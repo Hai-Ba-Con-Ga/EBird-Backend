@@ -12,7 +12,10 @@ namespace EBird.Api.Configurations
         public static void AddDbService (this IServiceCollection services)
         {
             var settings = services.BuildServiceProvider().GetService<IOptions<AppSettings>>();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(settings.Value.ConnectionStrings.DefaultConnection));
+            Console.WriteLine(settings);
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(settings.Value.ConnectionStrings.DefaultConnection));
+            //services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            
         }
         public static void AddRepositories (this IServiceCollection services)
         {

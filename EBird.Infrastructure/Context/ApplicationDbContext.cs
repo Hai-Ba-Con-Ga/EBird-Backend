@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EBird.Application.Interfaces;
+using EBird.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace EBird.Infrastructure.Context
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -14,7 +16,7 @@ namespace EBird.Infrastructure.Context
         }
 
         #region DbSet
-
+        public DbSet<PlaceEntity> Places { get; set; }
         #endregion
     }
 }
