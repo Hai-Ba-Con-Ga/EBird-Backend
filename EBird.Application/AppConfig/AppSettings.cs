@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace EBird.Application.AppConfig
 {
     public class AppSettings
-    {
-        public DbConfig ConnectionStrings { get; set; }
+    {   
+        public DbConfig ConnectionStringsOptions { get; set; }
         public JwtSetting JwtSetting { get; set; }
     }
 }
