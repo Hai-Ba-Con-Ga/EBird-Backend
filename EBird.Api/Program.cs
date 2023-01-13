@@ -12,7 +12,11 @@ builder.Services.Configure<AppSettings>(configuration.GetSection(nameof(AppSetti
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                                                       options.UseSqlServer(builder
+                                                                               .Configuration
+                                                                               .GetConnectionString("DefaultConnection")));
+
 //builder.Services.AddDbService();
 builder.Services.AddRepositories();
 builder.Services.AddAppServices();
