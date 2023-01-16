@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EBird.Domain.Common
+namespace EBird.Domain.Enums
 {
-    public abstract class BaseEntity
+    public enum Role
     {
-        public Guid Id { get; init; }
+        Admin,
+        User
     }
 }
