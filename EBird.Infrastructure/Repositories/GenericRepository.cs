@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Infrastructure.Repositories
 {
-    public abstract class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         protected ApplicationDbContext _context;
         protected DbSet<T> dbSet;
