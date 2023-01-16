@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Infrastructure.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public abstract class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         protected ApplicationDbContext _context;
         protected DbSet<T> dbSet;
@@ -22,27 +22,27 @@ namespace EBird.Infrastructure.Repositories
             dbSet = context.Set<T>();
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<int> CreateAsync(T entity)
         {
             await dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            
+            int rowEffect = await _context.SaveChangesAsync();
+            return rowEffect;
         }
 
         public async Task<T> DeleteAsync(Guid id)
         {
-            T _entity  = await GetByIdAsync(id);
-            if(_entity == null )
+            T _entity = await GetByIdAsync(id);
+            if(_entity == null)
             {
                 return null;
             }
-            dbSet.Remove( _entity );
+            dbSet.Remove(_entity);
             await _context.SaveChangesAsync();
             return _entity;
-            
+
         }
 
-        public async  Task<T> DeleteSoftAsync(Guid id)
+        public async Task<T> DeleteSoftAsync(Guid id)
         {
             T _entity = await GetByIdAsync(id);
             if(_entity == null)
@@ -54,7 +54,7 @@ namespace EBird.Infrastructure.Repositories
             return _entity;
         }
 
-        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
         {
             return dbSet.AsQueryable().AsNoTracking().FirstOrDefaultAsync(predicate);
         }
@@ -70,17 +70,18 @@ namespace EBird.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<int> UpdateAsync(T entity)
         {
             _context.Attach(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            int rowsEffect = await _context.SaveChangesAsync();
+            return rowsEffect;
         }
 
         public async Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
         {
             List<T> list;
             var query = dbSet.AsQueryable();
-            foreach (var property in navigationProperties)
+            foreach(var property in navigationProperties)
             {
                 query = query.Include(property);
             }
@@ -88,5 +89,5 @@ namespace EBird.Infrastructure.Repositories
             return list;
         }
     }
-    
+
 }
