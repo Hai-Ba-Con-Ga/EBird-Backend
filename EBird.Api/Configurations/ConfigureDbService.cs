@@ -10,15 +10,6 @@ namespace EBird.Api.Configurations
 {
     public static class ConfigureDbService
     {
-        public static void AddDbService(this IServiceCollection services)
-        {
-            var settings = services.BuildServiceProvider().GetService<IOptions<AppSettings>>();
-            Console.WriteLine(settings);
-            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(settings.Value.ConnectionStrings.DefaultConnection));
-            //services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());        
-
-        }
-
         public static void AddDbService(this IServiceCollection services, IConfiguration configuration)
         {
 
@@ -29,6 +20,9 @@ namespace EBird.Api.Configurations
                 return;
             }
             Console.WriteLine(connectionOption.DefaultConnection ?? "Connection string is null");
+            services.AddDbContext<ApplicationDbContext>(options =>
+                                                       options.UseSqlServer(connectionOption.DefaultConnection));
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
         }
         
         public static void AddRepositories(this IServiceCollection services)
