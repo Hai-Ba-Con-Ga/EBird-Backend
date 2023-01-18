@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -8,10 +8,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\EBird.Domain\EBird.Domain.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Services\IServices\" />
+		<ProjectReference Include="..\EBird.Api\EBird.Api.csproj" />
+		<ProjectReference Include="..\EBird.Infrastructure\EBird.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
