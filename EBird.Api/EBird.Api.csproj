@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EBird.Application\EBird.Application.csproj" />
-    <ProjectReference Include="..\EBird.Domain\EBird.Domain.csproj" />
     <ProjectReference Include="..\EBird.Infrastructure\EBird.Infrastructure.csproj" />
   </ItemGroup>
 

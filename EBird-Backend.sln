@@ -10,17 +10,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{75A62EAB-7B8C-4D1F-90E2-203D88D2C269}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Domain", "EBird.Domain\EBird.Domain.csproj", "{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}"
-	ProjectSection(ProjectDependencies) = postProject
-		{40FAEDBE-AD4B-4185-B2D7-B1017F655E44} = {40FAEDBE-AD4B-4185-B2D7-B1017F655E44}
-		{C708FA8E-504D-4F20-A588-64DA87882D78} = {C708FA8E-504D-4F20-A588-64DA87882D78}
-		{CAF0BEDA-9679-4384-ACB5-96522F284EF1} = {CAF0BEDA-9679-4384-ACB5-96522F284EF1}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Application", "EBird.Application\EBird.Application.csproj", "{CAF0BEDA-9679-4384-ACB5-96522F284EF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Infrastructure", "EBird.Infrastructure\EBird.Infrastructure.csproj", "{C708FA8E-504D-4F20-A588-64DA87882D78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Api", "EBird.Api\EBird.Api.csproj", "{40FAEDBE-AD4B-4185-B2D7-B1017F655E44}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

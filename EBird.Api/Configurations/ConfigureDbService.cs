@@ -1,11 +1,10 @@
 ﻿using EBird.Application.AppConfig;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Infrastructure.Context;
 using EBird.Infrastructure.Repositories;
-using EBird.Infrastructure.Repositories.IRepository;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+
 
 
 namespace EBird.Api.Configurations
@@ -30,7 +29,7 @@ namespace EBird.Api.Configurations
         
         public static void AddRepositories(this IServiceCollection services)
         {
-            //services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IWapperRepository, WapperRepository>();
         }
     }

@@ -1,21 +1,22 @@
 ﻿using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
-using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EBird.Infrastructure.Repositories;
 using System.Security;
-using EBird.Infrastructure.Repositories.IRepository;
+
+using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Interfaces;
+using EBird.Application.Model;
 
 namespace EBird.Application.Services
 {
     public class BirdTypeService : IBirdTypeService
     {
-        
-       
+        private IWapperRepository _wapperRepository;
+
         public Task<Response<BirdTypeEntity>> DeleteBirdType(int birdTypeID)
         {
             throw new NotImplementedException();

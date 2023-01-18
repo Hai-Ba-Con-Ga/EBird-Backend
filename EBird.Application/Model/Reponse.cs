@@ -1,4 +1,4 @@
-﻿namespace Response
+﻿namespace EBird.Application.Model
 {
     public class Response<T>
     {

@@ -1,5 +1,5 @@
-﻿using EBird.Domain.Entities;
-using Response;
+﻿using EBird.Application.Model;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Services.IServices
 {

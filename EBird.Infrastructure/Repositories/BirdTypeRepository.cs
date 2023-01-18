@@ -1,7 +1,6 @@
 ﻿using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
-using EBird.Infrastructure.Repositories.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;

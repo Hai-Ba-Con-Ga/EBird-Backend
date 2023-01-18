@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EBird.Infrastructure.Repositories.IRepository
+namespace EBird.Application.Interfaces.IRepository
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {

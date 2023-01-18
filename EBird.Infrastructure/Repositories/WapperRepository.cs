@@ -1,6 +1,6 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Infrastructure.Context;
-using EBird.Infrastructure.Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

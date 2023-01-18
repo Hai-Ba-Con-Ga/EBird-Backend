@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EBird.Infrastructure.Repositories.IRepository
+namespace EBird.Application.Interfaces
 {
     public interface IWapperRepository
     {
