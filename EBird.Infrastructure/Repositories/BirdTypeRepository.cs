@@ -1,4 +1,5 @@
-﻿using EBird.Domain.Entities;
+﻿using EBird.Application.Interfaces.IRepository;
+using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using EBird.Infrastructure.Repositories.IRepository;
 using System;
@@ -14,6 +15,9 @@ namespace EBird.Infrastructure.Repositories
         public BirdTypeRepository(ApplicationDbContext context) : base(context)
         {
         }
+
+
+        
     }
 
 }

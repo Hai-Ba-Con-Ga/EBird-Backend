@@ -1,4 +1,5 @@
-﻿using EBird.Infrastructure.Context;
+﻿using EBird.Application.Interfaces.IRepository;
+using EBird.Infrastructure.Context;
 using EBird.Infrastructure.Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,7 +27,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 if(_birdTypeRepository == null)
                 {
-                    _birdTypeRepository = new BirdTypeRepository(_context);
+                    //_birdTypeRepository = new BirdTypeRepository(_context);
                 }
                 return _birdTypeRepository;
             }

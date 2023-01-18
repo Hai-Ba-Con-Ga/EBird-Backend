@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EBird.Infrastructure.Repositories;
+using System.Security;
+using EBird.Infrastructure.Repositories.IRepository;
 
 namespace EBird.Application.Services
 {
     public class BirdTypeService : IBirdTypeService
     {
         
-
+       
         public Task<Response<BirdTypeEntity>> DeleteBirdType(int birdTypeID)
         {
             throw new NotImplementedException();
