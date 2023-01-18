@@ -19,20 +19,19 @@ jobs:
         switches: -avzr --delete --exclude="" --include="" --filter=""
         path: .
         remote_path: ~/ebird/server
-        remote_host: 171.226.155.174
+        remote_host: www.wyvernpserver.tech
         remote_port: 22
-        remote_user: demo
+        remote_user: admin
         remote_key: ${{ secrets.DEPLOY_KEY }}
     - name : Install package
       uses: appleboy/ssh-action@v0.1.7
       with:
-        host: 171.226.155.174
-        username: demo
+        host: www.wyvernpserver.tech
+        username: admin
         password: haibaconga
         port: 22
         script: >
           cd ebird/server &&
           fuser -k -n tcp 7137 &&
-          cd EBird.Api && 
-          dotnet run
+          nohup ./DEPLOY_SERVER.sh &
           
