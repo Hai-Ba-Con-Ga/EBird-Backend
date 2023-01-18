@@ -10,6 +10,20 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "BirdAllowSpecificOrigins",
+        buider =>
+        {
+            buider.WithOrigins(
+                "https://globird.tech",
+                "http://localhost:3000"
+                )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin();
+        });
+});
 builder.Services.AddDbService(configuration);
 builder.Services.AddRepositories();
 builder.Services.AddAppServices();
@@ -27,7 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true, WrapWhenApiPathStartsWith = "/server" });
-
+app.UseCors("BirdAllowSpecificOrigins");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

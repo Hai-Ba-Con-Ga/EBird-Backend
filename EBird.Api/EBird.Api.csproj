@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="UserFeatures\Responses\" />
-    <Folder Include="UserFeatures\Requests\" />
   </ItemGroup>
 
 </Project>
