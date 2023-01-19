@@ -5,7 +5,7 @@ using EBird.Application.Model;
 using Microsoft.AspNetCore.Http;
 using EBird.Application.Exceptions;
 using System.Net;
-
+using EBird.Application.Validation;
 
 namespace EBird.Application.Services
 {
@@ -96,7 +96,7 @@ namespace EBird.Application.Services
             return new Response<List<BirdTypeEntity>>()
                         .SetData(listBirdType)
                         .SetMessage("Get all of bird type is succesful")
-                        .SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+                        .SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK);
         }
 
         public async Task<Response<BirdTypeEntity>> GetBirdType(string birdTypeCode)
@@ -139,11 +139,14 @@ namespace EBird.Application.Services
                 {
                     throw new BadHttpRequestException("Invalid bird type code");
                 }
+                
                 var birdTypeResult = await _repository.BirdType.GetByIdAsync(birdTypeID);
+                
                 if(birdTypeResult == null)
                 {
                     throw new NotFoundException("Bird type not found");
                 }
+                
                 return new Response<BirdTypeEntity>()
                             .SetData(birdTypeResult)
                             .SetStatusCode((int) HttpStatusCode.OK)
@@ -158,19 +161,79 @@ namespace EBird.Application.Services
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
                 }
+                
                 return respone.SetSuccess(false)
                                 .SetMessage(ex.Message);
             }
         }
 
-        public Task<Response<BirdTypeEntity>> InsertBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeEntity>> InsertBirdType(BirdTypeEntity birdType)
         {
-            
+            try
+            {
+                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
+                
+                if(isValid == false)
+                {
+                    throw new BadHttpRequestException("Invalid bird type entity");
+                }
+                
+                int rowEffect = await _repository.BirdType.CreateAsync(birdType);
+                
+                if(rowEffect == 0)
+                {
+                    throw new Exception("Can insert data to database");
+                }
+                
+                return new Response<BirdTypeEntity>()
+                            .SetData(birdType)
+                            .SetSuccess(true)
+                            .SetMessage("Insert bird type is successful")
+                            .SetStatusCode((int) HttpStatusCode.OK);
+            }
+            catch(Exception ex)
+            {
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
         }
 
-        public Task<Response<BirdTypeEntity>> UpdateBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeEntity>> UpdateBirdType(BirdTypeEntity birdType)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
+                if(isValid == false)
+                {
+                    throw new BadHttpRequestException("Invalid bird type entity");
+                }
+                int rowEffect = await _repository.BirdType.UpdateAsync(birdType);
+                if(rowEffect == 0)
+                {
+                    throw new Exception("Can update data to database");
+                }
+                return new Response<BirdTypeEntity>()
+                            .SetData(birdType)
+                            .SetSuccess(true)
+                            .SetMessage("Update bird type is successful")
+                            .SetStatusCode((int) HttpStatusCode.OK);
+            }
+            catch(Exception ex)
+            {
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
         }
+        
     }
 }

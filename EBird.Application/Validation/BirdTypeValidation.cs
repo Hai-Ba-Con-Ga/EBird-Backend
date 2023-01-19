@@ -2,50 +2,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class BirdTypeValidation
+    public class BirdTypeValidation : BaseValidation
     {
-        public static bool ValidateBirdType(BirdTypeEntity birdType)
+        public static bool ValidateBirdTypeEntity(BirdTypeEntity birdType)
         {
             if(birdType == null)
             {
                 return false;
             }
-            if(ValidateBirdTypeCode(birdType.TypeCode) 
-                && ValidateBirdTypeName(birdType.TypeName)
-               )
+            if(ValidateID(birdType.Id) == false)
             {
-                return true;
+                return false;
+            }
+            if(ValidateString(birdType.TypeCode, 50) == false)
+            {
+                return false;
+            }
+            if(ValidateString(birdType.TypeName, 100) == false)
+            {
+                return false;
+            }
+            if(ValidateDatetime(birdType.CreatedDatetime) == false)
+            {
+                return false;
+            }
+            if(birdType.IsDeleted == true)
+            {
+                return false;
             }
             return true;
-        }
-
-        private static bool ValidateBirdTypeName(string typeName)
-        {
             
-        }
-
-        public static bool ValidateBirdTypeCode(string birdTypeCode)
-        {
-            if(string.IsNullOrEmpty(birdTypeCode))
-                return false;
-            if(birdTypeCode.Trim().Length > 50)
-                return false;
-            return true;
-        }
-
-        public static bool ValidateBirdTypeID(Guid birdTypeID)
-        {
-            if(birdTypeID == null)
-                return false;
-            return true;
-        }
-        
-
-        
+        }        
     }
 }
