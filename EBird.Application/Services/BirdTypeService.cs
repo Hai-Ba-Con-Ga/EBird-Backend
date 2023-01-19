@@ -1,50 +1,171 @@
 ﻿using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security;
-
-using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Interfaces;
 using EBird.Application.Model;
+using Microsoft.AspNetCore.Http;
+using EBird.Application.Exceptions;
+using System.Net;
+
 
 namespace EBird.Application.Services
 {
     public class BirdTypeService : IBirdTypeService
     {
-        private IWapperRepository _wapperRepository;
+        private IWapperRepository _repository;
 
-        public Task<Response<BirdTypeEntity>> DeleteBirdType(int birdTypeID)
+        public BirdTypeService(IWapperRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
 
-        public Task<Response<BirdTypeEntity>> DeleteBirdType(string birdTypeCode)
+        public async Task<Response<BirdTypeEntity>> DeleteBirdType(Guid birdTypeID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(birdTypeID == null)
+                {
+                    throw new BadHttpRequestException("Invalid bird type id");
+
+                }
+
+                var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeID);
+
+                if(birdTypeDeleted == null)
+                {
+                    throw new NotFoundException("Bird type not found");
+                }
+
+                return new Response<BirdTypeEntity>()
+                            .SetSuccess(true)
+                            .SetMessage("Soft delete is successfull")
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetData(birdTypeDeleted);
+            }
+            catch(Exception ex)
+            {
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException || ex is NotFoundException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
+
         }
 
-        public Task<Response<IEnumerable<BirdTypeEntity>>> GetAllBirdType()
+        public async Task<Response<BirdTypeEntity>> DeleteBirdType(string birdTypeCode)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
+                {
+                    throw new BadHttpRequestException("Invalid bird type code");
+
+                }
+
+                var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeCode);
+
+                if(birdTypeDeleted == null)
+                {
+                    throw new NotFoundException("Bird type not found");
+                }
+
+                return new Response<BirdTypeEntity>()
+                            .SetSuccess(true)
+                            .SetMessage("Soft delete is successfull")
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetData(birdTypeDeleted);
+            }
+            catch(Exception ex)
+            {
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException || ex is NotFoundException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
         }
 
-        public Task<Response<BirdTypeEntity>> GetBirdType(string birdTypeCode)
+        public async Task<Response<List<BirdTypeEntity>>> GetAllBirdType()
         {
-            throw new NotImplementedException();
+            var listBirdType = await _repository.BirdType.GetAllAsync();
+
+            return new Response<List<BirdTypeEntity>>()
+                        .SetData(listBirdType)
+                        .SetMessage("Get all of bird type is succesful")
+                        .SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         }
 
-        public Task<Response<BirdTypeEntity>> GetBirdType(int birdTypeID)
+        public async Task<Response<BirdTypeEntity>> GetBirdType(string birdTypeCode)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
+                {
+                    throw new BadHttpRequestException("Invalid bird type code");
+                }
+                var birdTypeResult = await _repository.BirdType.GetBirdTypeByCode(birdTypeCode);
+                if(birdTypeResult == null)
+                {
+                    throw new NotFoundException("Bird type not found");
+                }
+                return new Response<BirdTypeEntity>()
+                            .SetData(birdTypeResult)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Get bird type by code name is successful");
+            }
+            catch(Exception ex)
+            {
+
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException || ex is NotFoundException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
+        }
+
+        public async Task<Response<BirdTypeEntity>> GetBirdType(Guid birdTypeID)
+        {
+            try
+            {
+                if(birdTypeID == null)
+                {
+                    throw new BadHttpRequestException("Invalid bird type code");
+                }
+                var birdTypeResult = await _repository.BirdType.GetByIdAsync(birdTypeID);
+                if(birdTypeResult == null)
+                {
+                    throw new NotFoundException("Bird type not found");
+                }
+                return new Response<BirdTypeEntity>()
+                            .SetData(birdTypeResult)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Get bird type by code name is successful");
+            }
+            catch(Exception ex)
+            {
+
+                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                if(ex is BadHttpRequestException || ex is NotFoundException)
+                {
+                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                }
+                return respone.SetSuccess(false)
+                                .SetMessage(ex.Message);
+            }
         }
 
         public Task<Response<BirdTypeEntity>> InsertBirdType(BirdTypeEntity birdType)
         {
-            throw new NotImplementedException();
+            
         }
 
         public Task<Response<BirdTypeEntity>> UpdateBirdType(BirdTypeEntity birdType)

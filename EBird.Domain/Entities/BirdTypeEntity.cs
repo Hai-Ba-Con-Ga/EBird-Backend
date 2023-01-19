@@ -20,7 +20,7 @@ namespace EBird.Domain.Entities
         [Column("BirdTypeName", TypeName = "nvarchar")]
         [MaxLength(100)]
         [Required]
-        public string Name { get; set; }
+        public string TypeName { get; set; }
 
         [Column("BirdTypeCreatedDatetime", TypeName = "datetime")]
         [Required]
@@ -29,5 +29,13 @@ namespace EBird.Domain.Entities
         //relationship
         public ICollection<BirdEntity> Birds { get; set; }
 
+        public BirdTypeEntity(string typeCode, string name, DateTime createdDatetime) : base(Guid.NewGuid())
+        {
+            TypeCode = typeCode;
+            TypeName = name;
+            CreatedDatetime = createdDatetime;
+        }
+
+        
     }
 }
