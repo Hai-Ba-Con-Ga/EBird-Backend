@@ -27,7 +27,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 if(_birdTypeRepository == null)
                 {
-                    //_birdTypeRepository = new BirdTypeRepository(_context);
+                    _birdTypeRepository = new BirdTypeRepository(_context);
                 }
                 return _birdTypeRepository;
             }

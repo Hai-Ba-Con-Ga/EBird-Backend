@@ -56,7 +56,7 @@ namespace EBird.Infrastructure.Repositories
 
         public Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
         {
-            return dbSet.AsQueryable().AsNoTracking().FirstOrDefaultAsync(predicate);
+            return dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<T>> GetAllAsync()
@@ -66,7 +66,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<T> GetByIdAsync(Guid id)
         {
-            T entity = await dbSet.FirstOrDefaultAsync(e => e.Id.Equals(id));
+            var entity = await dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id.Equals(id));
             return entity;
         }
 

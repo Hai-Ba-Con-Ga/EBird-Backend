@@ -11,7 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbService(configuration);
+//register Repository
 builder.Services.AddRepositories();
+//register Application Service
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
 

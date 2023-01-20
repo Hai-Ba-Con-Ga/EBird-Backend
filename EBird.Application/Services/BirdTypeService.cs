@@ -6,19 +6,22 @@ using Microsoft.AspNetCore.Http;
 using EBird.Application.Exceptions;
 using System.Net;
 using EBird.Application.Validation;
+using AutoMapper;
 
 namespace EBird.Application.Services
 {
     public class BirdTypeService : IBirdTypeService
     {
         private IWapperRepository _repository;
+        private IMapper _mapper;
 
-        public BirdTypeService(IWapperRepository repository)
+        public BirdTypeService(IWapperRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
-        public async Task<Response<BirdTypeEntity>> DeleteBirdType(Guid birdTypeID)
+        public async Task<Response<BirdTypeDTO>> DeleteBirdType(Guid birdTypeID)
         {
             try
             {
@@ -35,15 +38,17 @@ namespace EBird.Application.Services
                     throw new NotFoundException("Bird type not found");
                 }
 
-                return new Response<BirdTypeEntity>()
+                var birdTypeDeletedDTO = _mapper.Map<BirdTypeDTO>(birdTypeDeleted);
+
+                return new Response<BirdTypeDTO>()
                             .SetSuccess(true)
                             .SetMessage("Soft delete is successfull")
                             .SetStatusCode((int) HttpStatusCode.OK)
-                            .SetData(birdTypeDeleted);
+                            .SetData(birdTypeDeletedDTO);
             }
             catch(Exception ex)
             {
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException || ex is NotFoundException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
@@ -54,7 +59,7 @@ namespace EBird.Application.Services
 
         }
 
-        public async Task<Response<BirdTypeEntity>> DeleteBirdType(string birdTypeCode)
+        public async Task<Response<BirdTypeDTO>> DeleteBirdType(string birdTypeCode)
         {
             try
             {
@@ -71,15 +76,17 @@ namespace EBird.Application.Services
                     throw new NotFoundException("Bird type not found");
                 }
 
-                return new Response<BirdTypeEntity>()
+                var birdTypeDeletedDTO = _mapper.Map<BirdTypeDTO>(birdTypeDeleted);
+
+                return new Response<BirdTypeDTO>()
                             .SetSuccess(true)
                             .SetMessage("Soft delete is successfull")
                             .SetStatusCode((int) HttpStatusCode.OK)
-                            .SetData(birdTypeDeleted);
+                            .SetData(birdTypeDeletedDTO);
             }
             catch(Exception ex)
             {
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException || ex is NotFoundException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
@@ -89,17 +96,19 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<List<BirdTypeEntity>>> GetAllBirdType()
+        public async Task<Response<List<BirdTypeDTO>>> GetAllBirdType()
         {
             var listBirdType = await _repository.BirdType.GetAllAsync();
 
-            return new Response<List<BirdTypeEntity>>()
-                        .SetData(listBirdType)
+            var listBirdTypeDTO = _mapper.Map<List<BirdTypeDTO>>(listBirdType);
+
+            return new Response<List<BirdTypeDTO>>()
+                        .SetData(listBirdTypeDTO)
                         .SetMessage("Get all of bird type is succesful")
                         .SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK);
         }
 
-        public async Task<Response<BirdTypeEntity>> GetBirdType(string birdTypeCode)
+        public async Task<Response<BirdTypeDTO>> GetBirdType(string birdTypeCode)
         {
             try
             {
@@ -107,13 +116,18 @@ namespace EBird.Application.Services
                 {
                     throw new BadHttpRequestException("Invalid bird type code");
                 }
+                
                 var birdTypeResult = await _repository.BirdType.GetBirdTypeByCode(birdTypeCode);
+                
                 if(birdTypeResult == null)
                 {
                     throw new NotFoundException("Bird type not found");
                 }
-                return new Response<BirdTypeEntity>()
-                            .SetData(birdTypeResult)
+
+                var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
+                
+                return new Response<BirdTypeDTO>()
+                            .SetData(birdTypeResultDTO)
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Get bird type by code name is successful");
@@ -121,7 +135,7 @@ namespace EBird.Application.Services
             catch(Exception ex)
             {
 
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException || ex is NotFoundException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
@@ -131,7 +145,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeEntity>> GetBirdType(Guid birdTypeID)
+        public async Task<Response<BirdTypeDTO>> GetBirdType(Guid birdTypeID)
         {
             try
             {
@@ -146,9 +160,11 @@ namespace EBird.Application.Services
                 {
                     throw new NotFoundException("Bird type not found");
                 }
+
+                var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
                 
-                return new Response<BirdTypeEntity>()
-                            .SetData(birdTypeResult)
+                return new Response<BirdTypeDTO>()
+                            .SetData(birdTypeResultDTO)
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Get bird type by code name is successful");
@@ -156,7 +172,7 @@ namespace EBird.Application.Services
             catch(Exception ex)
             {
 
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException || ex is NotFoundException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
@@ -167,7 +183,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeEntity>> InsertBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeDTO>> InsertBirdType(BirdTypeEntity birdType)
         {
             try
             {
@@ -184,16 +200,18 @@ namespace EBird.Application.Services
                 {
                     throw new Exception("Can insert data to database");
                 }
-                
-                return new Response<BirdTypeEntity>()
-                            .SetData(birdType)
+
+                var birdTypeDTO = _mapper.Map<BirdTypeDTO>(birdType);
+
+                return new Response<BirdTypeDTO>()
+                            .SetData(birdTypeDTO)
                             .SetSuccess(true)
                             .SetMessage("Insert bird type is successful")
                             .SetStatusCode((int) HttpStatusCode.OK);
             }
             catch(Exception ex)
             {
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
@@ -203,7 +221,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeEntity>> UpdateBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeDTO>> UpdateBirdType(BirdTypeEntity birdType)
         {
             try
             {
@@ -212,20 +230,25 @@ namespace EBird.Application.Services
                 {
                     throw new BadHttpRequestException("Invalid bird type entity");
                 }
+                
                 int rowEffect = await _repository.BirdType.UpdateAsync(birdType);
+                
                 if(rowEffect == 0)
                 {
                     throw new Exception("Can update data to database");
                 }
-                return new Response<BirdTypeEntity>()
-                            .SetData(birdType)
+
+                var birdTypeDTO = _mapper.Map<BirdTypeDTO>(birdType);
+                
+                return new Response<BirdTypeDTO>()
+                            .SetData(birdTypeDTO)
                             .SetSuccess(true)
                             .SetMessage("Update bird type is successful")
                             .SetStatusCode((int) HttpStatusCode.OK);
             }
             catch(Exception ex)
             {
-                Response<BirdTypeEntity> respone = new Response<BirdTypeEntity>();
+                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
                 if(ex is BadHttpRequestException)
                 {
                     respone.SetStatusCode(((BaseHttpException) ex).StatusCode);

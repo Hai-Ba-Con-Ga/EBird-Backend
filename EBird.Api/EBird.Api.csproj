@@ -12,6 +12,7 @@
     <PackageReference Include="AutoWrapper.Core" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UserFeatures\Responses\" />
     <Folder Include="UserFeatures\Requests\" />
+    <Folder Include="UserFeatures\Responses\" />
   </ItemGroup>
 
 </Project>

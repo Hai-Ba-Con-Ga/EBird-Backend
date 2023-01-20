@@ -16,9 +16,9 @@ namespace EBird.Domain.Common
         
         public bool IsDeleted { get; set; } = false;
 
-        protected BaseEntity(Guid id)
-        {
-            Id = id;
-        }
+        //protected BaseEntity(Guid id)
+        //{
+        //    Id = id;
+        //}
     }
 }

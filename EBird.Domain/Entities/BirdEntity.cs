@@ -11,6 +11,7 @@ namespace EBird.Domain.Entities
 {
     public class BirdEntity : BaseEntity
     {
+
         [Column("BirdName", TypeName = "nvarchar")]
         [MaxLength(50)]
         [Required]
@@ -53,6 +54,19 @@ namespace EBird.Domain.Entities
         //[ForeignKey("OwnerId")]
         //public AccountEnity Owner { get; set; }
 
+        //public BirdEntity(string name, int age, float weight, 
+        //                  int elo, bool status, DateTime createdDatetime, 
+        //                  string description, string color) : base(Guid.NewGuid())
+        //{
+        //    Name = name;
+        //    Age = age;
+        //    Weight = weight;
+        //    Elo = elo;
+        //    Status = status;
+        //    CreatedDatetime = createdDatetime;
+        //    Description = description;
+        //    Color = color;
+        //}
 
 
     }

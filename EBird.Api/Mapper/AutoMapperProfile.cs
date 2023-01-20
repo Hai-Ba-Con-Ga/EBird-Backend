@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EBird.Application.Model;
+using EBird.Domain.Entities;
 
 namespace EBird.Api.Mapper
 {
@@ -6,9 +8,7 @@ namespace EBird.Api.Mapper
     {
         public AutoMapperProfile() 
         {
-        
-        
-        
+            CreateMap<BirdTypeEntity, BirdTypeDTO>();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace EBird.Domain.Entities
         [Column("BirdTypeCode", TypeName = "nvarchar")]
         [MaxLength(50)]
         [Required]
-        //index in fluentAPI
+        //to be indexed in fluentAPI
         public string TypeCode { get; set; }
 
         [Column("BirdTypeName", TypeName = "nvarchar")]
@@ -29,12 +29,12 @@ namespace EBird.Domain.Entities
         //relationship
         public ICollection<BirdEntity> Birds { get; set; }
 
-        public BirdTypeEntity(string typeCode, string name, DateTime createdDatetime) : base(Guid.NewGuid())
-        {
-            TypeCode = typeCode;
-            TypeName = name;
-            CreatedDatetime = createdDatetime;
-        }
+        //public BirdTypeEntity(string typeCode, string name, DateTime createdDatetime) : base(Guid.NewGuid())
+        //{
+        //    TypeCode = typeCode;
+        //    TypeName = name;
+        //    CreatedDatetime = createdDatetime;
+        //}
 
         
     }
