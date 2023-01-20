@@ -28,14 +28,5 @@ namespace EBird.Domain.Entities
 
         //relationship
         public ICollection<BirdEntity> Birds { get; set; }
-
-        //public BirdTypeEntity(string typeCode, string name, DateTime createdDatetime) : base(Guid.NewGuid())
-        //{
-        //    TypeCode = typeCode;
-        //    TypeName = name;
-        //    CreatedDatetime = createdDatetime;
-        //}
-
-        
     }
 }

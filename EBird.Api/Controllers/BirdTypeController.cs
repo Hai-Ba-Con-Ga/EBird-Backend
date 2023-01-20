@@ -35,9 +35,10 @@ namespace EBird.Api.Controllers
 
         // POST api/<BirdTypeController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
         {
-            Console.WriteLine(value);
+           var birdTypeReponse = await _birdTypeService.InsertBirdType(birdTypeDTO);
+            return Ok(birdTypeReponse);
         }
 
         // PUT api/<BirdTypeController>/5

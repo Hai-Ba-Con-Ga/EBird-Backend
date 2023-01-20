@@ -8,7 +8,7 @@ namespace EBird.Api.Mapper
     {
         public AutoMapperProfile() 
         {
-            CreateMap<BirdTypeEntity, BirdTypeDTO>();
+            CreateMap<BirdTypeEntity, BirdTypeDTO>().ReverseMap();
         }
     }
 }

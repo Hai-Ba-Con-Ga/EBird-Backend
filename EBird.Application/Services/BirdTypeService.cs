@@ -183,16 +183,18 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeDTO>> InsertBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeDTO>> InsertBirdType(BirdTypeDTO birdTypeDTO)
         {
             try
             {
-                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
-                
-                if(isValid == false)
+                if(birdTypeDTO == null)
                 {
-                    throw new BadHttpRequestException("Invalid bird type entity");
+                    throw new BadHttpRequestException("Invalid bird type");
                 }
+
+                var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
+
+                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
                 
                 int rowEffect = await _repository.BirdType.CreateAsync(birdType);
                 
@@ -200,8 +202,6 @@ namespace EBird.Application.Services
                 {
                     throw new Exception("Can insert data to database");
                 }
-
-                var birdTypeDTO = _mapper.Map<BirdTypeDTO>(birdType);
 
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeDTO)
