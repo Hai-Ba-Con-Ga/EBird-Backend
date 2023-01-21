@@ -11,8 +11,5 @@ namespace EBird.Application.Model
         [Required(ErrorMessage = "Type name is required")]
         [StringLength(100, ErrorMessage = "Type name cannot be longer than 100 characters")]
         public string TypeName { get; set; }
-        
-        [Required(ErrorMessage = "Create datetime is required")]
-        public DateTime CreatedDatetime { get; set; }
     }
 }

@@ -221,11 +221,16 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeDTO>> UpdateBirdType(BirdTypeEntity birdType)
+        public async Task<Response<BirdTypeDTO>> UpdateBirdType(Guid id, BirdTypeDTO birdTypeDTO)
         {
             try
             {
+                var birdType = await _repository.BirdType.GetByIdAsync(id);
+
+                _mapper.Map(birdTypeDTO, birdType);
+
                 bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
+                
                 if(isValid == false)
                 {
                     throw new BadHttpRequestException("Invalid bird type entity");
@@ -237,8 +242,6 @@ namespace EBird.Application.Services
                 {
                     throw new Exception("Can update data to database");
                 }
-
-                var birdTypeDTO = _mapper.Map<BirdTypeDTO>(birdType);
                 
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeDTO)

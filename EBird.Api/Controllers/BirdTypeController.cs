@@ -29,7 +29,7 @@ namespace EBird.Api.Controllers
         public async Task<ActionResult<Response<BirdTypeDTO>>> Get(Guid id)
         {
             var birdTypeRespone = await _birdTypeService.GetBirdType(id);
-           
+
             return Ok(birdTypeRespone);
         }
 
@@ -37,21 +37,24 @@ namespace EBird.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
         {
-           var birdTypeReponse = await _birdTypeService.InsertBirdType(birdTypeDTO);
+            var birdTypeReponse = await _birdTypeService.InsertBirdType(birdTypeDTO);
             return Ok(birdTypeReponse);
         }
 
         // PUT api/<BirdTypeController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<Response<BirdTypeDTO>>> Put(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
         {
-            
+            var birdTypeReponse = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
+            return Ok(birdTypeReponse);
         }
 
         // DELETE api/<BirdTypeController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<Response<BirdTypeDTO>>> Delete(Guid id)
         {
+            var birdTypeReponse = await _birdTypeService.DeleteBirdType(id);
+            return Ok(birdTypeReponse);
         }
     }
 }
