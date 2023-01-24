@@ -88,6 +88,20 @@ namespace EBird.Infrastructure.Repositories
             list = await query.Where(predicate).AsNoTracking().ToListAsync();
             return list;
         }
+        public async Task<T> FindByIdAsync(Guid id, params string[] navigationProperties)
+        {
+            var query = ApplyNavigation(navigationProperties);
+            T entity = await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+            return entity;
+        }
+
+        private IQueryable<T> ApplyNavigation(params string[] navigationProperties)
+        {
+            var query = dbSet.AsQueryable();
+            foreach (string navigationProperty in navigationProperties)
+                query = query.Include(navigationProperty);
+            return query;
+        }
     }
 
 }

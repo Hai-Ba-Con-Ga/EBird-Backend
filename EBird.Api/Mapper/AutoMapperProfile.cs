@@ -9,8 +9,7 @@ namespace EBird.Api.Mapper
         public AutoMapperProfile() 
         {
             CreateMap<SignupRequest, AccountEntity>();
-        
-        
+            CreateMap<UpdateAccountRequest, AccountEntity>();
         }
     }
 }

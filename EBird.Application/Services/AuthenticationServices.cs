@@ -4,11 +4,14 @@ using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Response;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace EBird.Application.Services
 {
@@ -19,11 +22,13 @@ namespace EBird.Application.Services
         private readonly IGenericRepository<AccountEntity> _accountRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IConfiguration configuration)
+        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IGenericRepository<AccountEntity> accountRepository, IConfiguration configuration)
         {
             _refreshTokenRepository = refreshTokenRepository;
+            _accountRepository = accountRepository;
             _configuration = configuration;
         }
+
         public async Task< TokenModel> CreateToken(AccountEntity account)
         {
             var claims = new List<Claim>
@@ -34,7 +39,7 @@ namespace EBird.Application.Services
                  new Claim(ClaimTypes.Role, account.RoleString),
                  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
              };
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("JwtSetting:IssuerSigningKey").Value));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -74,7 +79,74 @@ namespace EBird.Application.Services
                 return Convert.ToBase64String(random);
             }
         }
-         
-        
+        public string HashPassword(string password)
+        {
+            var sha = SHA256.Create();
+            var asByteArrray = Encoding.Default.GetBytes(password);
+            var hasedPassword = sha.ComputeHash(asByteArrray);
+            return Convert.ToBase64String(hasedPassword);
+        }
+        public async Task<ActionResult<Response<TokenModel>>> Login(string username, string password)
+        {
+            var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(username));
+
+            if (user == null)
+            {
+                return Response<TokenModel>.Builder().SetStatusCode(400).SetMessage("Username is not exist").SetSuccess(false);
+            }
+            if (!user.Password.Equals(HashPassword(password)))
+            {
+                return Response<TokenModel>.Builder().SetStatusCode(400).SetMessage("Password wrong!").SetSuccess(false);
+            }
+            var token = await CreateToken(user);
+            return Response<TokenModel>.Builder().SetStatusCode(200)
+                .SetMessage("Login successfully!").SetSuccess(true).SetData(token);
+
+        }
+        public async Task<ActionResult<Response<string>>> Logout(Guid id)
+        {
+            var refreshToken = await _refreshTokenRepository.FindWithCondition(p=>p.AccountId.Equals(id));  
+            await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
+            return Response<string>.Builder().SetStatusCode(200).SetSuccess(true);
+        }
+        public async Task<ActionResult<Response<string>>> Signup(AccountEntity req)
+        {
+            var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username));
+            if (user != null)
+            {
+                return Response<string>.Builder().SetStatusCode(400).SetSuccess(false).SetMessage("Username is exist!");
+            }
+            req.Password = HashPassword(req.Password);
+            await _accountRepository.CreateAsync(req);
+
+            return Response<string>.Builder().SetStatusCode(200).SetSuccess(true);
+        }
+        public async Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model)
+        {
+            var refreshToken = await _refreshTokenRepository.FindWithCondition(p => p.Token.Equals(model.RefreshToken));
+            if (refreshToken == null)
+            {
+                return Response<TokenModel>.Builder().SetStatusCode(400).SetSuccess(false).SetMessage("Invalid Token");
+
+            }
+            if (refreshToken.ExpiredAt < DateTime.Now)
+            {
+                return Response<TokenModel>.Builder().SetStatusCode(400).SetSuccess(false).SetMessage("Token expried");
+            }
+            if (refreshToken.IsUsed || refreshToken.IsRevoked)
+            {
+                return Response<TokenModel>.Builder().SetStatusCode(400).SetSuccess(false).SetMessage("Invalid Token");
+
+            }
+
+            var user = await _accountRepository.GetByIdAsync(refreshToken.AccountId);
+            refreshToken.IsRevoked = true;
+            refreshToken.IsUsed = true;
+            await _refreshTokenRepository.UpdateAsync(refreshToken);
+            var token = await CreateToken(user);
+            return Response<TokenModel>.Builder().SetStatusCode(200).SetSuccess(true).SetData(token);
+        }
+
+
     }
 }

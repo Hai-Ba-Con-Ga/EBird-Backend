@@ -10,7 +10,7 @@ namespace EBird.Domain.Entities
     public class AccountEntity : BaseEntity
     {
         [Column(TypeName = "varchar")]
-        [MaxLength(50)]
+        [MaxLength(255)]
         public string Password { get; set; } = null!;
 
         [Column(TypeName = "varchar")]
@@ -33,12 +33,13 @@ namespace EBird.Domain.Entities
             private set { Role = Enum.Parse<Role>(value); }
         }
         [NotMapped]
-        public Role Role { get; set; }
+        public Role Role { get; set; } = Role.User;
 
         [Column(TypeName = "varchar")]
         [MaxLength(50)]
         public string Username { get; set; } = null!;
         
         public string Description { get; set; } = null!;
+        public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
     }
 }

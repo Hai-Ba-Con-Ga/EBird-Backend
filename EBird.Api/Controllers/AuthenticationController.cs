@@ -5,9 +5,12 @@ using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
+using EBird.Infrastructure.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 
@@ -18,70 +21,49 @@ namespace EBird.Api.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationServices _authenticationServices;
-        private readonly IGenericRepository<AccountEntity> _accountRepository;
-        private readonly IGenericRepository<RefreshTokenEntity> _refreshTokenRepository;
         private readonly IMapper _mapper;
 
-        public AuthenticationController(IAuthenticationServices authenticationServices, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IMapper mapper)
+        public AuthenticationController(IAuthenticationServices authenticationServices, IMapper mapper)
         {
             _authenticationServices = authenticationServices;
-            _accountRepository = accountRepository;
-            _refreshTokenRepository = refreshTokenRepository;
             _mapper = mapper;
         }
 
         [HttpPost("login")]
-
         public async Task<ActionResult<Response<TokenModel>>> Login(LoginRequest req)
         {
-            var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username));
-            
-            if (user == null)
-            {
-                return Response<TokenModel>.Builder().SetStatusCode(400).SetMessage("Username is not exist").SetSuccess(false);
-            }
-            if (!user.Password.Equals(req.Password))
-            {
-                return Response<TokenModel>.Builder().SetStatusCode(400).SetMessage("Password wrong!").SetSuccess(false);
-            }
-            var token = await _authenticationServices.CreateToken(user);
-            return Response<TokenModel>.Builder().SetStatusCode(200)
-                .SetMessage("Login successfully!").SetSuccess(true).SetData(token);
+            return await _authenticationServices.Login(req.Username, req.Password);
 
         }
-        [HttpGet("logout")]
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpDelete("logout")]
         public async Task<ActionResult<Response<string>>> Logout()
         {
-            string rawId = this.User.FindFirstValue((ClaimTypes.NameIdentifier));
-            Guid id = Guid.Parse(rawId);
-            
-            var refresh = await _refreshTokenRepository.FindWithCondition(p => p.AccountId.Equals(id));
-            if (refresh == null)
+            string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(rawId == null)
             {
                 return Response<string>.Builder().SetStatusCode(401).SetSuccess(false);
             }
-            await _refreshTokenRepository.DeleteAsync(refresh.Id);
-            return Response<string>.Builder().SetStatusCode(200).SetSuccess(true);
+            try
+            {
+                Guid id = Guid.Parse(rawId);
+                return await _authenticationServices.Logout(id);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
         [HttpPost("signup")]
         public async Task<ActionResult<Response<string>>> Signup(SignupRequest req)
         {
-            var user = _accountRepository.FindWithCondition(p=> p.Username.Equals(req.Username));
-            if (user != null) {
-                return Response<string>.Builder().SetStatusCode(400).SetSuccess(false).SetMessage("Username is exist!");
-            }
-            var newUser = new AccountEntity{
-                Username = req.Username,
-                Password= req.Password,
-                CreateDateTime= DateTime.UtcNow,
-                Description= req.Description,
-                Email= req.Email,
-                FirstName= req.FirstName,
-                LastName= req.LastName,
-                Role = Role.User
-            };
-            await _accountRepository.CreateAsync(newUser);
-            return Response<string>.Builder().SetStatusCode(200).SetSuccess(true);
+            return await _authenticationServices.Signup(_mapper.Map <AccountEntity> (req));
+        }
+        [HttpPost("renew-token")]
+        public async Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model)
+        {
+            return await _authenticationServices.RenewToken(model);
         }
 
     }

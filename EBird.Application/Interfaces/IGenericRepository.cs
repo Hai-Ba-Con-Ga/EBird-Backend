@@ -39,5 +39,6 @@ namespace EBird.Application.Interfaces
         Task<T> DeleteSoftAsync(Guid id);
         Task<T> FindWithCondition(Expression<Func<T, bool>> predicate);
         Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
+        Task<T> FindByIdAsync(Guid id, params string[] navigationProperties);
     }
 }
