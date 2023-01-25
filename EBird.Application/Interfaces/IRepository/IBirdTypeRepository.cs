@@ -12,5 +12,6 @@ namespace EBird.Application.Interfaces.IRepository
         Task<BirdTypeEntity> DeleteSoftAsync(string birdTypeCode);
 
         Task<BirdTypeEntity> GetBirdTypeByCode(string birdTypeCode);
+        bool IsExistBirdTypeCode(string birdTypeCode);
     }
 }

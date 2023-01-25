@@ -32,6 +32,11 @@ namespace EBird.Infrastructure.Repositories
         {
             return await this.FindWithCondition(x => x.TypeCode == birdTypeCode);
         }
+
+        public bool IsExistBirdTypeCode(string birdTypeCode)
+        {
+            return this.FindWithCondition(x => x.TypeCode == birdTypeCode).Result != null;
+        }
     }
 
 }

@@ -2,11 +2,12 @@
 using EBird.Domain.Entities;
 using EBird.Application.Interfaces;
 using EBird.Application.Model;
-using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Http;
 using EBird.Application.Exceptions;
 using System.Net;
 using EBird.Application.Validation;
 using AutoMapper;
+using Microsoft.Data.SqlClient;
 
 namespace EBird.Application.Services
 {
@@ -25,12 +26,6 @@ namespace EBird.Application.Services
         {
             try
             {
-                if(birdTypeID == null)
-                {
-                    throw new BadHttpRequestException("Invalid bird type id");
-
-                }
-
                 var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeID);
 
                 if(birdTypeDeleted == null)
@@ -48,15 +43,20 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException || ex is NotFoundException)
+                if(ex is NotFoundException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
-                }
-                return respone.SetSuccess(false)
+                    return Response<BirdTypeDTO>.Builder()
+                                .SetSuccess(false)
+                                .SetStatusCode(((BaseHttpException) ex).StatusCode)
                                 .SetMessage(ex.Message);
+                }
+                //handle other exception
+                Console.WriteLine(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal server error");
             }
-
         }
 
         public async Task<Response<BirdTypeDTO>> DeleteBirdType(string birdTypeCode)
@@ -65,7 +65,7 @@ namespace EBird.Application.Services
             {
                 if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
                 {
-                    throw new BadHttpRequestException("Invalid bird type code");
+                    throw new BadRequestException("Invalid bird type code");
 
                 }
 
@@ -86,26 +86,55 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException || ex is NotFoundException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                    return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
                 }
-                return respone.SetSuccess(false)
-                                .SetMessage(ex.Message);
+                Console.WriteLine(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                                .SetSuccess(false)
+                                .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                                .SetMessage("Internal server error");
             }
         }
 
         public async Task<Response<List<BirdTypeDTO>>> GetAllBirdType()
         {
-            var listBirdType = await _repository.BirdType.GetAllAsync();
+            try
+            {
+                var listBirdType = await _repository.BirdType.GetAllAsync();
 
-            var listBirdTypeDTO = _mapper.Map<List<BirdTypeDTO>>(listBirdType);
+                if(listBirdType is null)
+                {
+                    throw new NotFoundException("Can't find bird type");
+                }
 
-            return new Response<List<BirdTypeDTO>>()
-                        .SetData(listBirdTypeDTO)
-                        .SetMessage("Get all of bird type is succesful")
-                        .SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK);
+                var listBirdTypeDTO = _mapper.Map<List<BirdTypeDTO>>(listBirdType);
+
+                return new Response<List<BirdTypeDTO>>()
+                            .SetData(listBirdTypeDTO)
+                            .SetMessage("Get all of bird type is succesful")
+                            .SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK);
+            }
+            catch(Exception ex)
+            {
+                if(ex is NotFoundException)
+                {
+                    return Response<List<BirdTypeDTO>>.Builder()
+                                .SetSuccess(false)
+                                .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                                .SetMessage(ex.Message);
+                }
+                //handle other exception
+                Console.WriteLine(ex.Message);
+                return Response<List<BirdTypeDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal server error");
+            }
         }
 
         public async Task<Response<BirdTypeDTO>> GetBirdType(string birdTypeCode)
@@ -114,18 +143,18 @@ namespace EBird.Application.Services
             {
                 if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
                 {
-                    throw new BadHttpRequestException("Invalid bird type code");
+                    throw new BadRequestException("Invalid bird type code");
                 }
-                
+
                 var birdTypeResult = await _repository.BirdType.GetBirdTypeByCode(birdTypeCode);
-                
+
                 if(birdTypeResult == null)
                 {
                     throw new NotFoundException("Bird type not found");
                 }
 
                 var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
-                
+
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeResultDTO)
                             .SetStatusCode((int) HttpStatusCode.OK)
@@ -134,14 +163,18 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException || ex is NotFoundException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                    return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
                 }
-                return respone.SetSuccess(false)
-                                .SetMessage(ex.Message);
+                Console.WriteLine(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
             }
         }
 
@@ -149,20 +182,15 @@ namespace EBird.Application.Services
         {
             try
             {
-                if(birdTypeID == null)
-                {
-                    throw new BadHttpRequestException("Invalid bird type code");
-                }
-                
                 var birdTypeResult = await _repository.BirdType.GetByIdAsync(birdTypeID);
-                
+
                 if(birdTypeResult == null)
                 {
                     throw new NotFoundException("Bird type not found");
                 }
 
                 var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
-                
+
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeResultDTO)
                             .SetStatusCode((int) HttpStatusCode.OK)
@@ -171,15 +199,18 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException || ex is NotFoundException)
+                if(ex is NotFoundException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                    return Response<BirdTypeDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetMessage(ex.Message);
                 }
-                
-                return respone.SetSuccess(false)
-                                .SetMessage(ex.Message);
+                Console.WriteLine(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
             }
         }
 
@@ -187,22 +218,32 @@ namespace EBird.Application.Services
         {
             try
             {
-                if(birdTypeDTO == null)
+                bool isValid = BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO);
+
+                if(birdTypeDTO == null || isValid == false)
                 {
-                    throw new BadHttpRequestException("Invalid bird type");
+                    throw new BadRequestException("Invalid bird type");
+                }
+                bool isValidTypeCode = BirdTypeValidation.ValidateBirdTypeCode(_repository, birdTypeDTO.TypeCode);
+                if(isValidTypeCode == false)
+                {
+                    throw new BadRequestException("Invalid bird type code");
                 }
 
                 var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
+                birdType.CreatedDatetime = DateTime.Now;
 
-                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
-                
+                if(isValid == false)
+                {
+                    throw new BadRequestException("Invalid bird type");
+                }
+
                 int rowEffect = await _repository.BirdType.CreateAsync(birdType);
-                
+
                 if(rowEffect == 0)
                 {
                     throw new Exception("Can insert data to database");
                 }
-
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeDTO)
                             .SetSuccess(true)
@@ -211,13 +252,19 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException)
+                if(ex is BadRequestException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                    return Response<BirdTypeDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetMessage(ex.Message);
                 }
-                return respone.SetSuccess(false)
-                                .SetMessage(ex.Message);
+                //if(ex is SqlException)
+                Console.WriteLine(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
             }
         }
 
@@ -225,24 +272,29 @@ namespace EBird.Application.Services
         {
             try
             {
+                bool isValid = BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO);
+
+                if(isValid == false)
+                {
+                    throw new BadRequestException("Invalid bird type for updating");
+                }
+
                 var birdType = await _repository.BirdType.GetByIdAsync(id);
+
+                if(birdType == null)
+                {
+                    throw new NotFoundException("Can not found bird type for updating");
+                }
 
                 _mapper.Map(birdTypeDTO, birdType);
 
-                bool isValid = BirdTypeValidation.ValidateBirdTypeEntity(birdType);
-                
-                if(isValid == false)
-                {
-                    throw new BadHttpRequestException("Invalid bird type entity");
-                }
-                
                 int rowEffect = await _repository.BirdType.UpdateAsync(birdType);
-                
+
                 if(rowEffect == 0)
                 {
                     throw new Exception("Can update data to database");
                 }
-                
+
                 return new Response<BirdTypeDTO>()
                             .SetData(birdTypeDTO)
                             .SetSuccess(true)
@@ -251,15 +303,19 @@ namespace EBird.Application.Services
             }
             catch(Exception ex)
             {
-                Response<BirdTypeDTO> respone = new Response<BirdTypeDTO>();
-                if(ex is BadHttpRequestException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    respone.SetStatusCode(((BaseHttpException) ex).StatusCode);
+                    return Response<BirdTypeDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetMessage(ex.Message);
                 }
-                return respone.SetSuccess(false)
-                                .SetMessage(ex.Message);
+                return Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
             }
         }
-        
+
     }
 }

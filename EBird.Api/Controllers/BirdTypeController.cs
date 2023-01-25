@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EBird.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("bird-type")]
     [ApiController]
     public class BirdTypeController : ControllerBase
     {
@@ -16,45 +16,45 @@ namespace EBird.Api.Controllers
             _birdTypeService = birdTypeService;
         }
 
-        // GET: api/<BirdTypeController>
-        [HttpGet]
+        // GET all
+        [HttpGet("find-all")]
         public async Task<ActionResult<Response<List<BirdTypeDTO>>>> Get()
         {
             var birdTypeResponeList = await _birdTypeService.GetAllBirdType();
-            return Ok(birdTypeResponeList);
+            return StatusCode((int) birdTypeResponeList.StatusCode, birdTypeResponeList);
         }
 
-        // GET api/<BirdTypeController>/5
+        // GET within id
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Get(Guid id)
         {
             var birdTypeRespone = await _birdTypeService.GetBirdType(id);
 
-            return Ok(birdTypeRespone);
+            return StatusCode((int)birdTypeRespone.StatusCode, birdTypeRespone);
         }
 
-        // POST api/<BirdTypeController>
-        [HttpPost]
+        // POST : create new bird type
+        [HttpPost("create")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
         {
             var birdTypeReponse = await _birdTypeService.InsertBirdType(birdTypeDTO);
-            return Ok(birdTypeReponse);
+            return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);
         }
 
-        // PUT api/<BirdTypeController>/5
-        [HttpPut("{id}")]
+        // PUT : update exist bird type
+        [HttpPatch("update/{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Put(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
         {
             var birdTypeReponse = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
-            return Ok(birdTypeReponse);
+            return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);
         }
 
-        // DELETE api/<BirdTypeController>/5
-        [HttpDelete("{id}")]
+        // DELETE: delete bird type
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Delete(Guid id)
         {
             var birdTypeReponse = await _birdTypeService.DeleteBirdType(id);
-            return Ok(birdTypeReponse);
+            return StatusCode((int) birdTypeReponse.StatusCode, birdTypeReponse);
         }
     }
 }
