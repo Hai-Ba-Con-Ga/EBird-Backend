@@ -97,6 +97,16 @@ namespace EBird.Infrastructure.Repositories
             }
             return await dbSet.AsNoTracking().Where(predicate).ToListAsync();
         }
+
+        public Task<List<T>> GetAllActiveAsync()
+        {
+            return dbSet.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+        }
+
+        public Task<T> GetByIdActiveAsync(Guid id)
+        {
+            return dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == false);
+        }
     }
 
 }

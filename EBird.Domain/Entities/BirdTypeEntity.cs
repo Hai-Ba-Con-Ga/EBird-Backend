@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Domain.Entities
 {
+    [Table("BirdType")]
     public class BirdTypeEntity : BaseEntity
     {
         [Column("BirdTypeCode", TypeName = "nvarchar")]

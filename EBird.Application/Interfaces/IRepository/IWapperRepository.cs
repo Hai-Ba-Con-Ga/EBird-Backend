@@ -10,5 +10,6 @@ namespace EBird.Application.Interfaces
     public interface IWapperRepository
     {
         public IBirdTypeRepository BirdType { get; }
+        public IBirdRepository Bird { get; }
     }
 }

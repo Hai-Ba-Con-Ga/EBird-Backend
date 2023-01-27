@@ -37,7 +37,7 @@ namespace EBird.Api.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
         {
-            var birdTypeReponse = await _birdTypeService.InsertBirdType(birdTypeDTO);
+            var birdTypeReponse = await _birdTypeService.AddBirdType(birdTypeDTO);
             return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);
         }
 

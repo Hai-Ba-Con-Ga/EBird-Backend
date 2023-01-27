@@ -7,7 +7,8 @@ namespace EBird.Api.Configurations
     {
         public static void AddAppServices (this IServiceCollection services)
         {
-            services.AddScoped<IBirdTypeService, BirdTypeService>();
+            services.AddScoped<IBirdTypeService, BirdTypeService>()
+                    .AddScoped<IBirdService, BirdService>();
         }
     }
 }

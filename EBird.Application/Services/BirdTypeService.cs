@@ -68,7 +68,7 @@ namespace EBird.Application.Services
 
                 }
 
-                var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeCode);
+                var birdTypeDeleted = await _repository.BirdType.SoftDeleteAsync(birdTypeCode);
 
                 if(birdTypeDeleted == null)
                 {
@@ -213,7 +213,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task<Response<BirdTypeDTO>> InsertBirdType(BirdTypeDTO birdTypeDTO)
+        public async Task<Response<BirdTypeDTO>> AddBirdType(BirdTypeDTO birdTypeDTO)
         {
             try
             {

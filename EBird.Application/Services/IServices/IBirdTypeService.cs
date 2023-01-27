@@ -10,7 +10,7 @@ namespace EBird.Application.Services.IServices
 
         public Task<Response<List<BirdTypeDTO>>> GetAllBirdType();
 
-        public Task<Response<BirdTypeDTO>> InsertBirdType(BirdTypeDTO birdTypeDTO);
+        public Task<Response<BirdTypeDTO>> AddBirdType(BirdTypeDTO birdTypeDTO);
 
         public Task<Response<BirdTypeDTO>> UpdateBirdType(Guid id, BirdTypeDTO birdTypeDTO);
 

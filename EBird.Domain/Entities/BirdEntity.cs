@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Domain.Entities
 {
+    [Table("Bird")]
     public class BirdEntity : BaseEntity
     {
 
@@ -29,9 +30,9 @@ namespace EBird.Domain.Entities
         [Required]
         public int Elo { get; set; }
 
-        [Column("BirdStatus", TypeName = "bit")]
-        [Required]
-        public bool Status { get; set; }
+        [Column("BirdStatus", TypeName = "nvarchar")]
+        [MaxLength(50)]
+        public string Status { get; set; }
 
         [Column("BirdCreatedDatetime", TypeName = "datetime")]
         [Required]

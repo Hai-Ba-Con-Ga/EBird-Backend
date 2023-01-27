@@ -16,7 +16,7 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<BirdTypeEntity> DeleteSoftAsync(string birdTypeCode)
+        public async Task<BirdTypeEntity> SoftDeleteAsync(string birdTypeCode)
         {
             BirdTypeEntity _entity = await GetBirdTypeByCode(birdTypeCode);
             if(_entity == null)

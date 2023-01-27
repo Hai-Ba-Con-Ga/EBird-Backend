@@ -16,6 +16,8 @@ namespace EBird.Infrastructure.Repositories
         
         private IBirdTypeRepository _birdTypeRepository;
 
+        private IBirdRepository _birdRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -30,6 +32,18 @@ namespace EBird.Infrastructure.Repositories
                     _birdTypeRepository = new BirdTypeRepository(_context);
                 }
                 return _birdTypeRepository;
+            }
+        }
+
+        public IBirdRepository Bird
+        {
+            get
+            {
+                if(_birdRepository == null)
+                {
+                    _birdRepository = new BirdRepository(_context);
+                }
+                return _birdRepository;
             }
         }
 
