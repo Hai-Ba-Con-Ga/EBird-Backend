@@ -1,6 +1,7 @@
 ﻿using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 return null;
             }
-            
+
             _entity.IsDeleted = true;
             await this.UpdateAsync(_entity);
             return _entity;
@@ -37,6 +38,16 @@ namespace EBird.Infrastructure.Repositories
         {
             return this.FindWithCondition(x => x.TypeCode == birdTypeCode).Result != null;
         }
-    }
 
+        public async Task<List<BirdTypeEntity>> GetAllBirdTypeActiveAsync()
+        {
+            return await this.FindAllWithCondition(x => x.IsDeleted == false);
+        }
+
+        public async Task<BirdTypeEntity> GetBirdTypeActiveAsync(Guid id)
+        {
+            return await this.FindWithCondition(x => x.Id == id && x.IsDeleted == false);
+        }
+    }
 }
+    

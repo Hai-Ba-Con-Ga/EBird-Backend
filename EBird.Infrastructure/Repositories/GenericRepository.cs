@@ -88,6 +88,15 @@ namespace EBird.Infrastructure.Repositories
             list = await query.Where(predicate).AsNoTracking().ToListAsync();
             return list;
         }
+
+        public async Task<List<T>> FindAllWithCondition(Expression<Func<T, bool>> predicate = null)
+        {
+            if(predicate == null)
+            {
+                return await dbSet.AsNoTracking().ToListAsync();
+            }
+            return await dbSet.AsNoTracking().Where(predicate).ToListAsync();
+        }
     }
 
 }

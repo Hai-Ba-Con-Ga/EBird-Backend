@@ -2,7 +2,6 @@
 using EBird.Domain.Entities;
 using EBird.Application.Interfaces;
 using EBird.Application.Model;
-//using Microsoft.AspNetCore.Http;
 using EBird.Application.Exceptions;
 using System.Net;
 using EBird.Application.Validation;
@@ -105,11 +104,11 @@ namespace EBird.Application.Services
         {
             try
             {
-                var listBirdType = await _repository.BirdType.GetAllAsync();
+                var listBirdType = await _repository.BirdType.GetAllBirdTypeActiveAsync();
 
-                if(listBirdType is null)
+                if(listBirdType.Count == 0 || listBirdType == null)
                 {
-                    throw new NotFoundException("Can't find bird type");
+                    throw new NotFoundException("Bird type not found");
                 }
 
                 var listBirdTypeDTO = _mapper.Map<List<BirdTypeDTO>>(listBirdType);
@@ -182,7 +181,7 @@ namespace EBird.Application.Services
         {
             try
             {
-                var birdTypeResult = await _repository.BirdType.GetByIdAsync(birdTypeID);
+                var birdTypeResult = await _repository.BirdType.GetBirdTypeActiveAsync(birdTypeID);
 
                 if(birdTypeResult == null)
                 {
@@ -195,7 +194,7 @@ namespace EBird.Application.Services
                             .SetData(birdTypeResultDTO)
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
-                            .SetMessage("Get bird type by code name is successful");
+                            .SetMessage("Get bird type is successful");
             }
             catch(Exception ex)
             {
@@ -219,11 +218,11 @@ namespace EBird.Application.Services
             try
             {
                 bool isValid = BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO);
-
                 if(birdTypeDTO == null || isValid == false)
                 {
                     throw new BadRequestException("Invalid bird type");
                 }
+
                 bool isValidTypeCode = BirdTypeValidation.ValidateBirdTypeCode(_repository, birdTypeDTO.TypeCode);
                 if(isValidTypeCode == false)
                 {
