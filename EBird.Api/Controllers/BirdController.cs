@@ -18,7 +18,7 @@ namespace EBird.Api.Controllers
         }
 
 
-        // GET: api/<BirdController>
+        // GET: get all
         [HttpGet("find-all")]
         public async Task<ActionResult<Response<List<BirdDTO>>>> Get()
         {
@@ -26,7 +26,7 @@ namespace EBird.Api.Controllers
             return StatusCode((int) responseData.StatusCode, responseData);
         }
 
-        // GET api/<BirdController>/5
+        // GET : get bird by id 
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<BirdDTO>>> Get(Guid id)
         {
@@ -34,24 +34,28 @@ namespace EBird.Api.Controllers
             return StatusCode((int) responseData.StatusCode, responseData);
         }
 
-        // POST api/<BirdController>
-        [HttpPost]
+        // POST : create bird
+        [HttpPost("create")]
         public async Task<ActionResult<Response<BirdDTO>>> Post([FromBody] BirdDTO birdDTO)
         {
             var responseData = await _birdService.AddBird(birdDTO);
             return StatusCode((int) responseData.StatusCode, responseData);
         }
 
-        // PUT api/<BirdController>/5
-        [HttpPatch("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT : update bird
+        [HttpPatch("update/{id}")]
+        public async Task<ActionResult<Response<BirdDTO>>> Patch(Guid id, [FromBody] BirdDTO birdDTO)
         {
+            var responseData = await _birdService.UpdateBird(id, birdDTO);
+            return StatusCode((int) responseData.StatusCode, responseData);
         }
-
-        // DELETE api/<BirdController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        
+        // DELETE : delete bird
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult<Response<BirdDTO>>> Delete(Guid id)
         {
+            var responseData = await _birdService.DeleteBird(id);
+            return StatusCode((int) responseData.StatusCode, responseData);
         }
     }
 }

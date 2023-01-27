@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Domain.Entities;
 using System;
@@ -10,63 +11,27 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class BirdTypeValidation : BaseValidation
+    public class BirdTypeValidation
     {
-        public static bool ValidateBirdTypeEntity( IWapperRepository _repository, BirdTypeEntity birdType)
+        public static async Task ValidateBirdTypeDTO(BirdTypeDTO birdType, IWapperRepository _repository)
         {
             if(birdType == null)
             {
-                return false;
+                throw new BadRequestException("Data is null");
             }
-            if(ValidateID(birdType.Id) == false)
-            {
-                return false;
-            }
-            if(ValidateString(birdType.TypeCode, 50) == false)
-            {
-                return false;
-            }
-            if(ValidateBirdTypeCode(_repository, birdType.TypeCode) == false)
-            {
-                return false;
-            }
-            if(ValidateString(birdType.TypeName, 100) == false)
-            {
-                return false;
-            }
-            if(ValidateDatetime(birdType.CreatedDatetime) == false)
-            {
-                return false;
-            }
-            if(birdType.IsDeleted == true)
-            {
-                return false;
-            }
-            return true;
-            
-        }
 
-        public static bool ValidateBirdTypeDTO(BirdTypeDTO birdType)
-        {
-            if(birdType == null)
+            var result = await ValidateBirdTypeCode(birdType.TypeCode, _repository);
+
+            if(result == false)
             {
-                return false;
+                throw new BadRequestException("Bird type code already exists");
             }
-            if(ValidateString(birdType.TypeCode, 50) == false)
-            {
-                return false;
-            }
-            if(ValidateString(birdType.TypeName, 100) == false)
-            {
-                return false;
-            }
-            return true;
 
         }
 
-        public static bool ValidateBirdTypeCode(IWapperRepository _repository, string birdTypeCode)
+        public static async Task<bool> ValidateBirdTypeCode(string birdTypeCode, IWapperRepository _repository)
         {
-            bool isExist = _repository.BirdType.IsExistBirdTypeCode(birdTypeCode);
+            bool isExist = await _repository.BirdType.IsExistBirdTypeCode(birdTypeCode);
             if(isExist == false)
             {
                 return true;

@@ -34,11 +34,16 @@ namespace EBird.Infrastructure.Repositories
             return await this.FindWithCondition(x => x.TypeCode == birdTypeCode);
         }
 
-        public bool IsExistBirdTypeCode(string birdTypeCode)
+        public async Task<bool> IsExistBirdTypeCode(string birdTypeCode)
         {
-            return this.FindWithCondition(x => x.TypeCode == birdTypeCode).Result != null;
+            var result = await this.FindWithCondition(x => x.TypeCode == birdTypeCode);
+            if(result == null)
+            {
+                return false;
+            }
+            return true;
         }
-
+        
         public async Task<List<BirdTypeEntity>> GetAllBirdTypeActiveAsync()
         {
             return await this.FindAllWithCondition(x => x.IsDeleted == false);

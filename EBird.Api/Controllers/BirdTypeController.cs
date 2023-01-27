@@ -43,7 +43,7 @@ namespace EBird.Api.Controllers
 
         // PUT : update exist bird type
         [HttpPatch("update/{id}")]
-        public async Task<ActionResult<Response<BirdTypeDTO>>> Put(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
+        public async Task<ActionResult<Response<BirdTypeDTO>>> Patch(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
         {
             var birdTypeReponse = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
             return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);

@@ -217,25 +217,10 @@ namespace EBird.Application.Services
         {
             try
             {
-                bool isValid = BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO);
-                if(birdTypeDTO == null || isValid == false)
-                {
-                    throw new BadRequestException("Invalid bird type");
-                }
-
-                bool isValidTypeCode = BirdTypeValidation.ValidateBirdTypeCode(_repository, birdTypeDTO.TypeCode);
-                if(isValidTypeCode == false)
-                {
-                    throw new BadRequestException("Invalid bird type code");
-                }
+               await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
 
                 var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
                 birdType.CreatedDatetime = DateTime.Now;
-
-                if(isValid == false)
-                {
-                    throw new BadRequestException("Invalid bird type");
-                }
 
                 int rowEffect = await _repository.BirdType.CreateAsync(birdType);
 
@@ -271,12 +256,7 @@ namespace EBird.Application.Services
         {
             try
             {
-                bool isValid = BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO);
-
-                if(isValid == false)
-                {
-                    throw new BadRequestException("Invalid bird type for updating");
-                }
+                await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
 
                 var birdType = await _repository.BirdType.GetByIdAsync(id);
 
