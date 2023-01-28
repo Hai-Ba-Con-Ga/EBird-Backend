@@ -27,8 +27,4 @@
 		<ProjectReference Include="..\EBird.Infrastructure\EBird.Infrastructure.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="UserFeatures\Responses\" />
-	</ItemGroup>
-
 </Project>
