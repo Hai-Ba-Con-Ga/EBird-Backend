@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EBird.Api.UserFeatures.Requests;
 using EBird.Application.Interfaces;
+using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -25,16 +26,17 @@ namespace EBird.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<AccountEntity>>> GetAccountById(Guid id)
+        public async Task<ActionResult<Response<AccountResponse>>> GetAccountById(Guid id)
         {
             var response = await _accountServices.GetAccountById(id);
+            
             return StatusCode((int)response.StatusCode, response);
         }
         [HttpGet("find-all")]
         public async Task<ActionResult<Response<string>>> GetAllAccount()
         {
             var response = await _accountServices.GetAllAccount();
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int)response.StatusCode, response.Data);
         }
 
         [HttpPatch("update-account/{id}")]

@@ -1,4 +1,5 @@
-﻿using EBird.Domain.Entities;
+﻿using EBird.Application.Model;
+using EBird.Domain.Entities;
 using Response;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,8 @@ namespace EBird.Application.Services.IServices
 {
     public interface IAccountServices
     {
-        Task<Response<AccountEntity>> GetAccountById(Guid id);
-        Task<Response<List<AccountEntity>>> GetAllAccount();
+        Task<Response<AccountResponse>> GetAccountById(Guid id);
+        Task<Response<List<AccountResponse>>> GetAllAccount();
         Task<Response<string>> UpdateAccount(AccountEntity updateAccount);
         Task<Response<string>> DeleteAccount(Guid id);
     }
