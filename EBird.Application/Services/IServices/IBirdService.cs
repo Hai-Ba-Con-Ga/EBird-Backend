@@ -9,11 +9,11 @@ namespace EBird.Application.Services.IServices
 {
     public interface IBirdService
     { 
-        public Task<Response<BirdDTO>> GetBird(Guid birdID);
-        public Task<Response<List<BirdDTO>>> GetBirds();
-        public Task<Response<BirdDTO>> AddBird(BirdDTO birdDTO);
-        public Task<Response<BirdDTO>> UpdateBird(Guid id, BirdDTO birdDTO);
-        public Task<Response<BirdDTO>> DeleteBird(Guid birdID);
+        public Task<BirdDTO> GetBird(Guid birdID);
+        public Task<List<BirdDTO>> GetBirds();
+        public Task<BirdDTO> AddBird(BirdDTO birdDTO);
+        public Task<BirdDTO> UpdateBird(Guid id, BirdDTO birdDTO);
+        public Task<BirdDTO> DeleteBird(Guid birdID);
 
     }
 }

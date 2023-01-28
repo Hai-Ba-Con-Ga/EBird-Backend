@@ -18,18 +18,20 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<BirdTypeEntity> SoftDeleteAsync(string birdTypeCode)
         {
-            BirdTypeEntity _entity = await GetBirdTypeByCode(birdTypeCode);
+            BirdTypeEntity _entity = await GetBirdTypeByCodeAsync(birdTypeCode);
+
             if(_entity == null)
             {
                 return null;
             }
-
             _entity.IsDeleted = true;
+
             await this.UpdateAsync(_entity);
+
             return _entity;
         }
 
-        public async Task<BirdTypeEntity> GetBirdTypeByCode(string birdTypeCode)
+        public async Task<BirdTypeEntity> GetBirdTypeByCodeAsync(string birdTypeCode)
         {
             return await this.FindWithCondition(x => x.TypeCode == birdTypeCode);
         }
@@ -43,16 +45,36 @@ namespace EBird.Infrastructure.Repositories
             }
             return true;
         }
-        
+
         public async Task<List<BirdTypeEntity>> GetAllBirdTypeActiveAsync()
         {
-            return await this.FindAllWithCondition(x => x.IsDeleted == false);
+            return await this.GetAllActiveAsync();
         }
 
         public async Task<BirdTypeEntity> GetBirdTypeActiveAsync(Guid id)
         {
-            return await this.FindWithCondition(x => x.Id == id && x.IsDeleted == false);
+            return await this.GetByIdAsync(id);
+        }
+
+        public async Task<BirdTypeEntity> UpdateBirdTypeAsync(BirdTypeEntity birdType)
+        {
+            var updateEntity = await this.UpdateAsync(birdType);
+            if(updateEntity == 0)
+            {
+                return null;
+            }
+            return birdType;
+        }
+
+        public async Task<BirdTypeEntity> AddBirdTypeAsync(BirdTypeEntity birdType)
+        {
+            birdType.CreatedDatetime = DateTime.Now;
+            var addEntity = await this.CreateAsync(birdType);
+            if(addEntity == 0)
+            {
+                return null;
+            }
+            return birdType;
         }
     }
 }
-    

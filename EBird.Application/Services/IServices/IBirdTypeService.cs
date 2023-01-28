@@ -5,18 +5,18 @@ namespace EBird.Application.Services.IServices
 {
     public interface IBirdTypeService
     {
-        public Task<Response<BirdTypeDTO>> GetBirdType(string birdTypeCode);
-        public Task<Response<BirdTypeDTO>> GetBirdType(Guid birdTypeID);
+        public Task<BirdTypeDTO> GetBirdType(string birdTypeCode);
+        public Task<BirdTypeDTO> GetBirdType(Guid birdTypeID);
 
-        public Task<Response<List<BirdTypeDTO>>> GetAllBirdType();
+        public Task<List<BirdTypeDTO>> GetAllBirdType();
 
-        public Task<Response<BirdTypeDTO>> AddBirdType(BirdTypeDTO birdTypeDTO);
+        public Task<BirdTypeDTO> AddBirdType(BirdTypeDTO birdTypeDTO);
 
-        public Task<Response<BirdTypeDTO>> UpdateBirdType(Guid id, BirdTypeDTO birdTypeDTO);
+        public Task<BirdTypeDTO> UpdateBirdType(Guid id, BirdTypeDTO birdTypeDTO);
 
-        public Task<Response<BirdTypeDTO>> DeleteBirdType(Guid birdTypeID);
+        public Task<BirdTypeDTO> DeleteBirdType(Guid birdTypeID);
 
-        public Task<Response<BirdTypeDTO>> DeleteBirdType(string birdTypeCode);
+        public Task<BirdTypeDTO> DeleteBirdType(string birdTypeCode);
 
     }
 }

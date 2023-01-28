@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EBird.Application.Exceptions;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace EBird.Api.Controllers
 {
@@ -17,44 +19,201 @@ namespace EBird.Api.Controllers
         }
 
         // GET all
-        [HttpGet("find-all")]
+        [HttpGet("all")]
         public async Task<ActionResult<Response<List<BirdTypeDTO>>>> Get()
         {
-            var birdTypeResponeList = await _birdTypeService.GetAllBirdType();
-            return StatusCode((int) birdTypeResponeList.StatusCode, birdTypeResponeList);
+            Response<List<BirdTypeDTO>> response;
+            try
+            {
+                var birdTypeResponeList = await _birdTypeService.GetAllBirdType();
+
+                response = new Response<List<BirdTypeDTO>>()
+                            .SetData(birdTypeResponeList)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Get bird type by code name is successful");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<List<BirdTypeDTO>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+
+                response = Response<List<BirdTypeDTO>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+
         }
 
-        // GET within id
+        // GET by id
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Get(Guid id)
         {
-            var birdTypeRespone = await _birdTypeService.GetBirdType(id);
+            Response<BirdTypeDTO> response;
+            try
+            {
+                var responseData = await _birdTypeService.GetBirdType(id);
 
-            return StatusCode((int)birdTypeRespone.StatusCode, birdTypeRespone);
+                response = new Response<BirdTypeDTO>()
+                            .SetData(responseData)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Get bird type is successful");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+
+                response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
         }
 
-        // POST : create new bird type
+        // POST  create new bird type
         [HttpPost("create")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
         {
-            var birdTypeReponse = await _birdTypeService.AddBirdType(birdTypeDTO);
-            return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);
+            Response<BirdTypeDTO> response = null;
+            try
+            {
+                var responseData = await _birdTypeService.AddBirdType(birdTypeDTO);
+
+                response = new Response<BirdTypeDTO>()
+                            .SetData(responseData)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Create bird type is successful");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+
+                response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
         }
 
-        // PUT : update exist bird type
+        // PATCH : update exist bird type
         [HttpPatch("update/{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Patch(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
         {
-            var birdTypeReponse = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
-            return StatusCode((int)birdTypeReponse.StatusCode, birdTypeReponse);
+            Response<BirdTypeDTO> response = null;
+            try
+            {
+                var responseData = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
+
+                response = new Response<BirdTypeDTO>()
+                            .SetData(responseData)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Update bird type is successful");
+
+                return response;
+            }
+            catch(Exception ex)
+            {
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+
+                response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
         }
 
         // DELETE: delete bird type
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult<Response<BirdTypeDTO>>> Delete(Guid id)
         {
-            var birdTypeReponse = await _birdTypeService.DeleteBirdType(id);
-            return StatusCode((int) birdTypeReponse.StatusCode, birdTypeReponse);
+            Response<BirdTypeDTO> response = null;
+            try
+            {
+                var birdTypeReponse = await _birdTypeService.DeleteBirdType(id);
+
+                response = new Response<BirdTypeDTO>()
+                            .SetData(birdTypeReponse)
+                            .SetStatusCode((int) HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Delete bird type is successful");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+
+                response = Response<BirdTypeDTO>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
         }
     }
 }

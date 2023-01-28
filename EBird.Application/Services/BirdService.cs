@@ -26,181 +26,83 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<Response<BirdDTO>> AddBird(BirdDTO birdDTO)
+        public async Task<BirdDTO> AddBird(BirdDTO birdDTO)
         {
-            try
+            await BirdValidation.ValidateBird(birdDTO, _repository);
+
+            BirdEntity birdEntity = _mapper.Map<BirdEntity>(birdDTO);
+
+            birdEntity = await _repository.Bird.AddBirdAsync(birdEntity);
+
+            if(birdEntity == null)
             {
-                await BirdValidation.ValidateBird(birdDTO, _repository);
-                
-                BirdEntity birdEntity = _mapper.Map<BirdEntity>(birdDTO);
-                
-                birdEntity = await _repository.Bird.AddBirdAsync(birdEntity);
-                
-                if(birdEntity == null)
-                {
-                    throw new BadRequestException("Bird is not added");
-                }
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(true)
-                           .SetStatusCode((int) HttpStatusCode.OK)
-                           .SetMessage("Add bird successful")
-                           .SetData(birdDTO);
+                throw new BadRequestException("Bird is not added");
             }
-            catch(Exception ex)
-            {
-                if(ex is BadRequestException)
-                {
-                    return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
-                            .SetMessage(ex.Message);
-                }
-                Console.WriteLine(ex.Message);
-                return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-            }
+            
+            return birdDTO;
         }
 
-        public async Task<Response<BirdDTO>> DeleteBird(Guid birdID)
+        public async Task<BirdDTO> DeleteBird(Guid birdID)
         {
-            try
+            var birdEntity = await _repository.Bird.SoftDeleteBirdAsync(birdID);
+            
+            if(birdEntity == null)
             {
-                var birdEntity = await _repository.Bird.SoftDeleteBirdAsync(birdID);
-                if(birdEntity == null)
-                {
-                    throw new NotFoundException("Not found Bird for delete");
-                }
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(true)
-                           .SetStatusCode((int) HttpStatusCode.OK)
-                           .SetMessage("Delete bird successful");
+                throw new NotFoundException("Not found Bird for delete");
             }
-            catch(Exception ex)
-            {
-                if(ex is BadRequestException)
-                {
-                    return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
-                            .SetMessage(ex.Message);
-                }
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(false)
-                           .SetStatusCode((int) HttpStatusCode.InternalServerError)
-                           .SetMessage("Internal Server Error");
-            }
+            
+            return _mapper.Map<BirdDTO>(birdEntity);
         }
 
-        public async Task<Response<BirdDTO>> GetBird(Guid birdID)
+        public async Task<BirdDTO> GetBird(Guid birdID)
         {
-            try
+            var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
+            
+            if(birdEntity == null)
             {
-                var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
-                if(birdEntity == null)
-                {
-                    throw new NotFoundException("Can not found bird");
-                }
-                var birdDTO = _mapper.Map<BirdDTO>(birdEntity);
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(true)
-                           .SetStatusCode((int) HttpStatusCode.OK)
-                           .SetMessage("Get bird successful")
-                           .SetData(birdDTO);
+                throw new NotFoundException("Can not found bird");
             }
-            catch(Exception ex)
-            {
-                if(ex is BadRequestException)
-                {
-                    return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
-                            .SetMessage(ex.Message);
-                }
-                Console.WriteLine(ex.Message);
-                return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-            }
+            
+            var birdDTO = _mapper.Map<BirdDTO>(birdEntity);
+            
+            return birdDTO;
         }
 
-        public async Task<Response<List<BirdDTO>>> GetBirds()
+        public async Task<List<BirdDTO>> GetBirds()
         {
-            try
+            var listBirdEntity = await _repository.Bird.GetBirdsActiveAsync();
+            
+            if(listBirdEntity.Count == 0)
             {
-                var birdEntity = await _repository.Bird.GetBirdsActiveAsync();
-                if(birdEntity.Count == 0)
-                {
-                    throw new NotFoundException("Can not found bird");
-                }
-                var birdDTO = _mapper.Map<List<BirdDTO>>(birdEntity);
-                return Response<List<BirdDTO>>.Builder()
-                           .SetSuccess(true)
-                           .SetStatusCode((int) HttpStatusCode.OK)
-                           .SetMessage("Get bird successful")
-                           .SetData(birdDTO);
+                throw new NotFoundException("Can not found bird");
             }
-            catch(Exception ex)
-            {
-                if(ex is BadRequestException)
-                {
-                    return Response<List<BirdDTO>>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
-                            .SetMessage(ex.Message);
-                }
-                return Response<List<BirdDTO>>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-            }
+            
+            var listBirdDTO = _mapper.Map<List<BirdDTO>>(listBirdEntity);
+            
+            return listBirdDTO;
         }
 
-        public async Task<Response<BirdDTO>> UpdateBird(Guid birdID, BirdDTO birdDTO)
+        public async Task<BirdDTO> UpdateBird(Guid birdID, BirdDTO birdDTO)
         {
-            try
+            await BirdValidation.ValidateBird(birdDTO, _repository);
+
+            var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
+
+            if(birdEntity == null)
             {
-                await BirdValidation.ValidateBird(birdDTO, _repository);
-                
-                var birdEntity = await _repository.Bird.GetBirdActiveAsync(id);
-
-                if(birdEntity == null)
-                {
-                    throw new NotFoundException("Can not found bird");
-                }
-
-                _mapper.Map(birdDTO, birdEntity);
-
-                var result = await _repository.Bird.UpdateBirdAsync(birdEntity);
-
-                if(result == null)
-                {
-                    throw new BadRequestException("Do not have data change");
-                }
-
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(true)
-                           .SetStatusCode((int) HttpStatusCode.OK)
-                           .SetMessage("Update bird successful")
-                           .SetData(birdDTO);
+                throw new NotFoundException("Can not found bird");
             }
-            catch(Exception ex)
+
+            _mapper.Map(birdDTO, birdEntity);
+
+            var result = await _repository.Bird.UpdateBirdAsync(birdEntity);
+
+            if(result == null)
             {
-                if(ex is NotFoundException || ex is BadRequestException)
-                {
-                    return Response<BirdDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
-                            .SetMessage(ex.Message);
-                }
-                Console.WriteLine(ex.Message);
-                return Response<BirdDTO>.Builder()
-                           .SetSuccess(false)
-                           .SetStatusCode((int) HttpStatusCode.InternalServerError)
-                           .SetMessage("Internal Server Error");
+                throw new BadRequestException("Update is fail");
             }
+
+            return birdDTO;
         }
 
     }
