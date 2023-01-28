@@ -39,18 +39,6 @@ builder.Services.AddDbService(configuration);
 builder.Services.AddRepositories();
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//                .AddJwtBearer(options =>
-//                {
-//                    options.TokenValidationParameters = new TokenValidationParameters
-//                    {
-//                        ValidateIssuerSigningKey = true,
-//                        IssuerSigningKey = new SymmetricSecurityKey(
-//                            System.Text.Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JwtSetting:IssuerSigningKey").Value)),
-//                        ValidateIssuer = false,
-//                        ValidateAudience = false,
-//                    };
-//                });
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen(c =>
 {
