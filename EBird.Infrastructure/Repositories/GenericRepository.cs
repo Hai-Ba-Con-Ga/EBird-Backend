@@ -102,6 +102,15 @@ namespace EBird.Infrastructure.Repositories
                 query = query.Include(navigationProperty);
             return query;
         }
+        public Task<List<T>> GetAllActiveAsync()
+        {
+            return dbSet.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+        }
+
+        public Task<T> GetByIdActiveAsync(Guid id)
+        {
+            return dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == false);
+        }
     }
 
 }

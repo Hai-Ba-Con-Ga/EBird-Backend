@@ -40,5 +40,7 @@ namespace EBird.Application.Interfaces
         Task<T> FindWithCondition(Expression<Func<T, bool>> predicate);
         Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
         Task<T> FindByIdAsync(Guid id, params string[] navigationProperties);
+        Task<List<T>> GetAllActiveAsync();
+        Task<T> GetByIdActiveAsync(Guid id);
     }
 }

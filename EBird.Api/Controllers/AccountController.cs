@@ -36,7 +36,7 @@ namespace EBird.Api.Controllers
         public async Task<ActionResult<Response<string>>> GetAllAccount()
         {
             var response = await _accountServices.GetAllAccount();
-            return StatusCode((int)response.StatusCode, response.Data);
+            return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPatch("update-account/{id}")]

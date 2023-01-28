@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EBird.Api.UserFeatures.Requests;
+using EBird.Application.Model;
 using EBird.Domain.Entities;
 
 namespace EBird.Api.Mapper
@@ -10,6 +11,7 @@ namespace EBird.Api.Mapper
         {
             CreateMap<SignupRequest, AccountEntity>();
             CreateMap<UpdateAccountRequest, AccountEntity>();
+            CreateMap<AccountEntity, AccountResponse>();
         }
     }
 }
