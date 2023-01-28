@@ -97,7 +97,7 @@ namespace EBird.Api.Controllers
         }
 
         // POST : create bird
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<ActionResult<Response<BirdDTO>>> Post([FromBody] BirdDTO birdDTO)
         {
             Response<BirdDTO> response = null;
@@ -137,7 +137,7 @@ namespace EBird.Api.Controllers
         }
 
         // PUT : update bird
-        [HttpPatch("update/{id}")]
+        [HttpPatch("{id}")]
         public async Task<ActionResult<Response<BirdDTO>>> Patch(Guid id, [FromBody] BirdDTO birdDTO)
         {
             Response<BirdDTO> response = null;
@@ -176,7 +176,7 @@ namespace EBird.Api.Controllers
         }
 
         // DELETE : delete bird
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Response<BirdDTO>>> Delete(Guid id)
         {
             Response<BirdDTO> response = null;
