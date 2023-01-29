@@ -51,7 +51,7 @@ namespace EBird.Application.Services
         }
         public async Task<Response<string>> UpdateAccount(AccountEntity updateAccount)
         {
-            var account = await _accountRepository.GetByIdActiveAsync(updateAccount.Id);
+            var account = await _accountRepository.GetByIdAsync(updateAccount.Id);
             if (account == null)
             {
                 return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist");

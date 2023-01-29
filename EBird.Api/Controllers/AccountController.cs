@@ -32,26 +32,28 @@ namespace EBird.Api.Controllers
             
             return StatusCode((int)response.StatusCode, response);
         }
-        [HttpGet("find-all")]
+        [HttpGet]
         public async Task<ActionResult<Response<string>>> GetAllAccount()
         {
             var response = await _accountServices.GetAllAccount();
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [HttpPatch("update-account/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<Response<string>>> UpdateAccount(Guid id, [FromBody] UpdateAccountRequest updateAccount)
         {
             var acc = await _accountRepository.GetByIdAsync(id);
+            Console.WriteLine(acc.Id);
             var response = await _accountServices.UpdateAccount(_mapper.Map<UpdateAccountRequest, AccountEntity>(updateAccount, acc));
             return StatusCode((int)response.StatusCode, response);
         }
-        [HttpDelete("delete-account/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Response<string>>> DeleteAccount(Guid id)
         {
             var response = await _accountServices.DeleteAccount(id);
             return StatusCode((int)response.StatusCode, response);
         }
+        
 
     }
 }
