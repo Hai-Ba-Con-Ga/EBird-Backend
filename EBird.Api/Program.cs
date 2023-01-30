@@ -38,7 +38,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultTokenProviders();
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
 builder.Services.AddDbService(configuration);
+//register Repository
 builder.Services.AddRepositories();
+//register Application Service
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
