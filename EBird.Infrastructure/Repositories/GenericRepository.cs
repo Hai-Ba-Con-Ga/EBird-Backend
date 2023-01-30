@@ -1,4 +1,4 @@
-﻿using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Common;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -54,9 +54,9 @@ namespace EBird.Infrastructure.Repositories
             return _entity;
         }
 
-        public Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
+        public async Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
         {
-            return dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
+            return await dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<T>> GetAllAsync()
@@ -98,14 +98,14 @@ namespace EBird.Infrastructure.Repositories
             return await dbSet.AsNoTracking().Where(predicate).ToListAsync();
         }
 
-        public Task<List<T>> GetAllActiveAsync()
+        public async Task<List<T>> GetAllActiveAsync()
         {
-            return dbSet.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+            return await dbSet.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
         }
 
-        public Task<T> GetByIdActiveAsync(Guid id)
+        public async Task<T> GetByIdActiveAsync(Guid id)
         {
-            return dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == false);
+            return await dbSet.FirstOrDefaultAsync(x => x.Id.Equals(id) && x.IsDeleted == false);
         }
     }
 

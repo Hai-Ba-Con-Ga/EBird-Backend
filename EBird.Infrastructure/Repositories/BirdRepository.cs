@@ -32,14 +32,14 @@ namespace EBird.Infrastructure.Repositories
             return await this.GetByIdActiveAsync(birdID);
         }
 
-        public Task<List<BirdEntity>> GetBirdsActiveAsync()
+        public async Task<List<BirdEntity>> GetBirdsActiveAsync()
         {
-            return this.GetAllActiveAsync();
+            return await this.GetAllActiveAsync();
         }
 
-        public Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID)
+        public async Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID)
         {
-            return this.DeleteSoftAsync(birdID);
+            return await this.DeleteSoftAsync(birdID);
         }
 
         public async Task<BirdEntity> UpdateBirdAsync(BirdEntity bird)
