@@ -4,6 +4,7 @@ using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal;
 using Response;
 using System.Net;
 
@@ -12,25 +13,31 @@ namespace EBird.Application.Services
     public class AccountServices : IAccountServices
     {
         private readonly IGenericRepository<AccountEntity> _accountRepository;
-        private readonly IMapper _mapper;
+        private readonly IGenericRepository<VerifcationStoreEntity> _verifcationStoreRepository;
 
-        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IMapper mapper)
+        private readonly IMapper _mapper;
+        private readonly IAuthenticationServices _authenticationServices;
+        private readonly IEmailServices _emailServices;
+
+        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _authenticationServices = authenticationServices;
+            _emailServices = emailServices;
         }
 
         public async Task<Response<AccountResponse>> GetAccountById(Guid id)
         {
             var account = await _accountRepository.GetByIdActiveAsync(id);
-            
+
             if (account == null)
             {
                 return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
             }
             var accountResponse = new AccountResponse();
             _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
-            
+
             return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetData(accountResponse);
         }
         public async Task<Response<List<AccountResponse>>> GetAllAccount()
@@ -68,6 +75,66 @@ namespace EBird.Application.Services
                 return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Delete Failed").SetSuccess(false);
             }
             return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetMessage("Delete Successful").SetSuccess(true);
+        }
+        public async Task<Response<string>> ChangePassword(Guid id, Model.ChangePasswordModel model)
+        {
+            var account = await _accountRepository.GetByIdAsync(id);
+            if (account == null)
+            {
+                throw new Exception("The account is not exist");
+            }
+            var match = _authenticationServices.HashPassword(model.OldPassword).Equals(account.Password);
+            if (!match)
+            {
+                throw new Exception("The password is incorrect");
+            }
+
+            account.Password = _authenticationServices.HashPassword(model.NewPassword);
+            await _accountRepository.UpdateAsync(account);
+            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetMessage("Change Password Successful").SetSuccess(true);
+        }
+        public async Task<Response<string>> ForgotPassword(string username)
+        {
+            var account = await _accountRepository.FindWithCondition(p => p.Username.Equals(username));
+            if (account == null)
+            {
+                throw new Exception("The account is not exist");
+            }
+            var code = new Random().Next(10000, 99999).ToString();
+            var model = new SendForgotPasswordModel()
+            {
+                Code = code,
+                Email = account.Email,
+                FirstName = account.FirstName,
+                UserName = account.LastName,
+                ResetPasswordLink = $"https://localhost:7173/resetPassword/{account.Id}/Code/{code}"
+            };
+            await _verifcationStoreRepository.CreateAsync(new VerifcationStoreEntity()
+            {
+                AccountId = account.Id,
+                Code= code,
+            });
+
+            await _emailServices.SendForgotPassword(model);
+            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true);
+        }
+        public async Task<Response<string>> ResetPassword(ResetPasswordModel model)
+        {
+            var verification = await _verifcationStoreRepository.FindWithCondition(x => x.AccountId.Equals(model.AccountId) && x.Code.Equals(model.Code));
+            if(verification == null)
+            {
+                throw new Exception("Code is not exist");
+            }
+            var account = await _accountRepository.GetByIdAsync(model.AccountId);
+            if (account == null)
+            {
+                throw new Exception("The account is not exist");
+            }
+            account.Password = _authenticationServices.HashPassword(model.Password);
+            await _accountRepository.UpdateAsync(account);
+            await _verifcationStoreRepository.DeleteAsync(verification.Id);
+            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetMessage("Reset Password Successful");
+
         }
 
 

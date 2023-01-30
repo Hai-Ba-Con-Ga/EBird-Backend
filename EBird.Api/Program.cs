@@ -1,8 +1,10 @@
 using AutoWrapper;
 using EBird.Api.Configurations;
+using EBird.Application.AppConfig;
 using EBird.Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -34,7 +36,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
+builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
 builder.Services.AddDbService(configuration);
 builder.Services.AddRepositories();
 builder.Services.AddAppServices();

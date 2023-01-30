@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
 using System.Net;
+using System.Security.Claims;
 
 namespace EBird.Api.Controllers
 {
@@ -53,6 +54,25 @@ namespace EBird.Api.Controllers
         {
             var response = await _accountServices.DeleteAccount(id);
             return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpPut("change-password")]
+        public async Task<ActionResult<Response<string>>> ChangePassword([FromBody] ChangePasswordModel req)
+        {
+            string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (rawId == null)
+            {
+                return Response<string>.Builder().SetStatusCode(401).SetSuccess(false);
+            }
+            try
+            {
+                Guid id = Guid.Parse(rawId);
+                return await _accountServices.ChangePassword(id, req);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
         
 
