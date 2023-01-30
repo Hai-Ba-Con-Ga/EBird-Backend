@@ -1,4 +1,4 @@
-﻿using EBird.Application.Interfaces;
+using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +25,14 @@ namespace EBird.Infrastructure.Context
         }
 
         #region DbSet
+        public DbSet<AccountEntity> accounts { get; set; } = null!;
+        public DbSet<RefreshTokenEntity> refreshTokens { get; set; } = null!;
+        public DbSet<VerifcationStoreEntity> verifcationStores { get; set; } = null!;
+
+
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
+
         #endregion
     }
 }
