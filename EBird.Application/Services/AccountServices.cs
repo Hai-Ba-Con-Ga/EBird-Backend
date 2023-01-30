@@ -19,9 +19,10 @@ namespace EBird.Application.Services
         private readonly IAuthenticationServices _authenticationServices;
         private readonly IEmailServices _emailServices;
 
-        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices)
+        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IGenericRepository<VerifcationStoreEntity> verifcationStoreRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices)
         {
             _accountRepository = accountRepository;
+            _verifcationStoreRepository = verifcationStoreRepository;
             _mapper = mapper;
             _authenticationServices = authenticationServices;
             _emailServices = emailServices;
@@ -48,9 +49,10 @@ namespace EBird.Application.Services
                 return Response<List<AccountResponse>>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
             }
             var accountResponses = new List<AccountResponse>();
-            var accountResponse = new AccountResponse();
+            
             foreach (var account in accounts)
             {
+                var accountResponse = new AccountResponse();
                 _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
                 accountResponses.Add(accountResponse);
             }
@@ -100,6 +102,7 @@ namespace EBird.Application.Services
             {
                 throw new Exception("The account is not exist");
             }
+            Console.WriteLine(account.Id);
             var code = new Random().Next(10000, 99999).ToString();
             var model = new SendForgotPasswordModel()
             {
@@ -109,11 +112,12 @@ namespace EBird.Application.Services
                 UserName = account.LastName,
                 ResetPasswordLink = $"https://localhost:7173/resetPassword/{account.Id}/Code/{code}"
             };
-            await _verifcationStoreRepository.CreateAsync(new VerifcationStoreEntity()
+            var verifcation = new VerifcationStoreEntity()
             {
                 AccountId = account.Id,
-                Code= code,
-            });
+                Code = code,
+            };
+            await _verifcationStoreRepository.CreateAsync(verifcation);
 
             await _emailServices.SendForgotPassword(model);
             return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true);
@@ -134,6 +138,17 @@ namespace EBird.Application.Services
             await _accountRepository.UpdateAsync(account);
             await _verifcationStoreRepository.DeleteAsync(verification.Id);
             return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetMessage("Reset Password Successful");
+
+        }
+        public async Task<Response<string>> CheckEmail(string email)
+        {
+            var account = await _accountRepository.FindWithCondition(x=> x.Email.Equals(email)); 
+            if (account == null)
+            {
+                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Email is not exist").SetSuccess(false);
+
+            }
+            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true);
 
         }
 

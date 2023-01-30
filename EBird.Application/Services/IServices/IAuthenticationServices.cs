@@ -18,6 +18,6 @@ namespace EBird.Application.Services.IServices
         Task<ActionResult<Response<string>>> Logout(Guid id);
         Task<ActionResult<Response<string>>> Signup(AccountEntity req);
         Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model);
-
+        Task<Response<AccountResponse>> GetAccountById(Guid id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces;
+﻿using AutoMapper;
+using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
@@ -20,12 +21,14 @@ namespace EBird.Application.Services
         private readonly IGenericRepository<RefreshTokenEntity> _refreshTokenRepository;
         private readonly IGenericRepository<AccountEntity> _accountRepository;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IGenericRepository<AccountEntity> accountRepository, IConfiguration configuration)
+        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IGenericRepository<AccountEntity> accountRepository, IConfiguration configuration, IMapper mapper)
         {
             _refreshTokenRepository = refreshTokenRepository;
             _accountRepository = accountRepository;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         public async Task< TokenModel> CreateToken(AccountEntity account)
@@ -150,6 +153,19 @@ namespace EBird.Application.Services
             await _refreshTokenRepository.UpdateAsync(refreshToken);
             var token = await CreateToken(user);
             return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetData(token);
+        }
+        public async Task<Response<AccountResponse>> GetAccountById(Guid id)
+        {
+            var account = await _accountRepository.GetByIdActiveAsync(id);
+
+            if (account == null)
+            {
+                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
+            }
+            var accountResponse = new AccountResponse();
+            _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
+
+            return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetData(accountResponse);
         }
 
 

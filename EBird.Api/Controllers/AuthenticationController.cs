@@ -43,7 +43,7 @@ namespace EBird.Api.Controllers
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(rawId == null)
             {
-                return Response<string>.Builder().SetStatusCode(401).SetSuccess(false);
+                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.Unauthorized).SetSuccess(false);
             }
             try
             {
@@ -64,6 +64,25 @@ namespace EBird.Api.Controllers
         public async Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model)
         {
             return await _authenticationServices.RenewToken(model);
+        }
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<AccountResponse>>> GetAccountInformation()
+        {
+            string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (rawId == null)
+            {
+                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.Forbidden).SetSuccess(false);
+            }
+            try
+            {
+                Guid id = Guid.Parse(rawId);
+                return await _authenticationServices.GetAccountById(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
     }

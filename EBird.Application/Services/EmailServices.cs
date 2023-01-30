@@ -17,8 +17,10 @@ namespace EBird.Application.Services
         }
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
+            
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSetting.Mail);
+            //email.Sender = MailboxAddress.Parse("linhtruong2601@gmail.com");
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
@@ -42,7 +44,7 @@ namespace EBird.Application.Services
             email.Body = builder.ToMessageBody();
             using var smtp = new MailKit.Net.Smtp.SmtpClient();
             smtp.Connect(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_mailSetting.Mail, _mailSetting.Password);
+            smtp.Authenticate(_mailSetting.UserName, _mailSetting.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
@@ -50,7 +52,7 @@ namespace EBird.Application.Services
         {
             string body = string.Empty;
 
-            using (StreamReader reader = new StreamReader(".\\Templates\\Fotgot_Password_Template.html"))
+            using (StreamReader reader = new StreamReader(".\\Templates\\Forgot_Password_Template.html"))
             {
                 body = reader.ReadToEnd();
             }

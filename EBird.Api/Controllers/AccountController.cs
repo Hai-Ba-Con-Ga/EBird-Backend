@@ -4,8 +4,10 @@ using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Ocsp;
 using Response;
 using System.Net;
 using System.Security.Claims;
@@ -56,6 +58,7 @@ namespace EBird.Api.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("change-password")]
         public async Task<ActionResult<Response<string>>> ChangePassword([FromBody] ChangePasswordModel req)
         {
@@ -74,7 +77,33 @@ namespace EBird.Api.Controllers
                 throw new Exception(ex.Message);
             }
         }
-        
-
+        [HttpPut("forgot-password")]
+        public async Task<ActionResult<Response<string>>> ForgotPassword([FromBody] ForgotPasswordRequest req)
+        {
+            try
+            {
+                return await _accountServices.ForgotPassword(req.Username);
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPut("reset-password")]
+        public async Task<ActionResult<Response<string>>> ResetPassword([FromBody] ResetPasswordModel req)
+        {
+            try
+            {
+                return await _accountServices.ResetPassword(req);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPost("email")]
+        public async Task<ActionResult<Response<string>>> CheckEmail([FromBody] CheckEmailRequest req)
+        {
+            return await _accountServices.CheckEmail(req.Email);
+        }
     }
 }
