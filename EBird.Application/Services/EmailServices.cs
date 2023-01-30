@@ -44,7 +44,7 @@ namespace EBird.Application.Services
             email.Body = builder.ToMessageBody();
             using var smtp = new MailKit.Net.Smtp.SmtpClient();
             smtp.Connect(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_mailSetting.UserName, _mailSetting.Password);
+            smtp.Authenticate(_mailSetting.Mail, _mailSetting.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
