@@ -11,7 +11,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddScoped<IAccountServices, AccountServices>();
             services.AddTransient<IEmailServices, EmailServices>();
-            services.AddScoped<IBirdTypeService, BirdTypeService>()
+            services.AddScoped<IBirdTypeService, BirdTypeService>();
             services.AddScoped<IBirdService, BirdService>();
 
         }
