@@ -7,6 +7,7 @@ using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
+using System.Net;
 
 namespace EBird.Api.Controllers
 {
@@ -42,8 +43,8 @@ namespace EBird.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Response<string>>> UpdateAccount(Guid id, [FromBody] UpdateAccountRequest updateAccount)
         {
-            var acc = await _accountRepository.GetByIdAsync(id);
-            Console.WriteLine(acc.Id);
+            var acc = await _accountRepository.GetByIdActiveAsync(id);
+            
             var response = await _accountServices.UpdateAccount(_mapper.Map<UpdateAccountRequest, AccountEntity>(updateAccount, acc));
             return StatusCode((int)response.StatusCode, response);
         }

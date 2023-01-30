@@ -26,7 +26,7 @@ namespace EBird.Application.Services
             
             if (account == null)
             {
-                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist");
+                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
             }
             var accountResponse = new AccountResponse();
             _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
@@ -38,7 +38,7 @@ namespace EBird.Application.Services
             var accounts = await _accountRepository.GetAllActiveAsync();
             if (accounts == null)
             {
-                return Response<List<AccountResponse>>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist");
+                return Response<List<AccountResponse>>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
             }
             var accountResponses = new List<AccountResponse>();
             var accountResponse = new AccountResponse();
@@ -51,10 +51,10 @@ namespace EBird.Application.Services
         }
         public async Task<Response<string>> UpdateAccount(AccountEntity updateAccount)
         {
-            var account = await _accountRepository.GetByIdAsync(updateAccount.Id);
+            var account = await _accountRepository.GetByIdActiveAsync(updateAccount.Id);
             if (account == null)
             {
-                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist");
+                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
             }
             await _accountRepository.UpdateAsync(account);
             return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetMessage("Update Successful").SetSuccess(true);
@@ -62,7 +62,11 @@ namespace EBird.Application.Services
         }
         public async Task<Response<string>> DeleteAccount(Guid id)
         {
-            await _accountRepository.DeleteSoftAsync(id);
+            var account = await _accountRepository.DeleteSoftAsync(id);
+            if (account == null)
+            {
+                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Delete Failed").SetSuccess(false);
+            }
             return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetMessage("Delete Successful").SetSuccess(true);
         }
 
