@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,10 +16,12 @@
 
   <ItemGroup>
     <Folder Include="Context\EntityTypeConfigurations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EBird.Application\EBird.Application.csproj" />
+    <ProjectReference Include="..\EBird.Domain\EBird.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,14 @@
-﻿namespace EBird.Api.Configurations
+﻿using EBird.Application.Services;
+using EBird.Application.Services.IServices;
+
+namespace EBird.Api.Configurations
 {
     public static class ConfigureApplicationService
     {
         public static void AddAppServices (this IServiceCollection services)
         {
-
+            services.AddScoped<IBirdTypeService, BirdTypeService>()
+                    .AddScoped<IBirdService, BirdService>();
         }
     }
 }

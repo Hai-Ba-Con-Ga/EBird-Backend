@@ -4,6 +4,7 @@ using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230118115924_AddBirdEntity")]
+    partial class AddBirdEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,10 +66,8 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit")
                         .HasColumnName("BirdStatus");
 
                     b.Property<double>("Weight")
@@ -78,7 +78,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("BirdTypeId");
 
-                    b.ToTable("Bird");
+                    b.ToTable("Birds");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
@@ -94,24 +94,24 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("BirdTypeName");
+
                     b.Property<string>("TypeCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdTypeCode");
 
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("BirdTypeName");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TypeCode")
                         .IsUnique();
 
-                    b.ToTable("BirdType");
+                    b.ToTable("BirdTypes");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
