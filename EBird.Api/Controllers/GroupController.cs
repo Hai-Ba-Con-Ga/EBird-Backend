@@ -50,7 +50,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<List<GroupDTO>>.Builder()
                             .SetSuccess(false)
@@ -89,7 +88,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<GroupDTO>.Builder()
                             .SetSuccess(false)
@@ -128,7 +126,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<GroupDTO>.Builder()
                             .SetSuccess(false)
@@ -167,7 +164,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<GroupDTO>.Builder()
                             .SetSuccess(false)
@@ -206,7 +202,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<GroupDTO>.Builder()
                             .SetSuccess(false)

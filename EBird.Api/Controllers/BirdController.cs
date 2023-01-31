@@ -86,7 +86,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
@@ -126,7 +125,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
@@ -165,7 +163,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                            .SetSuccess(false)
@@ -204,7 +201,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
                 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
