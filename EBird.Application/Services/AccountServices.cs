@@ -102,7 +102,6 @@ namespace EBird.Application.Services
             {
                 throw new NotFoundException("The account is not exist");
             }
-            Console.WriteLine(account.Id);
             var code = new Random().Next(10000, 99999).ToString();
             var model = new SendForgotPasswordModel()
             {
