@@ -1,18 +1,14 @@
 ﻿using AutoMapper;
 using EBird.Api.UserFeatures.Requests;
-using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
-using EBird.Domain.Enums;
-using EBird.Infrastructure.Context;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using EBird.Application.Exceptions;
 
 namespace EBird.Api.Controllers
 {
@@ -32,7 +28,25 @@ namespace EBird.Api.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<Response<TokenModel>>> Login(LoginRequest req)
         {
-            return await _authenticationServices.Login(req.Username, req.Password);
+            Response<TokenModel> response = new Response<TokenModel>();
+            try
+            {
+                var result = await _authenticationServices.Login(req.Username, req.Password);
+                response = Response<TokenModel>.Builder().SetData(result).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            }
+            catch (NotFoundException ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
 
         }
 
@@ -41,16 +55,17 @@ namespace EBird.Api.Controllers
         public async Task<ActionResult<Response<string>>> Logout()
         {
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(rawId == null)
+            if (rawId == null)
             {
                 return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.Unauthorized).SetSuccess(false);
             }
             try
             {
                 Guid id = Guid.Parse(rawId);
-                return await _authenticationServices.Logout(id);
+                await _authenticationServices.Logout(id);
+                return Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -58,31 +73,70 @@ namespace EBird.Api.Controllers
         [HttpPost("signup")]
         public async Task<ActionResult<Response<string>>> Signup(SignupRequest req)
         {
-            return await _authenticationServices.Signup(_mapper.Map <AccountEntity> (req));
+            Response<string> response = new Response<string>();
+            try
+            {
+                await _authenticationServices.Signup(_mapper.Map<AccountEntity>(req));
+            }
+            catch (BadRequestException ex)
+            {
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+
+
         }
         [HttpPost("renew-token")]
         public async Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model)
         {
-            return await _authenticationServices.RenewToken(model);
+            Response<TokenModel> response = new Response<TokenModel>();
+            try
+            {
+                var result = await _authenticationServices.RenewToken(model);
+                response = Response<TokenModel>.Builder().SetData(result).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+
+            }
+            catch (BadRequestException ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+
+
         }
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<AccountResponse>>> GetAccountInformation()
         {
+            Response<AccountResponse> response = new Response<AccountResponse>();
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (rawId == null)
             {
-                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.Forbidden).SetSuccess(false);
+                response = Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.Forbidden).SetSuccess(false);
             }
             try
             {
                 Guid id = Guid.Parse(rawId);
-                return await _authenticationServices.GetAccountById(id);
+                var result = await _authenticationServices.GetAccountById(id);
+                response = Response<AccountResponse>.Builder().SetData(result).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            }
+            catch (NotFoundException ex)
+            {
+                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
+            return StatusCode((int)response.StatusCode, response);
         }
 
     }
