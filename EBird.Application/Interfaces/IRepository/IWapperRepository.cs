@@ -1,4 +1,5 @@
 ﻿using EBird.Application.Interfaces.IRepository;
+using EBird.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,8 @@ namespace EBird.Application.Interfaces
     {
         public IBirdTypeRepository BirdType { get; }
         public IBirdRepository Bird { get; }
+        public IGenericRepository<AccountEntity> Account { get; }
+
+        public IGroupRepository Group { get; }
     }
 }
