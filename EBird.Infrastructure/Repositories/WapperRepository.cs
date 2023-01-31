@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
+using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,6 +18,8 @@ namespace EBird.Infrastructure.Repositories
         private IBirdTypeRepository _birdTypeRepository;
 
         private IBirdRepository _birdRepository;
+
+        private IGenericRepository<AccountEntity> _accountRepository;
 
         public WapperRepository(ApplicationDbContext context)
         {
@@ -47,5 +50,16 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
+        public IGenericRepository<AccountEntity> Account
+        {
+            get
+            {
+                if(_accountRepository == null)
+                {
+                    _accountRepository = new GenericRepository<AccountEntity>(_context);
+                }
+                return _accountRepository;
+            }
+        }
     }
 }

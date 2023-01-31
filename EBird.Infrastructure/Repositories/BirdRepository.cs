@@ -27,6 +27,12 @@ namespace EBird.Infrastructure.Repositories
             return null;
         }
 
+        public async Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId)
+        {
+            return await this.FindAllWithCondition(b => b.OwnerId.Equals(accountId) 
+                                                        && b.IsDeleted == false);
+        }
+
         public async Task<BirdEntity> GetBirdActiveAsync(Guid birdID)
         {
             return await this.GetByIdActiveAsync(birdID);
