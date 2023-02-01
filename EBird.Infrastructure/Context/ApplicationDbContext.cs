@@ -32,6 +32,9 @@ namespace EBird.Infrastructure.Context
 
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
+        public DbSet<ResourceEntity> Resources { get; set; }
+        public DbSet<AccountResourceEntity> AccountResources { get; set; }
+        public DbSet<BirdResourceEntity> BirdResources { get; set; }
 
         #endregion
     }
