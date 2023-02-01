@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230201012433_Resouce")]
-    partial class Resouce
+    [Migration("20230201103302_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,7 +96,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("AccountResource");
+                    b.ToTable("AccountResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -179,7 +179,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("BirdResource");
+                    b.ToTable("BirdResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
@@ -274,6 +274,8 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreateById");
+
                     b.ToTable("Resource");
                 });
 
@@ -303,13 +305,13 @@ namespace EBird.Infrastructure.Migrations
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
                         .WithMany("AccountResources")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
-                        .WithMany()
+                        .WithMany("AccountResources")
                         .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -333,13 +335,13 @@ namespace EBird.Infrastructure.Migrations
                     b.HasOne("EBird.Domain.Entities.BirdEntity", "Bird")
                         .WithMany("BirdResources")
                         .HasForeignKey("BirdId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
-                        .WithMany()
+                        .WithMany("BirdResources")
                         .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Bird");
@@ -358,11 +360,24 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("Resources")
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("AccountResources");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Resources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -373,6 +388,13 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
                 {
                     b.Navigation("Birds");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.Navigation("AccountResources");
+
+                    b.Navigation("BirdResources");
                 });
 #pragma warning restore 612, 618
         }

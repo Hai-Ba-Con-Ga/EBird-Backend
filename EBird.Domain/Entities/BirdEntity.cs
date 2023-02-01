@@ -54,7 +54,7 @@ namespace EBird.Domain.Entities
 
         //[ForeignKey("OwnerId")]
         //public AccountEnity Owner { get; set; }
-        public ICollection<BirdResourceEntity> BirdResources { get; set; } = null!;
+        public ICollection<BirdResourceEntity> BirdResources { get; set; }
         
     }
 }

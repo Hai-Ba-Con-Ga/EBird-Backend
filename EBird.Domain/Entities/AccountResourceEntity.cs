@@ -1,4 +1,5 @@
 using EBird.Domain.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EBird.Domain.Entities
 {

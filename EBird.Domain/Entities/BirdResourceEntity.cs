@@ -8,7 +8,7 @@ namespace EBird.Domain.Entities
         //1 - M relationship Bird
         public BirdEntity Bird { get; set; } = null!;
         public Guid ResourceId { get; set; }
-        public ResourceEntity Resources { get; set; } = null!;
         //1- M relationship Resource
+        public ResourceEntity Resource { get; set; } = null!;
     }
 }

@@ -28,6 +28,7 @@ namespace EBird.Api.Controllers
             if (rawId == null)
             {
                 response = Response<ResourceEntity>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Account not found");
+                return StatusCode((int)response.StatusCode, response);
             }
             try
             {
@@ -41,7 +42,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
-        [HttpDelete("{file-name}")]
+        [HttpDelete("{fileName}")]
         public async Task<ActionResult<Response<string>>> DeleteFile(string fileName)
         {
             var response = new Response<string>();

@@ -171,14 +171,11 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<Guid>("ResourceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ResourcesId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BirdId");
 
-                    b.HasIndex("ResourcesId");
+                    b.HasIndex("ResourceId");
 
                     b.ToTable("BirdResources");
                 });
@@ -261,14 +258,11 @@ namespace EBird.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CreateById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Datalink")
-                        .HasColumnType("varchar");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("varchar");
@@ -278,7 +272,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("CreateById");
 
                     b.ToTable("Resource");
                 });
@@ -309,13 +303,13 @@ namespace EBird.Infrastructure.Migrations
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
                         .WithMany("AccountResources")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
-                        .WithMany()
+                        .WithMany("AccountResources")
                         .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -339,18 +333,18 @@ namespace EBird.Infrastructure.Migrations
                     b.HasOne("EBird.Domain.Entities.BirdEntity", "Bird")
                         .WithMany("BirdResources")
                         .HasForeignKey("BirdId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resources")
-                        .WithMany()
-                        .HasForeignKey("ResourcesId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
+                        .WithMany("BirdResources")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Bird");
 
-                    b.Navigation("Resources");
+                    b.Navigation("Resource");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -368,8 +362,8 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
                         .WithMany("Resources")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -392,6 +386,13 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
                 {
                     b.Navigation("Birds");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.Navigation("AccountResources");
+
+                    b.Navigation("BirdResources");
                 });
 #pragma warning restore 612, 618
         }

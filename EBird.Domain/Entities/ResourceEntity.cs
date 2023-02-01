@@ -8,9 +8,12 @@ namespace EBird.Domain.Entities
     {
         public Guid CreateById { get; set; }
         public AccountEntity Account { get; set; } = null!;
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "text")]
         public string? Datalink { get; set; }
         [Column(TypeName = "varchar")]
         public string? Description { get; set; }
+        public ICollection<AccountResourceEntity> AccountResources { get; set; }
+        public ICollection<BirdResourceEntity> BirdResources { get; set; }
+
     }
 }

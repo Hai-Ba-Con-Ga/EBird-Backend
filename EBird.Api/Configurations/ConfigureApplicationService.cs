@@ -1,3 +1,4 @@
+using EBird.Application.Interfaces;
 using EBird.Application.Services;
 using EBird.Application.Services.IServices;
 using MailKit;
@@ -13,6 +14,8 @@ namespace EBird.Api.Configurations
             services.AddTransient<IEmailServices, EmailServices>();
             services.AddScoped<IBirdTypeService, BirdTypeService>();
             services.AddScoped<IBirdService, BirdService>();
+            services.AddSingleton<ICloudStorage, GoogleCloudStorageService>();
+            services.AddScoped<IFileServices, FileServices>();
 
         }
     }

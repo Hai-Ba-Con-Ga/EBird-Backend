@@ -17,7 +17,7 @@ namespace EBird.Domain.Entities
         [MaxLength(50)]
         public string? Email { get; set; }
 
-        public DateTime CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
         
         [MaxLength(50)]
         public string FirstName { get; set; } = null!;
@@ -40,8 +40,8 @@ namespace EBird.Domain.Entities
         public string Username { get; set; } = null!;
         
         public string Description { get; set; } = null!;
-        public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
-        public ICollection<ResourceEntity> Resources { get; set; } = null!;
-        public ICollection<AccountResourceEntity> AccountResources { get; set; } = null!;
+        public ICollection<RefreshTokenEntity> RefreshTokens { get; set; }
+        public ICollection<ResourceEntity> Resources { get; set; }
+        public ICollection<AccountResourceEntity> AccountResources { get; set; }
     }
 }
