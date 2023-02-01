@@ -4,6 +4,7 @@ using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
 using EBird.Application.Services.IServices;
+using EBird.Application.Interfaces;
 
 namespace EBird.Application.Services
 {

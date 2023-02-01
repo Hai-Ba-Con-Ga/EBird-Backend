@@ -41,5 +41,7 @@ namespace EBird.Domain.Entities
         
         public string Description { get; set; } = null!;
         public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
+        public ICollection<ResourceEntity> Resources { get; set; } = null!;
+        public ICollection<AccountResourceEntity> AccountResources { get; set; } = null!;
     }
 }
