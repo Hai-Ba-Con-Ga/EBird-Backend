@@ -31,7 +31,11 @@ namespace EBird.Application.Model
         [StringLength(50, ErrorMessage = "Bird color cannot be longer than 50 characters")]
         public string Color { get; set; }
         
+        //forgeinkey
         [Required(ErrorMessage = "Bird type is required")]
         public Guid BirdTypeId { get; set; }
+
+        [Required(ErrorMessage = "Onwer is required")]
+        public Guid OwnerId { get; set; }
     }
 }
