@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230130154616_addfirst")]
-    partial class addfirst
+    [Migration("20230202005057_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -117,6 +117,10 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("OwnerId");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -130,6 +134,8 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BirdTypeId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Bird");
                 });
@@ -165,6 +171,49 @@ namespace EBird.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("BirdType");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDatetime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("GroupCreateDatetime");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxELO")
+                        .HasColumnType("int")
+                        .HasColumnName("GroupMaxELO");
+
+                    b.Property<int>("MinELO")
+                        .HasColumnType("int")
+                        .HasColumnName("GroupMinELO");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("GroupName");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("GroupStatus");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -235,7 +284,26 @@ namespace EBird.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Owner")
+                        .WithMany("Birds")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("BirdType");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
+                        .WithMany("Groups")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -251,6 +319,10 @@ namespace EBird.Infrastructure.Migrations
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
+                    b.Navigation("Birds");
+
+                    b.Navigation("Groups");
+
                     b.Navigation("RefreshTokens");
                 });
 

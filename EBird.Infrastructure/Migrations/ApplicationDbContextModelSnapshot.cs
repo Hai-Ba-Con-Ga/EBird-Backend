@@ -290,17 +290,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Navigation("BirdType");
 
-                });
-
-            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
-                {
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
-                        .WithMany("Groups")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
