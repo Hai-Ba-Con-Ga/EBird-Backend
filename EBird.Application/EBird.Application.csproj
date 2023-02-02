@@ -11,10 +11,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Services\IServices\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AutoWrapper.Core" Version="4.5.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />

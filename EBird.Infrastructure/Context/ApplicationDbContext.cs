@@ -1,4 +1,5 @@
 ﻿using EBird.Application.Interfaces;
+using EBird.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -15,6 +16,7 @@ namespace EBird.Infrastructure.Context
         }
 
         #region DbSet
+        public DbSet<RoomEntity> Rooms { get; set; }
         #endregion
     }
 }
