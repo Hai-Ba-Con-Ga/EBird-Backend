@@ -37,7 +37,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
-builder.Services.AddDbService(configuration);
+//builder.Services.AddDbService(configuration);
+builder.Services.AddDbLocalService();
 //register Repository
 builder.Services.AddRepositories();
 //register Application Service
