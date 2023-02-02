@@ -18,7 +18,7 @@ namespace EBird.Domain.Entities
         public string? Email { get; set; }
 
         [Column(TypeName = "datetime")]
-        public DateTime CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
 
         [Column(TypeName = "nvarchar")]
         [MaxLength(50)]
