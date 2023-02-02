@@ -37,8 +37,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
-builder.Services.AddDbService(configuration);
-//builder.Services.AddDbLocalService();
+//builder.Services.AddDbService(configuration);
+builder.Services.AddDbLocalService();
+
 //register Repository
 builder.Services.AddRepositories();
 //register Application Service
@@ -81,6 +82,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         //options.RoutePrefix = string.Empty;
     });
+     await app.Services.DbInitializer();
 }
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true, WrapWhenApiPathStartsWith = "/server" });
 app.UseCors("BirdAllowSpecificOrigins");
