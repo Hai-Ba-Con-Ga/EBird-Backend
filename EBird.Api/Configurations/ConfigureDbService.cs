@@ -32,5 +32,13 @@ namespace EBird.Api.Configurations
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IWapperRepository, WapperRepository>();
         }
+        public static void AddDbLocalService(this IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                                                       options.UseSqlite("DataSource=GloBird.db",
+                                                                            x => x.MigrationsAssembly("EBird.Infrastructure")));
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+        }
+
     }
 }
