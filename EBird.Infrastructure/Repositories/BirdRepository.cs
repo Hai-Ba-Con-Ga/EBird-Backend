@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model;
+using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
@@ -31,7 +32,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId)
         {
-            return await this.FindAllWithCondition(b => b.OwnerId.Equals(accountId) 
+            return await this.FindAllWithCondition(b => b.OwnerId.Equals(accountId)
                                                         && b.IsDeleted == false);
         }
 
@@ -50,13 +51,15 @@ namespace EBird.Infrastructure.Repositories
         /// </summary>
         /// <param name="birdParameters"></param>
         /// <returns></returns>
-        public async Task<List<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
+        public async Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
         {
-            var birds =  _context.Set<BirdEntity>().AsNoTracking();
-            
-            birds = birds.OrderBy(b => b.Elo);
+            var birds = _context.Set<BirdEntity>().AsNoTracking();
+            birds = birds.OrderByDescending(b => b.Elo);
 
-            return await PagedList<BirdEntity>.ToPageList(birds, birdParameters.PageNumber, birdParameters.PageSize);
+            PagedList<BirdEntity> pagedList = new PagedList<BirdEntity>();
+            await pagedList.LoadData(birds, birdParameters.PageNumber, birdParameters.PageSize);
+
+            return pagedList;
         }
 
         public async Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID)

@@ -1,7 +1,6 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
-using EBird.Application.Model;
-using EBird.Application.Model.PagingModel;
+using EBird.Application.Model.Bird;
 using System;
 using System.Collections.Generic;
 using System.Linq;

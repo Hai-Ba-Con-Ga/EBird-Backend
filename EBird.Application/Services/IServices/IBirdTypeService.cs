@@ -1,4 +1,4 @@
-﻿using EBird.Application.Model;
+﻿using EBird.Application.Model.BirdType;
 using EBird.Domain.Entities;
 
 namespace EBird.Application.Services.IServices

@@ -1,12 +1,12 @@
 ﻿using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Application.Interfaces;
-using EBird.Application.Model;
 using EBird.Application.Exceptions;
 using System.Net;
 using EBird.Application.Validation;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
+using EBird.Application.Model.BirdType;
 
 namespace EBird.Application.Services
 {

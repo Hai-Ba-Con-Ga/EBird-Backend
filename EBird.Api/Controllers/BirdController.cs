@@ -1,5 +1,5 @@
 ﻿using EBird.Application.Exceptions;
-using EBird.Application.Model;
+using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -266,7 +266,7 @@ namespace EBird.Api.Controllers
 
         // GET: get all active bird within pagination
         [HttpGet("pagination")]
-        public async Task<ActionResult<Response<PagedList<BirdDTO>>>> Get([FromHeader]BirdParameters birdParameters)
+        public async Task<ActionResult<Response<PagedList<BirdDTO>>>> Get([FromQuery]BirdParameters birdParameters)
         {
             Response<PagedList<BirdDTO>> response = null;
             try
@@ -304,7 +304,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                
+                Console.WriteLine(ex.Message);
                 response = Response<PagedList<BirdDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)

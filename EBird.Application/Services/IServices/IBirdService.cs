@@ -1,4 +1,4 @@
-﻿using EBird.Application.Model;
+﻿using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using System;
 using System.Collections.Generic;

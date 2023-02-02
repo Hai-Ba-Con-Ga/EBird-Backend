@@ -1,4 +1,5 @@
 ﻿using EBird.Application.Model;
+using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 using System;
@@ -16,7 +17,8 @@ namespace EBird.Application.Interfaces.IRepository
         Task<BirdEntity> AddBirdAsync(BirdEntity bird);
         Task<BirdEntity> UpdateBirdAsync(BirdEntity bird);
         Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID);
-        Task<List<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters);
+        Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters);
         Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId);
+        
     }
 }

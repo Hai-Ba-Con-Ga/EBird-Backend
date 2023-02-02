@@ -13,16 +13,16 @@ namespace EBird.Infrastructure.Migrations
                 name: "Account",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "varchar", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "varchar", maxLength: 50, nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
                     CreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
-                    Role = table.Column<string>(type: "varchar", maxLength: 20, nullable: false),
-                    Username = table.Column<string>(type: "varchar", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar", maxLength: 200, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,11 +33,11 @@ namespace EBird.Infrastructure.Migrations
                 name: "BirdType",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    BirdTypeCode = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
-                    BirdTypeName = table.Column<string>(type: "nvarchar", maxLength: 100, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BirdTypeCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BirdTypeName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     BirdTypeCreatedDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,10 +48,10 @@ namespace EBird.Infrastructure.Migrations
                 name: "VerifcationStore",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Code = table.Column<string>(type: "TEXT", nullable: false),
-                    AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,14 +62,14 @@ namespace EBird.Infrastructure.Migrations
                 name: "Group",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    GroupName = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
-                    GroupMaxELO = table.Column<int>(type: "INTEGER", nullable: false),
-                    GroupMinELO = table.Column<int>(type: "INTEGER", nullable: false),
-                    GroupStatus = table.Column<string>(type: "varchar", maxLength: 20, nullable: false),
-                    GroupCreateDatetime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedById = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    GroupMaxELO = table.Column<int>(type: "int", nullable: false),
+                    GroupMinELO = table.Column<int>(type: "int", nullable: false),
+                    GroupStatus = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    GroupCreateDatetime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,15 +86,15 @@ namespace EBird.Infrastructure.Migrations
                 name: "RefreshToken",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Token = table.Column<string>(type: "TEXT", nullable: false),
-                    JwtId = table.Column<string>(type: "TEXT", nullable: false),
-                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ExpiredAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    JwtId = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,18 +111,18 @@ namespace EBird.Infrastructure.Migrations
                 name: "Bird",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    BirdName = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BirdName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirdAge = table.Column<int>(type: "int", nullable: false),
-                    BirdWeight = table.Column<float>(type: "float", nullable: false),
+                    BirdWeight = table.Column<double>(type: "float", nullable: false),
                     BirdElo = table.Column<int>(type: "int", nullable: false),
-                    BirdStatus = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
+                    BirdStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirdCreatedDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
                     BirdDescription = table.Column<string>(type: "text", nullable: false),
-                    BirdColor = table.Column<string>(type: "nvarchar", maxLength: 50, nullable: false),
-                    BirdTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    BirdColor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BirdTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

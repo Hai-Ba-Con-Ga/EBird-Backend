@@ -17,6 +17,10 @@ namespace EBird.Application.Model.PagingModel
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
 
+        public PagedList()
+        {
+        }
+
         public PagedList(List<T> items, int count, int pageNumber, int pageSize)
         {
             TotalCount = count;
@@ -28,16 +32,19 @@ namespace EBird.Application.Model.PagingModel
             this.AddRange(items);
         }
 
-        public static async Task<PagedList<T>> ToPageList(IQueryable<T> queryList, int pageNumber, int pageSize)
+        public async Task LoadData(IQueryable<T> queryList, int pageNumber, int pageSize)
         {
             int count = queryList.Count();
-            
-            var items =  await queryList
+            this.TotalCount = count;
+            this.PageSize = pageSize;
+            this.CurrentPage = pageNumber;
+            this.TotalPages = (int) Math.Ceiling(count / (double) pageSize);
+
+            var items = await queryList
                                 .Skip((pageNumber - 1) * pageSize)
                                 .Take(pageSize)
                                 .ToListAsync();
-            
-            return new PagedList<T>(items, count, pageNumber, pageSize);
+            this.AddRange(items);
         }
     }
 }

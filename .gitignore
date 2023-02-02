@@ -381,3 +381,7 @@ FodyWeavers.xsd
 .history
 .ionide
 service-key.json
+
+/EBird.Api/GloBird.db
+/EBird.Api/GloBird.db-shm
+/EBird.Api/GloBird.db-wal

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EBird.Application.Exceptions;
-using EBird.Application.Model;
+using EBird.Application.Model.Group;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Response;
