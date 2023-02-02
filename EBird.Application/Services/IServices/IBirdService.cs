@@ -1,4 +1,5 @@
 ﻿using EBird.Application.Model;
+using EBird.Application.Model.PagingModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace EBird.Application.Services.IServices
         public Task<BirdDTO> AddBird(BirdDTO birdDTO);
         public Task<BirdDTO> UpdateBird(Guid id, BirdDTO birdDTO);
         public Task<BirdDTO> DeleteBird(Guid birdID);
+        public Task<PagedList<BirdDTO>> GetBirdsByPagingParameters(BirdParameters parameters);
 
     }
 }

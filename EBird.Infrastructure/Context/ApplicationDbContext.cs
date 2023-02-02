@@ -29,7 +29,6 @@ namespace EBird.Infrastructure.Context
         public DbSet<RefreshTokenEntity> refreshTokens { get; set; } = null!;
         public DbSet<VerifcationStoreEntity> verifcationStores { get; set; } = null!;
 
-
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
 

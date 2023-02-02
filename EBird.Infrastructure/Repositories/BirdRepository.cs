@@ -1,7 +1,9 @@
 ﻿using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model;
+using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,20 @@ namespace EBird.Infrastructure.Repositories
         public async Task<List<BirdEntity>> GetBirdsActiveAsync()
         {
             return await this.GetAllActiveAsync();
+        }
+
+        /// <summary>
+        /// Get bird list within paging
+        /// </summary>
+        /// <param name="birdParameters"></param>
+        /// <returns></returns>
+        public async Task<List<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
+        {
+            var birds =  _context.Set<BirdEntity>().AsNoTracking();
+            
+            birds = birds.OrderBy(b => b.Elo);
+
+            return await PagedList<BirdEntity>.ToPageList(birds, birdParameters.PageNumber, birdParameters.PageSize);
         }
 
         public async Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID)

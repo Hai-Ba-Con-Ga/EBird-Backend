@@ -1,6 +1,7 @@
 using AutoMapper;
 using EBird.Api.UserFeatures.Requests;
 using EBird.Application.Model;
+using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 
 namespace EBird.Api.Mapper
