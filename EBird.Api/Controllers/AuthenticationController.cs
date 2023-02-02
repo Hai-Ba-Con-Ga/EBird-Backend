@@ -77,6 +77,7 @@ namespace EBird.Api.Controllers
             try
             {
                 await _authenticationServices.Signup(_mapper.Map<AccountEntity>(req));
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             }
             catch (BadRequestException ex)
             {
