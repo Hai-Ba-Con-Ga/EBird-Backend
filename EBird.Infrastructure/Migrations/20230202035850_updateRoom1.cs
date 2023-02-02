@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class addfirst : Migration
+    public partial class updateRoom1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -42,6 +42,22 @@ namespace EBird.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BirdType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Room",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RoomStatus = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    RoomCity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RoomCreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Room", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,11 +113,18 @@ namespace EBird.Infrastructure.Migrations
                     BirdDescription = table.Column<string>(type: "text", nullable: false),
                     BirdColor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirdTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bird", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bird_Account_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bird_BirdType_BirdTypeId",
                         column: x => x.BirdTypeId,
@@ -114,6 +137,11 @@ namespace EBird.Infrastructure.Migrations
                 name: "IX_Bird_BirdTypeId",
                 table: "Bird",
                 column: "BirdTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bird_OwnerId",
+                table: "Bird",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BirdType_BirdTypeCode",
@@ -134,6 +162,9 @@ namespace EBird.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
+
+            migrationBuilder.DropTable(
+                name: "Room");
 
             migrationBuilder.DropTable(
                 name: "VerifcationStore");

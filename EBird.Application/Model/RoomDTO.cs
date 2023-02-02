@@ -14,14 +14,6 @@ namespace EBird.Application.Model
         [StringLength(50, ErrorMessage = "Room name cannot be longer than 50 characters")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Maximum Elo is required")]
-        public int MaximumELO { get; set; }
-
-        [Required(ErrorMessage = "Minimum Elo is required")]
-        public int MinimumELO { get; set; }
-
-        //[Required(ErrorMessage = "Status is required")]
-        //[StringLength(50, ErrorMessage = "Status cannot be longer than 50 characters")]
         public string Status { get; set; }
 
         [Required(ErrorMessage = "City is required")]

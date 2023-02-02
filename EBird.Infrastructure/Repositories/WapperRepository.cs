@@ -21,6 +21,8 @@ namespace EBird.Infrastructure.Repositories
 
         private IGenericRepository<AccountEntity> _accountRepository;
 
+        private IRoomRepository _roomRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -59,6 +61,18 @@ namespace EBird.Infrastructure.Repositories
                     _accountRepository = new GenericRepository<AccountEntity>(_context);
                 }
                 return _accountRepository;
+            }
+        }
+
+        public IRoomRepository Room
+        {
+            get
+            {
+                if (_roomRepository == null)
+                {
+                    _roomRepository = new RoomRepository(_context);
+                }
+                return _roomRepository;
             }
         }
     }

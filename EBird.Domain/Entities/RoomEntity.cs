@@ -14,34 +14,27 @@ namespace EBird.Domain.Entities
     {
         [Required]
         [MaxLength(50)]
-        [Column("Name", TypeName = "nvarchar")]
+        [Column("RoomName", TypeName = "nvarchar")]
         public string Name { get; set; }
 
         [Required]
-        [Column("MaximumELO", TypeName = "int")]
-        public int MaximumELO { get; set; }
-
-        [Required]
-        [Column("MinimumELO", TypeName = "int")]
-        public int MinimumELO { get; set; }
-
-        [Required]
-        [MaxLength(20)]
-        [Column("Status", TypeName = "varchar")]
+        [MaxLength(50)]
+        [Column("RoomStatus", TypeName = "varchar")]
         public string Status { get; set; }
 
         [Required]
         [MaxLength(50)]
-        [Column("City", TypeName = "nvarchar")]
+        [Column("RoomCity", TypeName = "nvarchar")]
         public string City { get; set; }
 
         [Required]
-        [Column("CreateDateTime", TypeName = "datetime")]
+        [Column("RoomCreateDateTime", TypeName = "datetime")]
         public DateTime CreateDateTime { get; set; }
 
-        
-        //[ForeignKey("CreateBy")]
-        //public int CreateById { get; set; }
-        //public virtual User CreateBy { get; set; }
+
+        ////forgein key with account table
+        //[Column("CreateById")]
+        //public Guid CreateById { get; set; }
+        //public AccountEntity CreateBy { get; set; }
     }
 }
