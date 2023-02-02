@@ -7,14 +7,14 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EBird.Application.Interfaces
+namespace EBird.Application.Interfaces.IRepository
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {
         Task<List<T>> GetAllAsync();
-        
+
         Task<T> GetByIdAsync(Guid id);
-        
+
         /// <summary>
         ///      Add a new entity to database
         /// </summary>
@@ -28,7 +28,7 @@ namespace EBird.Application.Interfaces
         /// <param name="entity">Entity for updating</param>
         /// <returns>Number of row in database have been changed</returns>
         Task<int> UpdateAsync(T entity);
-        
+
         Task<T> DeleteAsync(Guid id);
 
         /// <summary>
@@ -39,5 +39,10 @@ namespace EBird.Application.Interfaces
         Task<T> DeleteSoftAsync(Guid id);
         Task<T> FindWithCondition(Expression<Func<T, bool>> predicate);
         Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
+        Task<List<T>> FindAllWithCondition(Expression<Func<T, bool>> predicate = null);
+
+        Task<List<T>> GetAllActiveAsync();
+
+        Task<T> GetByIdActiveAsync(Guid id);
     }
 }

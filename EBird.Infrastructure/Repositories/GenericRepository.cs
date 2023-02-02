@@ -1,4 +1,4 @@
-﻿using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Common;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -54,9 +54,9 @@ namespace EBird.Infrastructure.Repositories
             return _entity;
         }
 
-        public Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
+        public async Task<T> FindWithCondition(Expression<Func<T, bool>> predicate)
         {
-            return dbSet.AsQueryable().AsNoTracking().FirstOrDefaultAsync(predicate);
+            return await dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<T>> GetAllAsync()
@@ -66,7 +66,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<T> GetByIdAsync(Guid id)
         {
-            T entity = await dbSet.FirstOrDefaultAsync(e => e.Id.Equals(id));
+            var entity = await dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id.Equals(id));
             return entity;
         }
 
@@ -87,6 +87,41 @@ namespace EBird.Infrastructure.Repositories
             }
             list = await query.Where(predicate).AsNoTracking().ToListAsync();
             return list;
+        }
+
+        public async Task<T> FindByIdAsync(Guid id, params string[] navigationProperties)
+        {
+            var query = ApplyNavigation(navigationProperties);
+            T entity = await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+            return entity;
+        }
+
+        private IQueryable<T> ApplyNavigation(params string[] navigationProperties)
+        {
+            var query = dbSet.AsQueryable();
+            foreach (string navigationProperty in navigationProperties)
+                query = query.Include(navigationProperty);
+            return query;
+        }
+        
+
+        public async Task<List<T>> FindAllWithCondition(Expression<Func<T, bool>> predicate = null)
+        {
+            if(predicate == null)
+            {
+                return await dbSet.AsNoTracking().ToListAsync();
+            }
+            return await dbSet.AsNoTracking().Where(predicate).ToListAsync();
+        }
+
+        public async Task<List<T>> GetAllActiveAsync()
+        {
+            return await dbSet.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+        }
+
+        public async Task<T> GetByIdActiveAsync(Guid id)
+        {
+            return await dbSet.FirstOrDefaultAsync(x => x.Id.Equals(id) && x.IsDeleted == false);
         }
     }
 

@@ -7,13 +7,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EBird.Domain\EBird.Domain.csproj" />
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+		<PackageReference Include="AutoWrapper.Core" Version="4.5.0" />
+		<PackageReference Include="MailKit" Version="3.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.9" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoWrapper.Core" Version="4.5.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+	  <ProjectReference Include="..\EBird.Domain\EBird.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

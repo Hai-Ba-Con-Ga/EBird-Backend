@@ -4,6 +4,7 @@ using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230130154616_addfirst")]
+    partial class addfirst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,10 +117,6 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("OwnerId");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -132,8 +130,6 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BirdTypeId");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Bird");
                 });
@@ -239,15 +235,7 @@ namespace EBird.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Owner")
-                        .WithMany("Birds")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("BirdType");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -263,8 +251,6 @@ namespace EBird.Infrastructure.Migrations
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
-                    b.Navigation("Birds");
-
                     b.Navigation("RefreshTokens");
                 });
 
