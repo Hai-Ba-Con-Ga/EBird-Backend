@@ -88,7 +88,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
@@ -128,7 +127,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
@@ -140,8 +138,8 @@ namespace EBird.Api.Controllers
         }
 
         // PUT : update bird
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<Response<BirdDTO>>> Patch(Guid id, [FromBody] BirdDTO birdDTO)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Response<BirdDTO>>> Put(Guid id, [FromBody] BirdDTO birdDTO)
         {
             Response<BirdDTO> response = null;
             try
@@ -167,7 +165,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
                 response = Response<BirdDTO>.Builder()
                            .SetSuccess(false)
@@ -206,8 +203,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
-
+                
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)

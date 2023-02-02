@@ -21,6 +21,8 @@ namespace EBird.Infrastructure.Repositories
 
         private IGenericRepository<AccountEntity> _accountRepository;
 
+        private IGroupRepository _groupRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -49,7 +51,7 @@ namespace EBird.Infrastructure.Repositories
                 return _birdRepository;
             }
         }
-
+        
         public IGenericRepository<AccountEntity> Account
         {
             get
@@ -61,5 +63,18 @@ namespace EBird.Infrastructure.Repositories
                 return _accountRepository;
             }
         }
+
+        public IGroupRepository Group
+        {
+            get
+            {
+                if(_groupRepository == null)
+                {
+                    _groupRepository = new GroupRepository(_context);
+                }
+                return _groupRepository;
+            }
+        }
+
     }
 }

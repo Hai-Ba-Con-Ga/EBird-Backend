@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class addfirst : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -59,6 +59,30 @@ namespace EBird.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Group",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    GroupMaxELO = table.Column<int>(type: "int", nullable: false),
+                    GroupMinELO = table.Column<int>(type: "int", nullable: false),
+                    GroupStatus = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    GroupCreateDatetime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Group", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Group_Account_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefreshToken",
                 columns: table => new
                 {
@@ -97,11 +121,18 @@ namespace EBird.Infrastructure.Migrations
                     BirdDescription = table.Column<string>(type: "text", nullable: false),
                     BirdColor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirdTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bird", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bird_Account_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bird_BirdType_BirdTypeId",
                         column: x => x.BirdTypeId,
@@ -116,10 +147,20 @@ namespace EBird.Infrastructure.Migrations
                 column: "BirdTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bird_OwnerId",
+                table: "Bird",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BirdType_BirdTypeCode",
                 table: "BirdType",
                 column: "BirdTypeCode",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Group_CreatedById",
+                table: "Group",
+                column: "CreatedById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshToken_AccountId",
@@ -131,6 +172,9 @@ namespace EBird.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Bird");
+
+            migrationBuilder.DropTable(
+                name: "Group");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
