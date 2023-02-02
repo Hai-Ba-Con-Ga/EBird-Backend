@@ -12,12 +12,12 @@ namespace EBird.Application.Services.IServices
 {
     public interface IAuthenticationServices
     {
-        Task<TokenModel> CreateToken(AccountEntity account);
+        Task< TokenModel> CreateToken(AccountEntity account);
         string HashPassword(string password);
-        Task<ActionResult<Response<TokenModel>>> Login(string username, string password);
-        Task<ActionResult<Response<string>>> Logout(Guid id);
-        Task<ActionResult<Response<string>>> Signup(AccountEntity req);
-        Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model);
-        Task<Response<AccountResponse>> GetAccountById(Guid id);
+        Task<TokenModel> Login(string username, string password);
+        Task Logout(Guid id);
+        Task Signup(AccountEntity req);
+        Task<TokenModel> RenewToken(TokenModel model);
+        Task<AccountResponse> GetAccountById(Guid id);
     }
 }

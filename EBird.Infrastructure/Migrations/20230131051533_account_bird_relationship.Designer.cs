@@ -4,6 +4,7 @@ using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230131051533_account_bird_relationship")]
+    partial class account_bird_relationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,49 +173,6 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("BirdType");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreateDatetime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("GroupCreateDatetime");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MaxELO")
-                        .HasColumnType("int")
-                        .HasColumnName("GroupMaxELO");
-
-                    b.Property<int>("MinELO")
-                        .HasColumnType("int")
-                        .HasColumnName("GroupMinELO");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("GroupName");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("GroupStatus");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("Group");
-                });
-
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -290,28 +249,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Navigation("BirdType");
 
-                });
-
-            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
-                {
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
-                        .WithMany("Groups")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
-                {
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
-                        .WithMany("Groups")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -328,8 +266,6 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("Birds");
-
-                    b.Navigation("Groups");
 
                     b.Navigation("RefreshTokens");
                 });

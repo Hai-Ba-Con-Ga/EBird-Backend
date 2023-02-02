@@ -13,6 +13,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using EBird.Application.Exceptions;
 
 namespace EBird.Application.Services
 {
@@ -89,63 +90,57 @@ namespace EBird.Application.Services
             var hasedPassword = sha.ComputeHash(asByteArrray);
             return Convert.ToBase64String(hasedPassword);
         }
-        public async Task<ActionResult<Response<TokenModel>>> Login(string username, string password)
+        public async Task<TokenModel> Login(string username, string password)
         {
             var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(username));
 
             
             if (user == null)
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Username is not exist").SetSuccess(false);
+               throw new NotFoundException("User not found!");
             }
             if (user.IsDeleted)
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.Forbidden).SetMessage("The account has been deleted!").SetSuccess(false);
-
+                throw new NotFoundException("User is deleted!");
             }
             if (!user.Password.Equals(HashPassword(password)))
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Password wrong!").SetSuccess(false);
+               throw new BadRequestException("Password is incorrect!");
             }
             var token = await CreateToken(user);
-            return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.OK)
-                .SetMessage("Login successfully!").SetSuccess(true).SetData(token);
-
+            return token;
         }
-        public async Task<ActionResult<Response<string>>> Logout(Guid id)
+        public async Task Logout(Guid id)
         {
             var refreshToken = await _refreshTokenRepository.FindWithCondition(p=>p.AccountId.Equals(id));  
             await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
-            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true);
+            
         }
-        public async Task<ActionResult<Response<string>>> Signup(AccountEntity req)
+        public async Task Signup(AccountEntity req)
         {
             var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username));
             if (user != null)
             {
-                return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetSuccess(false).SetMessage("Username is exist!");
+                throw new BadRequestException(String.Format("Username {0} is already taken", req.Username));
             }
             req.Password = HashPassword(req.Password);
             await _accountRepository.CreateAsync(req);
-
-            return Response<string>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true);
         }
-        public async Task<ActionResult<Response<TokenModel>>> RenewToken(TokenModel model)
+        public async Task<TokenModel> RenewToken(TokenModel model)
         {
             var refreshToken = await _refreshTokenRepository.FindWithCondition(p => p.Token.Equals(model.RefreshToken));
             if (refreshToken == null)
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetSuccess(false).SetMessage("Invalid Token");
+                throw new BadRequestException("Invalid Token");
 
             }
             if (refreshToken.ExpiredAt < DateTime.Now)
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetSuccess(false).SetMessage("Token expried");
+                throw new BadRequestException("Token has expired");
             }
             if (refreshToken.IsUsed || refreshToken.IsRevoked)
             {
-                return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetSuccess(false).SetMessage("Invalid Token");
-
+               throw new BadRequestException("Invalid Token");
             }
 
             var user = await _accountRepository.GetByIdAsync(refreshToken.AccountId);
@@ -153,20 +148,20 @@ namespace EBird.Application.Services
             refreshToken.IsUsed = true;
             await _refreshTokenRepository.UpdateAsync(refreshToken);
             var token = await CreateToken(user);
-            return Response<TokenModel>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetData(token);
+            return token;
         }
-        public async Task<Response<AccountResponse>> GetAccountById(Guid id)
+        public async Task<AccountResponse> GetAccountById(Guid id)
         {
             var account = await _accountRepository.GetByIdActiveAsync(id);
 
             if (account == null)
             {
-                return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Account is not exist").SetSuccess(false);
+                throw new NotFoundException("Account not found");
             }
             var accountResponse = new AccountResponse();
             _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
 
-            return Response<AccountResponse>.Builder().SetStatusCode((int)HttpStatusCode.OK).SetSuccess(true).SetData(accountResponse);
+            return accountResponse;
         }
 
 

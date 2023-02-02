@@ -29,6 +29,11 @@ namespace EBird.Infrastructure.Context
                 .HasMany(a => a.Groups)
                 .WithOne(g => g.CreatedBy)
                 .HasForeignKey(g => g.CreatedById);
+            //Config for one to many relationship between AccountEntity and BirdEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Birds)
+                .WithOne(b => b.Owner)
+                .HasForeignKey(b => b.OwnerId);
         }
 
         #region DbSet

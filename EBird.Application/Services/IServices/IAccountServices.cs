@@ -6,13 +6,13 @@ namespace EBird.Application.Services.IServices
 {
     public interface IAccountServices
     {
-        Task<Response<AccountResponse>> GetAccountById(Guid id);
-        Task<Response<List<AccountResponse>>> GetAllAccount();
-        Task<Response<string>> UpdateAccount(AccountEntity updateAccount);
-        Task<Response<string>> DeleteAccount(Guid id);
-        Task<Response<string>> ChangePassword(Guid id, ChangePasswordModel model);
-        Task<Response<string>> ForgotPassword(string username);
-        Task<Response<string>> ResetPassword(ResetPasswordModel model);
-        Task<Response<string>> CheckEmail(string email);
+        Task<AccountResponse> GetAccountById(Guid id);
+        Task<List<AccountResponse>> GetAllAccount();
+        Task UpdateAccount(AccountEntity updateAccount);
+        Task DeleteAccount(Guid id);
+        Task ChangePassword(Guid id, Model.ChangePasswordModel model);
+        Task ForgotPassword(string username);
+        Task ResetPassword(ResetPasswordModel model);
+        Task CheckEmail(string email);
     }
 }

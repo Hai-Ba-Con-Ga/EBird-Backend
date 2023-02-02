@@ -46,13 +46,14 @@ namespace EBird.Domain.Entities
         [Required]
         public string Color { get; set; }
 
-
+        //forgein key with account table
         [Column("BirdTypeId")]
         public Guid BirdTypeId { get; set; }
         public BirdTypeEntity BirdType { get; set; }
 
-
-        //[ForeignKey("OwnerId")]
-        //public AccountEnity Owner { get; set; }
+        //forgein key with account table
+        [Column("OwnerId")]
+        public Guid OwnerId { get; set; }
+        public AccountEntity Owner { get; set; }
     }
 }
