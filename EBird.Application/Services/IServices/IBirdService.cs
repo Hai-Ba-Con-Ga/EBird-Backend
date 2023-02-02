@@ -16,6 +16,7 @@ namespace EBird.Application.Services.IServices
         public Task<BirdDTO> UpdateBird(Guid id, BirdDTO birdDTO);
         public Task<BirdDTO> DeleteBird(Guid birdID);
         public Task<PagedList<BirdDTO>> GetBirdsByPagingParameters(BirdParameters parameters);
+        public Task<List<BirdDTO>> GetAllBirdByAccount(Guid accountId);
 
     }
 }

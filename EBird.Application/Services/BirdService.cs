@@ -117,5 +117,15 @@ namespace EBird.Application.Services
             return birdDTO;
         }
 
+        public async Task<List<BirdDTO>> GetAllBirdByAccount(Guid accountId)
+        {
+            var listBirdEntity = await _repository.Bird.GetAllBirdActiveByAccountId(accountId);
+            if(listBirdEntity.Count == 0)
+            {
+                throw new NotFoundException("Can not found bird");
+            }
+            return _mapper.Map<List<BirdDTO>>(listBirdEntity);
+        }
+
     }
 }

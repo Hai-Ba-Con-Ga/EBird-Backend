@@ -13,6 +13,7 @@ namespace EBird.Api.Configurations
             services.AddTransient<IEmailServices, EmailServices>();
             services.AddScoped<IBirdTypeService, BirdTypeService>();
             services.AddScoped<IBirdService, BirdService>();
+            services.AddScoped<IGroupService, GroupService>();
 
         }
     }
