@@ -64,7 +64,7 @@ namespace EBird.Application.Services
                     IsUsed = false,
                     IsRevoked = false,
                     IssuedAt = DateTime.UtcNow,
-                    ExpiredAt = DateTime.UtcNow.AddDays(1)
+                    ExpiredAt = DateTime.UtcNow.AddDays(7)
                 }
             );
             return new TokenModel

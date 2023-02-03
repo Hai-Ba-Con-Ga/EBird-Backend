@@ -2,10 +2,8 @@ using AutoWrapper;
 using EBird.Api.Configurations;
 using EBird.Application.AppConfig;
 using EBird.Infrastructure.Context;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
@@ -36,15 +34,25 @@ builder.Services.AddCors(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+}).AddGoogle(options =>
+        {
+            options.ClientId = "353487917217-3vnjd906comvj5fukp4djf1l3at13mr0.apps.googleusercontent.com";
+            options.ClientSecret = "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";
+        });
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
-builder.Services.AddDbService(configuration);
-//builder.Services.AddDbLocalService();
+//builder.Services.AddDbService(configuration);
+builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
 //register Application Service
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen(c =>
 {
@@ -82,7 +90,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         //options.RoutePrefix = string.Empty;
     });
-     await app.Services.DbInitializer();
+    await app.Services.DbInitializer();
 }
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true, WrapWhenApiPathStartsWith = "/server" });
 app.UseCors("BirdAllowSpecificOrigins");
