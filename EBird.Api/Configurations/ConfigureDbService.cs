@@ -15,7 +15,7 @@ namespace EBird.Api.Configurations
         {
 
             ConnectionOption connectionOption = configuration.GetSection(ConnectionOption.ConnectionStrings).Get<ConnectionOption>();
-            if(connectionOption == null)
+            if (connectionOption == null)
             {
                 Console.WriteLine("Connection option is null");
                 return;
@@ -26,11 +26,26 @@ namespace EBird.Api.Configurations
                                                                             x => x.MigrationsAssembly("EBird.Infrastructure")));
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
         }
-        
+
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IWapperRepository, WapperRepository>();
         }
+        public static void AddDbLocalService(this IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                                                       options.UseSqlite("DataSource=GloBird.db",
+                                                                            x => x.MigrationsAssembly("EBird.Infrastructure")));
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+        }
+        public static async Task DbInitializer(this IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            await using ApplicationDbContext dbContext =
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await DatabaseInitializer.InitializeAsync(dbContext);
+        }
+
     }
 }

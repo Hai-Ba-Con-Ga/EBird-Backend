@@ -14,6 +14,8 @@ namespace EBird.Application.Interfaces
         public IBirdRepository Bird { get; }
         public IGenericRepository<AccountEntity> Account { get; }
 
+        public IGroupRepository Group { get; }
+
         public IRoomRepository Room { get; }
     }
 }

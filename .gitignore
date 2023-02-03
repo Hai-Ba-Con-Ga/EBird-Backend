@@ -380,3 +380,8 @@ FodyWeavers.xsd
 # Ignore all local history of files
 .history
 .ionide
+service-key.json
+
+/EBird.Api/GloBird.db
+/EBird.Api/GloBird.db-shm
+/EBird.Api/GloBird.db-wal

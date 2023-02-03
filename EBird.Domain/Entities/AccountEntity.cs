@@ -17,15 +17,18 @@ namespace EBird.Domain.Entities
         [MaxLength(50)]
         public string? Email { get; set; }
 
-        public DateTime CreateDateTime { get; set; }
-        
+        [Column(TypeName = "datetime")]
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
+
+        [Column(TypeName = "nvarchar")]
         [MaxLength(50)]
         public string FirstName { get; set; } = null!;
 
+        [Column(TypeName = "nvarchar")]
         [MaxLength(50)]
         public string LastName { get; set; } = null!;
 
-        [Column("Role",TypeName = "varchar")]
+        [Column("Role", TypeName = "varchar")]
         [MaxLength(20)]
         public string RoleString
         {
@@ -38,9 +41,12 @@ namespace EBird.Domain.Entities
         [Column(TypeName = "varchar")]
         [MaxLength(50)]
         public string Username { get; set; } = null!;
-        
+
+        [Column(TypeName = "nvarchar")]
+        [MaxLength(200)]
         public string Description { get; set; } = null!;
         public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
+        public ICollection<GroupEntity> Groups { get; set; } = null!;
 
         public ICollection<BirdEntity> Birds { get; set; } = null!;
     }
