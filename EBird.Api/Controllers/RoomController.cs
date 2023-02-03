@@ -107,11 +107,86 @@ namespace EBird.Api.Controllers
             try
             {
                 var responseData = await _roomService.AddRoom(RoomDTO);
-
+                
                 response = Response<RoomDTO>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.Created)
                     .SetMessage("Create room is success")
+                    .SetData(responseData);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<RoomDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<RoomDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+        // PUT update 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Response<RoomDTO>>> Put(Guid id, [FromBody] RoomDTO roomDTO)
+        {
+            Response<RoomDTO> response = null;
+            try
+            {
+                var responseData = await _roomService.UpdateRoom(id, roomDTO);
+
+                response = Response<RoomDTO>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Update room is success")
+                    .SetData(responseData);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<RoomDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<RoomDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        // DELETE 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Response<RoomDTO>>> Delete(Guid id)
+        {
+            Response<RoomDTO> response = null;
+            try
+            {
+                var responseData = await _roomService.DeleteRoom(id);
+
+                response = Response<RoomDTO>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Delete room is success")
                     .SetData(responseData);
 
                 return StatusCode((int)response.StatusCode, response);

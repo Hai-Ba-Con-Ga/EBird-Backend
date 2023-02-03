@@ -39,11 +39,6 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<RoomEntity> SoftDeleteRoomAsync(Guid roomId)
         {
-            var room = await this.GetByIdActiveAsync(roomId);
-            if (room == null)
-            {
-                return null;
-            }
             return await this.DeleteSoftAsync(roomId);
         }
 

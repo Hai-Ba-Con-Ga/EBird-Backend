@@ -41,10 +41,11 @@ namespace EBird.Application.Services
         public async Task<RoomDTO> DeleteRoom(Guid roomId)
         {
             var res = await _repository.Room.SoftDeleteRoomAsync(roomId);
-            if (res is null)
+            if (res == null)
             {
                 throw new NotFoundException("Can not found room for delete");
             }
+            Console.WriteLine("can run here");
             return _mapper.Map<RoomDTO>(res);
         }
 
@@ -70,7 +71,7 @@ namespace EBird.Application.Services
 
         public async Task<RoomDTO> UpdateRoom(Guid id, RoomDTO roomDTO)
         {
-            // await RoomValidation.ValidateGroup(roomUpdateDTO, _repository);
+            // await RoomValidation.ValidateRoom(roomUpdateDTO, _repository);
             var roomEntity = await _repository.Room.GetRoomActiveAsync(id);
             if (roomEntity == null)
             {

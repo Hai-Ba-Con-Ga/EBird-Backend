@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230202035850_updateRoom1")]
-    partial class updateRoom1
+    [Migration("20230202053959_updateRoom2")]
+    partial class updateRoom2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
