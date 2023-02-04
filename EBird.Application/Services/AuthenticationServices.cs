@@ -14,7 +14,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using EBird.Application.Exceptions;
-
+using Google.Apis.Auth;
+using Newtonsoft.Json;
+using System.Text.Json;
 namespace EBird.Application.Services
 {
     public class AuthenticationServices : IAuthenticationServices
@@ -33,7 +35,7 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task< TokenModel> CreateToken(AccountEntity account)
+        public async Task<TokenModel> CreateToken(AccountEntity account)
         {
             var claims = new List<Claim>
              {
@@ -64,7 +66,7 @@ namespace EBird.Application.Services
                     IsUsed = false,
                     IsRevoked = false,
                     IssuedAt = DateTime.UtcNow,
-                    ExpiredAt = DateTime.UtcNow.AddDays(1)
+                    ExpiredAt = DateTime.UtcNow.AddDays(7)
                 }
             );
             return new TokenModel
@@ -94,10 +96,10 @@ namespace EBird.Application.Services
         {
             var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(username));
 
-            
+
             if (user == null)
             {
-               throw new NotFoundException("User not found!");
+                throw new NotFoundException("User not found!");
             }
             if (user.IsDeleted)
             {
@@ -105,16 +107,16 @@ namespace EBird.Application.Services
             }
             if (!user.Password.Equals(HashPassword(password)))
             {
-               throw new BadRequestException("Password is incorrect!");
+                throw new BadRequestException("Password is incorrect!");
             }
             var token = await CreateToken(user);
             return token;
         }
         public async Task Logout(Guid id)
         {
-            var refreshToken = await _refreshTokenRepository.FindWithCondition(p=>p.AccountId.Equals(id));  
+            var refreshToken = await _refreshTokenRepository.FindWithCondition(p => p.AccountId.Equals(id));
             await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
-            
+
         }
         public async Task Signup(AccountEntity req)
         {
@@ -122,6 +124,9 @@ namespace EBird.Application.Services
             if (user != null)
             {
                 throw new BadRequestException(String.Format("Username {0} is already taken", req.Username));
+            }
+            if (req.Email.Equals(user.Email)) {
+                throw new BadRequestException(String.Format("Email {0} is already taken", req.Email));
             }
             req.Password = HashPassword(req.Password);
             await _accountRepository.CreateAsync(req);
@@ -140,7 +145,7 @@ namespace EBird.Application.Services
             }
             if (refreshToken.IsUsed || refreshToken.IsRevoked)
             {
-               throw new BadRequestException("Invalid Token");
+                throw new BadRequestException("Invalid Token");
             }
 
             var user = await _accountRepository.GetByIdAsync(refreshToken.AccountId);
@@ -162,6 +167,36 @@ namespace EBird.Application.Services
             _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
 
             return accountResponse;
+        }
+
+        public async Task<TokenModel> LoginWithGoogle(string googleToken)
+        {
+            var client = new GoogleJsonWebSignature.Payload();
+
+
+            client = GoogleJsonWebSignature.ValidateAsync(googleToken, new GoogleJsonWebSignature.ValidationSettings()).Result;
+            // string json = System.Text.Json.JsonSerializer.Serialize(client);
+            Console.WriteLine(client.Email);
+            var account = await _accountRepository.FindWithCondition(p => p.Email.Equals(client.Email));
+            
+            var token = new TokenModel();
+            if (account == null)
+            {
+                var newAccount = new AccountEntity()
+                {
+                    Email = client.Email,
+                    FirstName = client.GivenName,
+                    LastName = client.FamilyName
+                };
+                await _accountRepository.CreateAsync(newAccount);
+                token = await CreateToken(newAccount);
+                return token;
+            }
+            if (account.Username != null){
+                throw new BadRequestException("The account invalid!!");
+            }
+            token = await CreateToken(account);
+            return token;
         }
 
 

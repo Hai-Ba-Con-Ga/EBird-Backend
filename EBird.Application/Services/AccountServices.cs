@@ -147,8 +147,17 @@ namespace EBird.Application.Services
                 throw new NotFoundException("Email is not exist");
 
             }
-            
-
+        }
+        public async Task ChangeRoleAdmin(Guid id)
+        {
+            var account = await _accountRepository.GetByIdAsync(id);
+            if (account == null)
+            {
+                throw new NotFoundException("The account is not exist");
+            }
+            account.Role = Domain.Enums.Role.Admin;
+            await _accountRepository.UpdateAsync(account);
+           
         }
 
 

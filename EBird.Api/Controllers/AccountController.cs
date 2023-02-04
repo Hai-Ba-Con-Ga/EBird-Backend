@@ -13,6 +13,7 @@ using Org.BouncyCastle.Ocsp;
 using Response;
 using System.Net;
 using System.Security.Claims;
+using EBird.Domain.Enums;
 
 namespace EBird.Api.Controllers
 {
@@ -53,6 +54,7 @@ namespace EBird.Api.Controllers
 
 
         }
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
         [HttpGet]
         public async Task<ActionResult<Response<List<AccountResponse>>>> GetAllAccount()
         {
@@ -204,6 +206,23 @@ namespace EBird.Api.Controllers
             catch (NotFoundException ex)
             {
                 response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
+        [HttpPut("change-role-admin/{id}")]
+        public async Task<ActionResult<Response<string>>> ChangeRoleAdmin(Guid id)
+        {
+            var response = new Response<string>();
+            try
+            {
+                await _accountServices.ChangeRoleAdmin(id);
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Change role successfully");
             }
             catch (Exception ex)
             {

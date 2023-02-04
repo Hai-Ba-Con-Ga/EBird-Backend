@@ -12,6 +12,7 @@ namespace EBird.Api.UserFeatures.Requests
         [Required(ErrorMessage = "Username is required")]
         [StringLength(20, ErrorMessage = "Username cannot be longer than 20 characters")]
         public string Username { get; set; } = null!;
+        [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
         [Required(ErrorMessage = "FirstName is required")]

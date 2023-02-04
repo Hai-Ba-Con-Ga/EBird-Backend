@@ -14,14 +14,14 @@ namespace EBird.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
+                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Role = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
