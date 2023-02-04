@@ -25,10 +25,10 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<RoomDTO> AddRoom(RoomDTO roomDTO)
+        public async Task<RoomCreateDTO> AddRoom(RoomCreateDTO roomCreateDTO)
         {
-            await BaseValidation.ValidateAccountId(roomDTO.CreateById, _repository);
-            var roomEntity = _mapper.Map<RoomEntity>(roomDTO);
+            await BaseValidation.ValidateAccountId(roomCreateDTO.CreateById, _repository);
+            var roomEntity = _mapper.Map<RoomEntity>(roomCreateDTO);
             var res = await _repository.Room.AddRoomAsync(roomEntity);
 
             if (res == null)
@@ -36,7 +36,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Room is not added");
             }
 
-            return _mapper.Map<RoomDTO>(res);
+            return _mapper.Map<RoomCreateDTO>(res);
         }
 
         public async Task<RoomDTO> DeleteRoom(Guid roomId)
@@ -69,16 +69,16 @@ namespace EBird.Application.Services
             return _mapper.Map<List<RoomDTO>>(roomDTOList);
         }
 
-        public async Task<RoomDTO> UpdateRoom(Guid id, RoomDTO roomDTO)
+        public async Task<RoomUpdateDTO> UpdateRoom(Guid id, RoomUpdateDTO roomUpdateDTO)
         {
-            await BaseValidation.ValidateAccountId(roomDTO.CreateById, _repository);
+            //await BaseValidation.ValidateAccountId(roomDTO.CreateById, _repository);
             var roomEntity = await _repository.Room.GetRoomActiveAsync(id);
             if (roomEntity == null)
             {
                 throw new NotFoundException("Can not found room for updating");
             }
 
-            _mapper.Map(roomDTO, roomEntity);
+            _mapper.Map(roomUpdateDTO, roomEntity);
 
             var res = await _repository.Room.UpdateRoomAsync(roomEntity);
 
@@ -86,7 +86,7 @@ namespace EBird.Application.Services
             {
                 throw new BadRequestException("Update Fail");
             }
-            return roomDTO;
+            return roomUpdateDTO;
         }
     }
 }

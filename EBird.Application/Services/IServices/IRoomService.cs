@@ -11,8 +11,8 @@ namespace EBird.Application.Services.IServices
     {
         public Task<RoomDTO> GetRoom(Guid roomId);
         public Task<List<RoomDTO>> GetRooms();
-        public Task<RoomDTO> AddRoom(RoomDTO roomDTO);
-        public Task<RoomDTO> UpdateRoom(Guid id, RoomDTO roomDTO);
+        public Task<RoomCreateDTO> AddRoom(RoomCreateDTO roomDTO);
+        public Task<RoomUpdateDTO> UpdateRoom(Guid id, RoomUpdateDTO roomDTO);
         public Task<RoomDTO> DeleteRoom(Guid roomId);
     }
 }
