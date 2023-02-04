@@ -140,5 +140,25 @@ namespace EBird.Api.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+
+        [HttpGet("login-with-google")]
+        public async Task<ActionResult<Response<TokenModel>>> LoginWithGoogle([FromQuery] string idToken)
+        {
+            Response<TokenModel> response = new Response<TokenModel>();
+            try
+            {
+                var result = await _authenticationServices.LoginWithGoogle(idToken);
+                response = Response<TokenModel>.Builder().SetData(result).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            }
+            catch(BadRequestException ex){
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<TokenModel>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }

@@ -27,11 +27,11 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
@@ -49,7 +49,6 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("nvarchar");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar");
 
@@ -60,7 +59,6 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnName("Role");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 

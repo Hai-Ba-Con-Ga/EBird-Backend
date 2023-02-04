@@ -1,6 +1,6 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
-using EBird.Application.Model;
+using EBird.Application.Model.Group;
 using System;
 using System.Collections.Generic;
 using System.Linq;

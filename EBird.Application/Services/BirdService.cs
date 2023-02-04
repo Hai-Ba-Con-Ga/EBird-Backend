@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
-using EBird.Application.Model;
+using EBird.Application.Model.Bird;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Application.Validation;
 using EBird.Domain.Entities;
@@ -82,6 +83,19 @@ namespace EBird.Application.Services
             return listBirdDTO;
         }
 
+        public async Task<PagedList<BirdDTO>> GetBirdsByPagingParameters(BirdParameters parameters)
+        {
+            BirdValidation.ValidateBirdParameter(parameters);
+            
+            var birdList = await _repository.Bird.GetBirdsActiveAsync(parameters);
+
+            var birdListDTO = _mapper.Map<PagedList<BirdDTO>>(birdList);
+            birdListDTO.MapMetaData(birdList);
+
+
+            return birdListDTO;
+        }
+        
         public async Task<BirdDTO> UpdateBird(Guid birdID, BirdDTO birdDTO)
         {
             await BirdValidation.ValidateBird(birdDTO, _repository);

@@ -2,7 +2,7 @@
 using EBird.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace EBird.Domain.Entities
 {
@@ -11,11 +11,12 @@ namespace EBird.Domain.Entities
     {
         [Column(TypeName = "varchar")]
         [MaxLength(255)]
-        public string Password { get; set; } = null!;
+        [AllowNull]
+        public string? Password { get; set; }
 
         [Column(TypeName = "varchar")]
         [MaxLength(50)]
-        public string? Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [Column(TypeName = "datetime")]
         public DateTime CreateDateTime { get; set; } = DateTime.Now;
@@ -40,11 +41,11 @@ namespace EBird.Domain.Entities
 
         [Column(TypeName = "varchar")]
         [MaxLength(50)]
-        public string Username { get; set; } = null!;
+        public string? Username { get; set; }
 
         [Column(TypeName = "nvarchar")]
         [MaxLength(200)]
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; }
         public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
         public ICollection<GroupEntity> Groups { get; set; } = null!;
         public ICollection<RoomEntity> Rooms { get; set; } = null!;
