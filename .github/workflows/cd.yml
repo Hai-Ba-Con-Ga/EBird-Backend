@@ -3,9 +3,10 @@ on:
   push:
     branches:
     - master
+    - dev
     - CI
     - CICD
-    
+    - CD
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   deploy:
@@ -18,19 +19,19 @@ jobs:
         switches: -avzr --delete --exclude="" --include="" --filter=""
         path: .
         remote_path: ~/ebird/server
-        remote_host: www.wyvernpserver.tech
+        remote_host: wyvernpserver.tech
         remote_port: 22
         remote_user: admin
         remote_key: ${{ secrets.DEPLOY_KEY }}
     - name : Install package
       uses: appleboy/ssh-action@v0.1.7
       with:
-        host: www.wyvernpserver.tech
+        host: wyvernpserver.tech
         username: admin
         password: haibaconga
         port: 22
         script: >
-          cd ebird/server &&
+          cd ebird &&
           fuser -k -n tcp 7137 &&
           nohup ./DEPLOY_SERVER.sh &
           
