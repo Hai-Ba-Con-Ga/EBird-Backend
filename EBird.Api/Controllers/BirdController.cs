@@ -1,8 +1,10 @@
 ﻿using EBird.Application.Exceptions;
-using EBird.Application.Model;
+using EBird.Application.Model.Bird;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Response;
 using System.Net;
 using System.Security.Claims;
@@ -203,6 +205,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
+                Console.WriteLine(ex.Message);
                 
                 response = Response<BirdDTO>.Builder()
                             .SetSuccess(false)
@@ -212,8 +215,7 @@ namespace EBird.Api.Controllers
                 return StatusCode((int) response.StatusCode, response);
             }
         }
-
-        // GET: get all by account id
+         // GET: get all by account id
         [HttpGet("/owner")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<List<BirdDTO>>>> GetAllByOwner()
@@ -252,8 +254,58 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
+
                 response = Response<List<BirdDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+        }
+
+        // GET: get all active bird within pagination
+        [HttpGet("pagination")]
+        public async Task<ActionResult<Response<PagedList<BirdDTO>>>> Get([FromQuery]BirdParameters birdParameters)
+        {
+            Response<PagedList<BirdDTO>> response = null;
+            try
+            {
+                var listBirdDTO = await _birdService.GetBirdsByPagingParameters(birdParameters);
+
+                var metaData = new
+                {
+                    listBirdDTO.CurrentPage,
+                    listBirdDTO.TotalPages,
+                    listBirdDTO.PageSize,
+                    listBirdDTO.HasNext,
+                    listBirdDTO.HasPrevious,
+                    listBirdDTO.TotalCount,
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
+
+                response = Response<PagedList<BirdDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int) HttpStatusCode.OK)
+                    .SetMessage("Get all birds successful")
+                    .SetData(listBirdDTO);
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<PagedList<BirdDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+                Console.WriteLine(ex.Message);
+                response = Response<PagedList<BirdDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
