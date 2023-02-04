@@ -44,8 +44,8 @@ builder.Services.AddAuthentication(options =>
             options.ClientSecret = "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";
         });
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
-// builder.Services.AddDbService(configuration);
-builder.Services.AddDbLocalService();
+builder.Services.AddDbService(configuration);
+// builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
