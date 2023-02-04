@@ -18,6 +18,8 @@ namespace EBird.Api.Mapper
             CreateMap<GroupUpdateDTO, GroupEntity>();
 
             CreateMap<RoomEntity, RoomDTO>().ReverseMap();
+            CreateMap<RoomEntity, RoomUpdateDTO>().ReverseMap();
+            CreateMap<RoomEntity, RoomCreateDTO>().ReverseMap();
         }
     }
 }
