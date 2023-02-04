@@ -35,5 +35,5 @@ jobs:
           pwd && 
           ./killport.sh &&
           pwd &&
-          ./DEPLOY_SERVER.sh &
+          nohup ./DEPLOY_SERVER.sh &
           
