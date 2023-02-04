@@ -265,7 +265,7 @@ namespace EBird.Api.Controllers
         }
 
         // GET: get all active bird within pagination
-        [HttpGet("pagination")]
+        [HttpGet("/all")]
         public async Task<ActionResult<Response<PagedList<BirdDTO>>>> Get([FromQuery]BirdParameters birdParameters)
         {
             Response<PagedList<BirdDTO>> response = null;
@@ -304,7 +304,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
                 response = Response<PagedList<BirdDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
