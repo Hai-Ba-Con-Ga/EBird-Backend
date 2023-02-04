@@ -81,13 +81,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        //options.RoutePrefix = string.Empty;
-    });
+    app.UseSwaggerUI(options => options.EnablePersistAuthorization());
+    app.UseDeveloperExceptionPage();
     await app.Services.DbInitializer();
 }
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = string.Empty;
+});
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true, WrapWhenApiPathStartsWith = "/server" });
 app.UseCors("BirdAllowSpecificOrigins");
 app.UseHttpsRedirection();
