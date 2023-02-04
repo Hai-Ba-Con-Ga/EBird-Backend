@@ -31,8 +31,8 @@ jobs:
         password: haibaconga
         port: 22
         script: >
-          cd ./ebird &&
+          cd ./ebird/server/EBird.Api &&
           pwd && 
           fuser -k -n tcp 7137 &&
-          ./DEPLOY_SERVER.sh
+          dotnet run &
           
