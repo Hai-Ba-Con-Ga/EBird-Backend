@@ -35,5 +35,6 @@ jobs:
           pwd && 
           ./killport.sh &&
           pwd &&
-          nohup ./DEPLOY_SERVER.sh &
+          tmux kill-session -t mysession &&
+          tmux new-session -d -s mysession ./DEPLOY_SERVER.sh
           
