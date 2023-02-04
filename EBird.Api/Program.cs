@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
          buider =>
          {
              buider
-             .AllowAnyOrigin()
+             //  .AllowAnyOrigin()
              .WithOrigins(
                  "https://globird.tech",
                  "http://localhost:3000",
