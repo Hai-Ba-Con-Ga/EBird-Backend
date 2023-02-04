@@ -17,10 +17,13 @@ namespace EBird.Application.Model
         public string Status { get; set; }
 
         [Required(ErrorMessage = "City is required")]
-        [StringLength(20, ErrorMessage = "City cannot be longer than 50 characters")]
+        [StringLength(50, ErrorMessage = "City cannot be longer than 50 characters")]
         public string City { get; set; }
 
-        [Required(ErrorMessage = " is required")]
+        [Required(ErrorMessage = "Create Time is required")]
         public DateTime CreateDateTime { get; set; }
+
+        [Required(ErrorMessage = "CreateBy is required")]
+        public Guid CreateById { get; set; }
     }
 }

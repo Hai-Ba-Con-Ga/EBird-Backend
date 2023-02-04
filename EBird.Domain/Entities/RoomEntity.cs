@@ -29,12 +29,12 @@ namespace EBird.Domain.Entities
 
         [Required]
         [Column("RoomCreateDateTime", TypeName = "datetime")]
-        public DateTime CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
 
 
-        ////forgein key with account table
-        //[Column("CreateById")]
-        //public Guid CreateById { get; set; }
-        //public AccountEntity CreateBy { get; set; }
+        //forgein key with account table
+        [Column("RoomCreateById")]
+        public Guid CreateById { get; set; }
+        public AccountEntity CreateBy { get; set; }
     }
 }

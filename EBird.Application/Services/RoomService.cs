@@ -4,6 +4,7 @@ using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
+using EBird.Application.Validation;
 using EBird.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace EBird.Application.Services
 
         public async Task<RoomDTO> AddRoom(RoomDTO roomDTO)
         {
-            //await RoomValidation.ValidateRoom()
+            await BaseValidation.ValidateAccountId(roomDTO.CreateById, _repository);
             var roomEntity = _mapper.Map<RoomEntity>(roomDTO);
             var res = await _repository.Room.AddRoomAsync(roomEntity);
 
@@ -45,7 +46,6 @@ namespace EBird.Application.Services
             {
                 throw new NotFoundException("Can not found room for delete");
             }
-            Console.WriteLine("can run here");
             return _mapper.Map<RoomDTO>(res);
         }
 
@@ -71,7 +71,7 @@ namespace EBird.Application.Services
 
         public async Task<RoomDTO> UpdateRoom(Guid id, RoomDTO roomDTO)
         {
-            // await RoomValidation.ValidateRoom(roomUpdateDTO, _repository);
+            await BaseValidation.ValidateAccountId(roomDTO.CreateById, _repository);
             var roomEntity = await _repository.Room.GetRoomActiveAsync(id);
             if (roomEntity == null)
             {
