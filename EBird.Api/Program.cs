@@ -19,16 +19,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "BirdAllowSpecificOrigins",
-        buider =>
-        {
-            buider.WithOrigins(
-                "https://globird.tech",
-                "http://localhost:3000"
-                )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin();
-        });
+         buider =>
+         {
+             buider
+             .AllowAnyOrigin()
+             .WithOrigins(
+                 "https://globird.tech",
+                 "http://localhost:3000",
+                 "http://localhost:5173"
+                 )
+             .AllowAnyHeader()
+             .AllowAnyMethod()
+
+             .AllowCredentials();
+         });
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
