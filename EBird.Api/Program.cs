@@ -40,12 +40,12 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 }).AddGoogle(options =>
         {
-            options.ClientId = "353487917217-3vnjd906comvj5fukp4djf1l3at13mr0.apps.googleusercontent.com";
-            options.ClientSecret = "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";
+            options.ClientId = "510469289426-ka5eitvaosv0mfjrj24ajfkvovjneli1.apps.googleusercontent.com";
+            options.ClientSecret = "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";
         });
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
-//builder.Services.AddDbService(configuration);
-builder.Services.AddDbLocalService();
+builder.Services.AddDbService(configuration);
+//builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
@@ -97,6 +97,7 @@ app.UseCors("BirdAllowSpecificOrigins");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

@@ -14,5 +14,6 @@ namespace EBird.Application.Services.IServices
         Task ForgotPassword(string username);
         Task ResetPassword(ResetPasswordModel model);
         Task CheckEmail(string email);
+        Task ChangeRoleAdmin(Guid id);
     }
 }

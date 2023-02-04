@@ -19,5 +19,6 @@ namespace EBird.Application.Services.IServices
         Task Signup(AccountEntity req);
         Task<TokenModel> RenewToken(TokenModel model);
         Task<AccountResponse> GetAccountById(Guid id);
+        Task<TokenModel> LoginWithGoogle(string googleToken);
     }
 }
