@@ -33,6 +33,7 @@ jobs:
         script: >
           cd ./ebird &&
           pwd && 
-          ./killport.sh 7137 &
+          ./killport.sh &&
+          pwd &&
           ./DEPLOY_SERVER.sh &
           
