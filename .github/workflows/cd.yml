@@ -31,8 +31,8 @@ jobs:
         password: haibaconga
         port: 22
         script: >
-          cd ./ebird/server &&
+          cd ./ebird &&
           pwd && 
           ./killport.sh 7137 &&
-          ./DEPLOY_SERVER.sh
+          ./DEPLOY_SERVER.sh &
           
