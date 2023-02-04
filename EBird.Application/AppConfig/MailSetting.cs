@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.AppConfig
 {
+    
     public class MailSetting
     {
+        public static string MailSettingString = "MailSettings";
         public string UserName { get; set; }
         public string Mail { get; set; }
         public string DisplayName { get; set; }

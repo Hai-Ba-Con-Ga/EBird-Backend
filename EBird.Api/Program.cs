@@ -34,16 +34,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-}).AddGoogle(options =>
-        {
-            options.ClientId = "510469289426-ka5eitvaosv0mfjrj24ajfkvovjneli1.apps.googleusercontent.com";
-            options.ClientSecret = "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";
-        });
-builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
+
+builder.Services.AddSettingService(configuration);
 builder.Services.AddDbService(configuration);
 // builder.Services.AddDbLocalService();
 
