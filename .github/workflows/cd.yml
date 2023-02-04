@@ -33,6 +33,5 @@ jobs:
         script: >
           cd ./ebird/server/EBird.Api &&
           pwd && 
-          fuser -k -n tcp 7137 &&
-          dotnet run
+          dotnet run & 
           
