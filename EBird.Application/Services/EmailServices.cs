@@ -20,7 +20,6 @@ namespace EBird.Application.Services
             
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSetting.Mail);
-            //email.Sender = MailboxAddress.Parse("linhtruong2601@gmail.com");
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
