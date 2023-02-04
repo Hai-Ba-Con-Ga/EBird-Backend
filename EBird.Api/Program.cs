@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
         });
 builder.Services.Configure<MailSetting>(configuration.GetSection("MailSettings"));
 builder.Services.AddDbService(configuration);
-//builder.Services.AddDbLocalService();
+// builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
