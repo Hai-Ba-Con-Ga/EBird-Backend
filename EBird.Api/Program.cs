@@ -19,16 +19,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "BirdAllowSpecificOrigins",
-        buider =>
-        {
-            buider.WithOrigins(
-                "https://globird.tech",
-                "http://localhost:3000"
-                )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin();
-        });
+         buider =>
+         {
+             buider
+              .AllowAnyOrigin()
+             .AllowAnyHeader()
+             .AllowAnyMethod();
+         });
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -77,13 +74,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        //options.RoutePrefix = string.Empty;
-    });
+    app.UseSwaggerUI(options => options.EnablePersistAuthorization());
+    app.UseDeveloperExceptionPage();
     await app.Services.DbInitializer();
 }
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = string.Empty;
+});
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true, WrapWhenApiPathStartsWith = "/server" });
 app.UseCors("BirdAllowSpecificOrigins");
 app.UseHttpsRedirection();

@@ -120,13 +120,17 @@ namespace EBird.Application.Services
         }
         public async Task Signup(AccountEntity req)
         {
-            var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username));
+            var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username) || p.Email.Equals(req.Email));
             if (user != null)
             {
-                throw new BadRequestException(String.Format("Username {0} is already taken", req.Username));
-            }
-            if (req.Email.Equals(user.Email)) {
-                throw new BadRequestException(String.Format("Email {0} is already taken", req.Email));
+                if(req.Username.Equals(user.Username))
+                {
+                    throw new BadRequestException(String.Format("Username {0} is already taken", req.Username));
+                }
+                if(req.Email.Equals(user.Email))
+                {
+                    throw new BadRequestException(String.Format("Email {0} is already taken", req.Email));
+                }
             }
             req.Password = HashPassword(req.Password);
             await _accountRepository.CreateAsync(req);
