@@ -11,11 +11,11 @@ namespace EBird.Application.Interfaces.IRepository
     {
         Task<List<NotificationEntity>> GetNotificationsActiveAsync();
         Task<NotificationEntity> GetNotificationActiveAsync(Guid notificationId);
-        Task<NotificationEntity> AddNotification(NotificationEntity notification);
+        Task<NotificationEntity> AddNotificationAsync(NotificationEntity notification);
         Task<int> UpdateNotificationAsync(NotificationEntity notification);
         Task<NotificationEntity> SoftDeleteNotificationAsync(Guid notificationId);
 
 
-        Task<List<NotificationEntity>> GetAllNotificationByAccountIdSync(Guid accountId);
+        Task<List<NotificationEntity>> GetAllNotificationActiveByAccountIdAsync(Guid accountId);
     }
 }

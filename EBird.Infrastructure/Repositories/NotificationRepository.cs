@@ -13,39 +13,43 @@ namespace EBird.Infrastructure.Repositories
     {
         public NotificationRepository(ApplicationDbContext context) : base(context)
         {
+            
         }
 
-        public async Task<NotificationEntity> AddNotification(NotificationEntity notification)
+		public async Task<NotificationEntity> AddNotificationAsync(NotificationEntity Notification)
         {
-            notification.CreateDateTime = DateTime.Now;
-            var result = await this.CreateAsync(notification);
-            if (result == 0) return null;
-            return notification;
+            Notification.CreateDateTime = DateTime.Now;
+            var res = await this.CreateAsync(Notification);
+            if (res > 0)
+            {
+                return Notification;
+            }
+            return null;
         }
 
-        public Task<List<NotificationEntity>> GetAllNotificationByAccountIdSync(Guid accountId)
+		public async Task<List<NotificationEntity>> GetAllNotificationActiveByAccountIdAsync(Guid accountId)
+		{
+			return await this.FindAllWithCondition(x => x.AccountId == accountId && x.IsDeleted == false);
+		}
+
+		public async Task<NotificationEntity> GetNotificationActiveAsync(Guid NotificationId)
         {
-            throw new NotImplementedException();
+            return await this.GetByIdActiveAsync(NotificationId);
         }
 
-        public Task<NotificationEntity> GetNotificationActiveAsync(Guid notificationId)
+        public async Task<List<NotificationEntity>> GetNotificationsActiveAsync()
         {
-            throw new NotImplementedException();
+            return await this.GetAllActiveAsync();
         }
 
-        public Task<List<NotificationEntity>> GetNotificationsActiveAsync()
+        public async Task<NotificationEntity> SoftDeleteNotificationAsync(Guid NotificationId)
         {
-            throw new NotImplementedException();
+            return await this.DeleteSoftAsync(NotificationId);
         }
 
-        public Task<NotificationEntity> SoftDeleteNotificationAsync(Guid notificationId)
+        public async Task<int> UpdateNotificationAsync(NotificationEntity Notification)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> UpdateNotificationAsync(NotificationEntity notification)
-        {
-            throw new NotImplementedException();
+            return await this.UpdateAsync(Notification);
         }
     }
 }
