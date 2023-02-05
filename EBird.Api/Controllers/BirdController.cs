@@ -1,4 +1,4 @@
-﻿using EBird.Application.Exceptions;
+using EBird.Application.Exceptions;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
