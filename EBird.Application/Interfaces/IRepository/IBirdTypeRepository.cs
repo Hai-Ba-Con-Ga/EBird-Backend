@@ -9,12 +9,12 @@ namespace EBird.Application.Interfaces.IRepository
 {
     public interface IBirdTypeRepository : IGenericRepository<BirdTypeEntity>
     {
-        Task<BirdTypeEntity> SoftDeleteAsync(string birdTypeCode);
+        Task<bool> SoftDeleteAsync(string birdTypeCode);
         Task<BirdTypeEntity> GetBirdTypeByCodeAsync(string birdTypeCode);
         Task<bool> IsExistBirdTypeCode(string birdTypeCode);
         Task<List<BirdTypeEntity>> GetAllBirdTypeActiveAsync();
         Task<BirdTypeEntity> GetBirdTypeActiveAsync(Guid id);
-        Task<BirdTypeEntity> AddBirdTypeAsync(BirdTypeEntity birdType);
+        Task<bool> AddBirdTypeAsync(BirdTypeEntity birdType);
 
     }
 }

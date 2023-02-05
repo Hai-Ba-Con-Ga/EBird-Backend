@@ -13,7 +13,7 @@ namespace EBird.Application.Validation
 {
     public class BirdTypeValidation
     {
-        public static async Task ValidateBirdTypeDTO(BirdTypeDTO birdType, IWapperRepository _repository)
+        public static async Task ValidateBirdTypeDTO(BirdTypeRequestDTO birdType, IWapperRepository _repository)
         {
             if(birdType == null)
             {
@@ -26,7 +26,7 @@ namespace EBird.Application.Validation
             {
                 throw new BadRequestException("Bird type code already exists");
             }
-
+            
         }
 
         public static async Task<bool> ValidateBirdTypeCode(string birdTypeCode, IWapperRepository _repository)

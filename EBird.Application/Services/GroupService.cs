@@ -26,61 +26,44 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<GroupDTO> AddGroup(GroupDTO groupDTO)
+        public async Task AddGroup(GroupCreateDTO groupDTO)
         {
             await GroupValidation.ValidateGroup(groupDTO, _repository);
-            
+
             var groupEntity = _mapper.Map<GroupEntity>(groupDTO);
-            
-            var resultAction = await _repository.Group.AddGroupAsync(groupEntity);
-            
-            if(resultAction == null)
-            {
-                throw new BadRequestException("Group is not added");
-            }
 
-            return _mapper.Map<GroupDTO>(resultAction);
+            await _repository.Group.AddGroupAsync(groupEntity);
         }
 
-        public async Task<GroupDTO> DeleteGroup(Guid groupId)
+        public async Task DeleteGroup(Guid groupId)
         {
-            var result = await _repository.Group.SoftDeleteGroupAsync(groupId);
-            
-            if(result is null)
-            {
-                throw new NotFoundException("Can not found group for delete");
-            }
-            return _mapper.Map<GroupDTO>(result);
+            await _repository.Group.SoftDeleteGroupAsync(groupId);
         }
 
-        public async Task<GroupDTO> GetGroup(Guid groupId)
+        public async Task<GroupResponseDTO> GetGroup(Guid groupId)
         {
             var birdDTO = await _repository.Group.GetGroupActiveAsync(groupId);
-            
+
             if(birdDTO == null)
             {
                 throw new NotFoundException("Can not found a group");
             }
-            return _mapper.Map<GroupDTO>(birdDTO);
+            return _mapper.Map<GroupResponseDTO>(birdDTO);
         }
 
-        public async Task<List<GroupDTO>> GetGroups()
+        public async Task<List<GroupResponseDTO>> GetGroups()
         {
             var birdDTOList = await _repository.Group.GetGroupsActiveAsync();
             
-            if(birdDTOList.Count == 0)
-            {
-                throw new NotFoundException("Can not found Groups");
-            }
-            return _mapper.Map<List<GroupDTO>>(birdDTOList);
+            return _mapper.Map<List<GroupResponseDTO>>(birdDTOList);
         }
 
-        public async Task<GroupDTO> UpdateGroup(Guid groupId, GroupUpdateDTO groupUpdateDTO)
+        public async Task UpdateGroup(Guid groupId, GroupRequestDTO groupUpdateDTO)
         {
             await GroupValidation.ValidateGroup(groupUpdateDTO, _repository);
-            
+
             var groupEntity = await _repository.Group.GetGroupActiveAsync(groupId);
-            
+
             if(groupEntity == null)
             {
                 throw new NotFoundException("Can not found group for updating");
@@ -88,14 +71,7 @@ namespace EBird.Application.Services
 
             _mapper.Map(groupUpdateDTO, groupEntity);
 
-            var result = await _repository.Group.UpdateGroupAsync(groupEntity);
-            
-            if(result == 0)
-            {
-                throw new BadRequestException("Update group is fail");
-            }
-
-            return _mapper.Map<GroupDTO>(groupEntity);
+            await _repository.Group.UpdateGroupAsync(groupEntity);
         }
     }
 }

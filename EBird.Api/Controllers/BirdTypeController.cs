@@ -21,14 +21,14 @@ namespace EBird.Api.Controllers
 
         // GET all
         [HttpGet("all")]
-        public async Task<ActionResult<Response<List<BirdTypeDTO>>>> Get()
+        public async Task<ActionResult<Response<List<BirdTypeResponseDTO>>>> Get()
         {
-            Response<List<BirdTypeDTO>> response;
+            Response<List<BirdTypeResponseDTO>> response;
             try
             {
                 var birdTypeResponeList = await _birdTypeService.GetAllBirdType();
 
-                response = new Response<List<BirdTypeDTO>>()
+                response = new Response<List<BirdTypeResponseDTO>>()
                             .SetData(birdTypeResponeList)
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
@@ -41,7 +41,7 @@ namespace EBird.Api.Controllers
 
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<List<BirdTypeDTO>>.Builder()
+                    response = Response<List<BirdTypeResponseDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException) ex).StatusCode)
                         .SetMessage(ex.Message);
@@ -49,7 +49,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<List<BirdTypeDTO>>.Builder()
+                response = Response<List<BirdTypeResponseDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
@@ -61,14 +61,14 @@ namespace EBird.Api.Controllers
 
         // GET by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<BirdTypeDTO>>> Get(Guid id)
+        public async Task<ActionResult<Response<BirdTypeResponseDTO>>> Get(Guid id)
         {
-            Response<BirdTypeDTO> response;
+            Response<BirdTypeResponseDTO> response;
             try
             {
                 var responseData = await _birdTypeService.GetBirdType(id);
 
-                response = new Response<BirdTypeDTO>()
+                response = new Response<BirdTypeResponseDTO>()
                             .SetData(responseData)
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
@@ -80,7 +80,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<BirdTypeDTO>.Builder()
+                    response = Response<BirdTypeResponseDTO>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException) ex).StatusCode)
                         .SetMessage(ex.Message);
@@ -88,7 +88,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdTypeDTO>.Builder()
+                response = Response<BirdTypeResponseDTO>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
@@ -99,15 +99,15 @@ namespace EBird.Api.Controllers
 
         // POST  create new bird type
         [HttpPost]
-        public async Task<ActionResult<Response<BirdTypeDTO>>> Post([FromBody] BirdTypeDTO birdTypeDTO)
+        public async Task<ActionResult<Response<string>>> Post([FromBody] BirdTypeRequestDTO birdTypeDTO)
         {
-            Response<BirdTypeDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _birdTypeService.AddBirdType(birdTypeDTO);
+                await _birdTypeService.AddBirdType(birdTypeDTO);
 
-                response = new Response<BirdTypeDTO>()
-                            .SetData(responseData)
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Create bird type is successful");
@@ -118,7 +118,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<BirdTypeDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException) ex).StatusCode)
                         .SetMessage(ex.Message);
@@ -126,7 +126,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdTypeDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
@@ -136,16 +136,16 @@ namespace EBird.Api.Controllers
         }
 
         // PATCH : update exist bird type
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<Response<BirdTypeDTO>>> Patch(Guid id, [FromBody] BirdTypeDTO birdTypeDTO)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Response<string>>> Post(Guid id, [FromBody] BirdTypeRequestDTO birdTypeDTO)
         {
-            Response<BirdTypeDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
+                await _birdTypeService.UpdateBirdType(id, birdTypeDTO);
 
-                response = new Response<BirdTypeDTO>()
-                            .SetData(responseData)
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Update bird type is successful");
@@ -156,7 +156,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<BirdTypeDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException) ex).StatusCode)
                         .SetMessage(ex.Message);
@@ -164,7 +164,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdTypeDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
@@ -175,15 +175,15 @@ namespace EBird.Api.Controllers
 
         // DELETE: delete bird type
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<BirdTypeDTO>>> Delete(Guid id)
+        public async Task<ActionResult<Response<string>>> Delete(Guid id)
         {
-            Response<BirdTypeDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var birdTypeReponse = await _birdTypeService.DeleteBirdType(id);
+                 await _birdTypeService.DeleteBirdType(id);
 
-                response = new Response<BirdTypeDTO>()
-                            .SetData(birdTypeReponse)
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int) HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Delete bird type is successful");
@@ -195,7 +195,7 @@ namespace EBird.Api.Controllers
 
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<BirdTypeDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException) ex).StatusCode)
                         .SetMessage(ex.Message);
@@ -203,7 +203,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdTypeDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");

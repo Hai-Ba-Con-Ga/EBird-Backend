@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,25 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<BirdTypeEntity> SoftDeleteAsync(string birdTypeCode)
+        public async Task<bool> SoftDeleteAsync(string birdTypeCode)
         {
             BirdTypeEntity _entity = await GetBirdTypeByCodeAsync(birdTypeCode);
 
             if(_entity == null)
             {
-                return null;
+                throw new BadRequestException("Not found bird type for delete");
             }
+
             _entity.IsDeleted = true;
 
-            await this.UpdateAsync(_entity);
+            int rowEffect = await this.UpdateAsync(_entity);
 
-            return _entity;
+            if(rowEffect == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<BirdTypeEntity> GetBirdTypeByCodeAsync(string birdTypeCode)
@@ -56,25 +63,30 @@ namespace EBird.Infrastructure.Repositories
             return await this.GetByIdAsync(id);
         }
 
-        public async Task<BirdTypeEntity> UpdateBirdTypeAsync(BirdTypeEntity birdType)
+        public async Task<bool> UpdateBirdTypeAsync(BirdTypeEntity birdType)
         {
-            var updateEntity = await this.UpdateAsync(birdType);
-            if(updateEntity == 0)
+            var rowEffect = await this.UpdateAsync(birdType);
+
+            if(rowEffect == 0)
             {
-                return null;
+                return false;
             }
-            return birdType;
+            
+            return true;
         }
 
-        public async Task<BirdTypeEntity> AddBirdTypeAsync(BirdTypeEntity birdType)
+        public async Task<bool> AddBirdTypeAsync(BirdTypeEntity birdType)
         {
             birdType.CreatedDatetime = DateTime.Now;
-            var addEntity = await this.CreateAsync(birdType);
-            if(addEntity == 0)
+            
+            int rowEffect = await this.CreateAsync(birdType);
+            
+            if(rowEffect == 0)
             {
-                return null;
+                return false;
             }
-            return birdType;
+            
+            return true;
         }
     }
 }

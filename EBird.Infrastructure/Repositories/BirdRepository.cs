@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
@@ -19,15 +20,18 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<BirdEntity> AddBirdAsync(BirdEntity bird)
+        public async Task<bool> AddBirdAsync(BirdEntity bird)
         {
             bird.CreatedDatetime = DateTime.Now;
+
             int rowEffect = await this.CreateAsync(bird);
-            if(rowEffect > 0)
+            
+            if(rowEffect == 0)
             {
-                return bird;
+                throw new BadRequestException("Bird is not created");
             }
-            return null;
+            
+            return true;
         }
 
         public async Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId)
@@ -62,19 +66,25 @@ namespace EBird.Infrastructure.Repositories
             return pagedList;
         }
 
-        public async Task<BirdEntity> SoftDeleteBirdAsync(Guid birdID)
+        public async Task<bool> SoftDeleteBirdAsync(Guid birdID)
         {
-            return await this.DeleteSoftAsync(birdID);
+            var result =  await this.DeleteSoftAsync(birdID);
+            if(result == null)
+            {
+                throw new BadRequestException("Bird is not deleted");
+            }
+            return true;
         }
 
-        public async Task<BirdEntity> UpdateBirdAsync(BirdEntity bird)
+        public async Task<bool> UpdateBirdAsync(BirdEntity bird)
         {
             int rowEffect = await this.UpdateAsync(bird);
             if(rowEffect == 0)
             {
-                return null;
+                throw new BadRequestException("Can not update bird");
             }
-            return bird;
+            return true;
+            ;
         }
     }
 }

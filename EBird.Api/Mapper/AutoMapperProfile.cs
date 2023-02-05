@@ -16,10 +16,17 @@ namespace EBird.Api.Mapper
             CreateMap<SignupRequest, AccountEntity>();
             CreateMap<UpdateAccountRequest, AccountEntity>();
             CreateMap<AccountEntity, AccountResponse>();
-            CreateMap<BirdTypeEntity, BirdTypeDTO>().ReverseMap();
-            CreateMap<BirdEntity, BirdDTO>().ReverseMap();
-            CreateMap<GroupEntity, GroupDTO>().ReverseMap();
-            CreateMap<GroupUpdateDTO, GroupEntity>();
+            //Bird type
+            CreateMap<BirdTypeEntity, BirdTypeResponseDTO>();
+            CreateMap<BirdTypeRequestDTO, BirdTypeEntity>();
+            //bird
+            CreateMap<BirdRequestDTO, BirdEntity>();
+            CreateMap<BirdCreateDTO, BirdEntity>();
+            CreateMap<BirdEntity, BirdResponseDTO>();
+            //group
+            CreateMap<GroupEntity, GroupResponseDTO>().ReverseMap();
+            CreateMap<GroupRequestDTO, GroupEntity>();
+            CreateMap<GroupCreateDTO, GroupEntity>();
         }
     }
 }

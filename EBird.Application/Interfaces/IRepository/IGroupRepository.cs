@@ -12,9 +12,9 @@ namespace EBird.Application.Interfaces.IRepository
     {
         Task<List<GroupEntity>> GetGroupsActiveAsync();
         Task<GroupEntity> GetGroupActiveAsync(Guid groupID);
-        Task<GroupEntity> AddGroupAsync(GroupEntity group);
-        Task<int> UpdateGroupAsync(GroupEntity group);
-        Task<GroupEntity> SoftDeleteGroupAsync(Guid groupID);
+        Task<bool> AddGroupAsync(GroupEntity group);
+        Task<bool> UpdateGroupAsync(GroupEntity group);
+        Task<bool> SoftDeleteGroupAsync(Guid groupID);
 
         //Task<List<GroupEntity>> GetGroupsByAccountAsync(Guid accountID);
     }

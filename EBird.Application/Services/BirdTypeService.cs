@@ -21,55 +21,39 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<BirdTypeDTO> DeleteBirdType(Guid birdTypeID)
+        public async Task DeleteBirdType(Guid birdTypeID)
         {
                 var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeID);
 
                 if(birdTypeDeleted == null)
                 {
                     throw new NotFoundException("Bird type not found");
-                }
-
-                var birdTypeDeletedDTO = _mapper.Map<BirdTypeDTO>(birdTypeDeleted);
-
-                return birdTypeDeletedDTO;   
+                }   
         }
 
-        public async Task<BirdTypeDTO> DeleteBirdType(string birdTypeCode)
+        public async Task DeleteBirdType(string birdTypeCode)
         {
             if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
             {
                 throw new BadRequestException("Invalid bird type code");
-
             }
 
-            var birdTypeDeleted = await _repository.BirdType.SoftDeleteAsync(birdTypeCode);
+            var isSuccess = await _repository.BirdType.SoftDeleteAsync(birdTypeCode);
 
-            if(birdTypeDeleted == null)
+            if(isSuccess == false)
             {
-                throw new NotFoundException("Bird type not found");
+                throw new BadRequestException("Can not delete bird type");
             }
-
-            var birdTypeDeletedDTO = _mapper.Map<BirdTypeDTO>(birdTypeDeleted);
-
-            return birdTypeDeletedDTO;
         }
 
-        public async Task<List<BirdTypeDTO>> GetAllBirdType()
+        public async Task<List<BirdTypeResponseDTO>> GetAllBirdType()
         {
             var listBirdType = await _repository.BirdType.GetAllBirdTypeActiveAsync();
-
-            if(listBirdType.Count == 0 || listBirdType == null)
-            {
-                throw new NotFoundException("Bird type not found");
-            }
-
-            var listBirdTypeDTO = _mapper.Map<List<BirdTypeDTO>>(listBirdType);
-
-            return listBirdTypeDTO;
+            
+             return _mapper.Map<List<BirdTypeResponseDTO>>(listBirdType);
         }
 
-        public async Task<BirdTypeDTO> GetBirdType(string birdTypeCode)
+        public async Task<BirdTypeResponseDTO> GetBirdType(string birdTypeCode)
         {
             if(birdTypeCode == null || birdTypeCode.Trim().Length == 0)
             {
@@ -83,12 +67,12 @@ namespace EBird.Application.Services
                 throw new NotFoundException("Bird type not found");
             }
 
-            var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
+            var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
 
             return birdTypeResultDTO;
         }
 
-        public async Task<BirdTypeDTO> GetBirdType(Guid birdTypeID)
+        public async Task<BirdTypeResponseDTO> GetBirdType(Guid birdTypeID)
         {
             var birdTypeResult = await _repository.BirdType.GetBirdTypeActiveAsync(birdTypeID);
 
@@ -97,28 +81,26 @@ namespace EBird.Application.Services
                 throw new NotFoundException("Bird type not found");
             }
 
-            var birdTypeResultDTO = _mapper.Map<BirdTypeDTO>(birdTypeResult);
+            var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
 
             return birdTypeResultDTO;
         }
 
-        public async Task<BirdTypeDTO> AddBirdType(BirdTypeDTO birdTypeDTO)
+        public async Task AddBirdType(BirdTypeRequestDTO birdTypeDTO)
         {
             await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
 
             var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
 
-            var updatedEntity = await _repository.BirdType.AddBirdTypeAsync(birdType);
-
-            if(updatedEntity == null)
+            bool isSuccess = await _repository.BirdType.AddBirdTypeAsync(birdType);
+            
+            if(isSuccess == false)
             {
                 throw new Exception("Can insert data to database");
             }
-
-            return birdTypeDTO;
         }
-
-        public async Task<BirdTypeDTO> UpdateBirdType(Guid id, BirdTypeDTO birdTypeDTO)
+        
+        public async Task UpdateBirdType(Guid id, BirdTypeRequestDTO birdTypeDTO)
         {
             await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
 
@@ -137,8 +119,6 @@ namespace EBird.Application.Services
             {
                 throw new Exception("Can update data to database");
             }
-
-            return birdTypeDTO;
         }
     }
 }
