@@ -25,6 +25,10 @@ namespace EBird.Infrastructure.Repositories
 
         private IRoomRepository _roomRepository;
 
+        private INotificationRepository _NotificationRepository;
+
+        private INotificationTypeRepository _NotificationTypeRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -88,6 +92,28 @@ namespace EBird.Infrastructure.Repositories
                     _roomRepository = new RoomRepository(_context);
                 }
                 return _roomRepository;
+            }
+        }
+        public INotificationRepository Notification
+        {
+            get
+            {
+                if (_NotificationRepository == null)
+                {
+                    _NotificationRepository = new NotificationRepository(_context);
+                }
+                return _NotificationRepository;
+            }
+        }
+        public INotificationTypeRepository NotificationType
+        {
+            get
+            {
+                if (_NotificationTypeRepository == null)
+                {
+                    _NotificationTypeRepository = new NotificationTypeRepository(_context);
+                }
+                return _NotificationTypeRepository;
             }
         }
     }

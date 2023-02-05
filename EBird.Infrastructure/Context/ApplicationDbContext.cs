@@ -17,6 +17,11 @@ namespace EBird.Infrastructure.Context
                 .HasIndex(b => b.TypeCode)
                 .IsUnique(true);
 
+            //Config for NotificationTypeEntity
+            modelBuilder.Entity<NotificationTypeEntity>()
+                .HasIndex(b => b.TypeCode)
+                .IsUnique(true);
+
             //Config for one to many relationship between BirdTypeEntity and BirdEntity
             modelBuilder.Entity<BirdTypeEntity>()
                 .HasMany(bt => bt.Birds)
@@ -35,6 +40,21 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
             //Config for one to many relationship between AccountEntity and RoomEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Rooms)
+                .WithOne(b => b.CreateBy)
+                .HasForeignKey(b => b.CreateById);
+            //Config for one to many relationship between AccountEntity and NotificationEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Notifications)
+                .WithOne(b => b.Account)
+                .HasForeignKey(b => b.AccountId);
+
+            //Config for one to many relationship between BirdTypeEntity and BirdEntity
+            modelBuilder.Entity<NotificationTypeEntity>()
+                .HasMany(bt => bt.Notifications)
+                .WithOne(b => b.NotificationType)
+                .HasForeignKey(b => b.NotificatoinTypeId);
         }
 
         #region DbSet
@@ -45,6 +65,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<NotificationEntity> Notifications { get; set; }
+        public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
 
         #endregion
     }

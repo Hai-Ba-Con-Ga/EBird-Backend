@@ -17,5 +17,8 @@ namespace EBird.Application.Interfaces
         public IGroupRepository Group { get; }
 
         public IRoomRepository Room { get; }
+
+        public INotificationRepository Notification { get; }
+        public INotificationTypeRepository NotificationType { get; }
     }
 }
