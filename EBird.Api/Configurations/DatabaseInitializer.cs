@@ -16,7 +16,7 @@ namespace EBird.Api.Configurations
         }
         public static async Task FeedAccounts(this ApplicationDbContext context)
         {
-            if (context.accounts.Any())
+            if (context.Accounts.Any())
             {
                 return;
             }
@@ -25,7 +25,7 @@ namespace EBird.Api.Configurations
             for (int i = 0; i < accountLength; i++)
             {
                 var account = accounts[i];
-                await context.accounts.AddAsync(
+                await context.Accounts.AddAsync(
                     new AccountEntity()
                     {
                         Email = account.Email,

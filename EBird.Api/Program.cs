@@ -34,7 +34,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 builder.Services.AddSettingService(configuration);
 builder.Services.AddDbService(configuration);
-// builder.Services.AddDbLocalService();
+//builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();

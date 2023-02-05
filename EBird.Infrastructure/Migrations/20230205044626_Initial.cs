@@ -108,6 +108,29 @@ namespace EBird.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Room",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RoomStatus = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    RoomCity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RoomCreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    RoomCreateById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Room", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Room_Account_RoomCreateById",
+                        column: x => x.RoomCreateById,
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Bird",
                 columns: table => new
                 {
@@ -166,6 +189,11 @@ namespace EBird.Infrastructure.Migrations
                 name: "IX_RefreshToken_AccountId",
                 table: "RefreshToken",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Room_RoomCreateById",
+                table: "Room",
+                column: "RoomCreateById");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -178,6 +206,9 @@ namespace EBird.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
+
+            migrationBuilder.DropTable(
+                name: "Room");
 
             migrationBuilder.DropTable(
                 name: "VerifcationStore");

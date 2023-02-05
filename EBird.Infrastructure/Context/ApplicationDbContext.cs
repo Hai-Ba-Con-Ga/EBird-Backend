@@ -38,9 +38,9 @@ namespace EBird.Infrastructure.Context
         }
 
         #region DbSet
-        public DbSet<AccountEntity> accounts { get; set; } = null!;
-        public DbSet<RefreshTokenEntity> refreshTokens { get; set; } = null!;
-        public DbSet<VerifcationStoreEntity> verifcationStores { get; set; } = null!;
+        public DbSet<AccountEntity> Accounts { get; set; } = null!;
+        public DbSet<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
+        public DbSet<VerifcationStoreEntity> VerifcationStores { get; set; } = null!;
 
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
