@@ -35,7 +35,6 @@ namespace EBird.Api.Controllers
                 IList<BirdResponseDTO> listBirdDTO = null;
                 if(parameters.PageSize == 0)
                 {
-                    System.Console.WriteLine("params is null");
                     listBirdDTO = await _birdService.GetBirds();
                 }
                 else
@@ -251,8 +250,6 @@ namespace EBird.Api.Controllers
                 }
 
                 Guid accountId = Guid.Parse(rawId);
-
-                Console.WriteLine(accountId);
 
                 var responseData = await _birdService.GetAllBirdByAccount(accountId);
 
