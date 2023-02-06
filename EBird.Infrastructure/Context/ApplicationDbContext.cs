@@ -35,6 +35,25 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
             //Config for one to many relationship between AccountEntity and RoomEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Rooms)
+                .WithOne(r => r.CreatedBy)
+                .HasForeignKey(r => r.CreatedById);
+            //Config for one to many relationship between AccountEntity and PostEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Posts)
+                .WithOne(r => r.CreatedBy)
+                .HasForeignKey(r => r.CreatedById);
+            //Config for one to many relationship between AccountEntity and ReportEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.HandledReports)
+                .WithOne(r => r.HandledBy)
+                .HasForeignKey(r => r.HandledById);
+
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.CreatedReports)
+                .WithOne(r => r.CreatedBy)
+                .HasForeignKey(r => r.CreatedById);
         }
 
         #region DbSet
@@ -45,6 +64,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<PostEntity> Posts { get; set; }
+        public DbSet<ReportEntity> Reports { get; set; }
 
         #endregion
     }

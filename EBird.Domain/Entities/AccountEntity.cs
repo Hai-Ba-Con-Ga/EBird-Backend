@@ -51,5 +51,8 @@ namespace EBird.Domain.Entities
         public ICollection<RoomEntity> Rooms { get; set; } = null!;
 
         public ICollection<BirdEntity> Birds { get; set; } = null!;
+        public ICollection<PostEntity> Posts { get; set; } = null!;
+        public ICollection<ReportEntity> HandledReports { get; set; } = null!;
+        public ICollection<ReportEntity> CreatedReports { get; set; } = null!;
     }
 }

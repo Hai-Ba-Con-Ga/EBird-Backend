@@ -33,8 +33,8 @@ namespace EBird.Domain.Entities
 
 
         //forgein key with account table
-        [Column("RoomCreateById")]
-        public Guid CreateById { get; set; }
-        public AccountEntity CreateBy { get; set; }
+        [ForeignKey("RoomCreateById")]
+        public Guid CreatedById { get; set; }
+        public AccountEntity CreatedBy { get; set; }
     }
 }
