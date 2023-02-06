@@ -9,10 +9,10 @@ namespace EBird.Application.Services.IServices
 {
     public interface IRoomService
     {
-        public Task<RoomDTO> GetRoom(Guid roomId);
-        public Task<List<RoomDTO>> GetRooms();
-        public Task<RoomCreateDTO> AddRoom(RoomCreateDTO roomDTO);
-        public Task<RoomUpdateDTO> UpdateRoom(Guid id, RoomUpdateDTO roomDTO);
-        public Task<RoomDTO> DeleteRoom(Guid roomId);
+        public Task<RoomResponseDTO> GetRoom(Guid roomId);
+        public Task<List<RoomResponseDTO>> GetRooms();
+        public Task AddRoom(RoomCreateDTO roomDTO);
+        public Task UpdateRoom(Guid id, RoomUpdateDTO roomDTO);
+        public Task DeleteRoom(Guid roomId);
     }
 }

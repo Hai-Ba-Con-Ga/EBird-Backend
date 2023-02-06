@@ -11,7 +11,7 @@ namespace EBird.Application.Validation
 {
     public class GroupValidation : BaseValidation
     {
-        public static async Task ValidateGroup(GroupDTO groupDTO, IWapperRepository _repository)
+        public static async Task ValidateGroup(GroupResponseDTO groupDTO, IWapperRepository _repository)
         {
             //validate account id
             await ValidateAccountId(groupDTO.CreatedById, _repository);
@@ -22,7 +22,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateGroup(GroupUpdateDTO groupDTO, IWapperRepository _repository)
+        public static async Task ValidateGroup(GroupRequestDTO groupDTO, IWapperRepository _repository)
         {
             //validate maxELO > minELO
             if(groupDTO.MaxELO <= groupDTO.MinELO)

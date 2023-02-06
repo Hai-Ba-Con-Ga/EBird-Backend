@@ -16,5 +16,7 @@ namespace EBird.Application.AppConfig
         }
 
         public string DefaultConnection { get; set; } = "";
+        public string CloudConnection { get; set; } = "";
+
     }
 }

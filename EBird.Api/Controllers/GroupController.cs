@@ -14,26 +14,24 @@ namespace EBird.Api.Controllers
     public class GroupController : ControllerBase
     {
         private IGroupService _groupService;
-        private IMapper _mapper;
 
-        public GroupController(IGroupService groupService, IMapper mapper)
+        public GroupController(IGroupService groupService)
         {
             this._groupService = groupService;
-            this._mapper = mapper;
         }
 
         // GET all
         [HttpGet("all")]
-        public async Task<ActionResult<Response<List<GroupDTO>>>> Get()
+        public async Task<ActionResult<Response<List<GroupResponseDTO>>>> Get()
         {
-            Response<List<GroupDTO>> response = null;
+            Response<List<GroupResponseDTO>> response = null;
             try
             {
                 var responseData = await _groupService.GetGroups();
 
-                response = Response<List<GroupDTO>>.Builder()
+                response = Response<List<GroupResponseDTO>>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.Created)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Get groups is success")
                     .SetData(responseData);
 
@@ -43,7 +41,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<List<GroupDTO>>.Builder()
+                    response = Response<List<GroupResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -51,7 +49,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<List<GroupDTO>>.Builder()
+                response = Response<List<GroupResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -62,16 +60,16 @@ namespace EBird.Api.Controllers
 
         // GET by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<GroupDTO>>> Get(Guid id)
+        public async Task<ActionResult<Response<GroupResponseDTO>>> Get(Guid id)
         {
-            Response<GroupDTO> response = null;
+            Response<GroupResponseDTO> response = null;
             try
             {
                 var responseData = await _groupService.GetGroup(id);
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<GroupResponseDTO>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.Created)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Get group is success")
                     .SetData(responseData);
 
@@ -81,7 +79,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<GroupDTO>.Builder()
+                    response = Response<GroupResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -89,7 +87,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<GroupResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -100,18 +98,18 @@ namespace EBird.Api.Controllers
 
         // POST create
         [HttpPost]
-        public async Task<ActionResult<Response<GroupDTO>>> Post([FromBody] GroupDTO groupDTO)
+        public async Task<ActionResult<Response<string>>> Post([FromBody] GroupCreateDTO groupDTO)
         {
-            Response<GroupDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _groupService.AddGroup(groupDTO);
+                 await _groupService.AddGroup(groupDTO);
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.Created)
                     .SetMessage("Create group is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -119,7 +117,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<GroupDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -127,7 +125,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -138,18 +136,18 @@ namespace EBird.Api.Controllers
 
         // PUT update 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<GroupDTO>>> Put(Guid id, [FromBody] GroupUpdateDTO groupUpdateDTO)
+        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] GroupRequestDTO groupUpdateDTO)
         {
-            Response<GroupDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _groupService.UpdateGroup(id, groupUpdateDTO);
+                await _groupService.UpdateGroup(id, groupUpdateDTO);
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Update group is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -157,7 +155,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<GroupDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -165,7 +163,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -176,18 +174,18 @@ namespace EBird.Api.Controllers
 
         // DELETE 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<GroupDTO>>> Delete(Guid id)
+        public async Task<ActionResult<Response<string>>> Delete(Guid id)
         {
-            Response<GroupDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _groupService.DeleteGroup(id);
+                 await _groupService.DeleteGroup(id);
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Delete group is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -195,7 +193,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<GroupDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -203,7 +201,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<GroupDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");

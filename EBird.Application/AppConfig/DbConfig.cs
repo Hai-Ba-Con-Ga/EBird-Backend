@@ -10,5 +10,6 @@ namespace EBird.Application.AppConfig
     public class DbConfig
     {
         public string DefaultConnection { get; set; }
+        public string CloudConnection { get; set; }
     }
 }

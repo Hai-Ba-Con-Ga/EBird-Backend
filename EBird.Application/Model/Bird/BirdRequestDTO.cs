@@ -23,7 +23,8 @@ namespace EBird.Application.Model.Bird
         [Required(ErrorMessage = "Bird elo is required")]
         public int Elo { get; set; } = 1500;
 
-        public string Status { get; set; }
+        [StringLength(50, ErrorMessage = "Bird status cannot be longer than 50 characters")]
+        public string? Status { get; set; }
 
         [StringLength(1000, ErrorMessage = "Bird description cannot be longer than 1000 characters")]
         public string Description { get; set; }
@@ -35,8 +36,5 @@ namespace EBird.Application.Model.Bird
         //forgeinkey
         [Required(ErrorMessage = "Bird type is required")]
         public Guid BirdTypeId { get; set; }
-
-        [Required(ErrorMessage = "Onwer is required")]
-        public Guid OwnerId { get; set; }
     }
 }

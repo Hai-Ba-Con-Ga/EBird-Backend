@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using System;
@@ -15,15 +16,17 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<GroupEntity> AddGroupAsync(GroupEntity group)
+        public async Task<bool> AddGroupAsync(GroupEntity group)
         {
             group.CreateDatetime = DateTime.Now;
-            var result =  await this.CreateAsync(group);
-            if(result == 0)
+            
+            int rowEffect =  await this.CreateAsync(group);
+            
+            if(rowEffect == 0)
             {
-                return null;
+                throw new BadRequestException("Can not add group");
             }
-            return group;
+            return true;
         }
 
         public async Task<GroupEntity> GetGroupActiveAsync(Guid groupID)
@@ -36,22 +39,23 @@ namespace EBird.Infrastructure.Repositories
             return await this.GetAllActiveAsync();
         }
 
-        public async Task<GroupEntity> SoftDeleteGroupAsync(Guid groupID)
+        public async Task<bool> SoftDeleteGroupAsync(Guid groupID)
         {
             var group = await this.GetByIdActiveAsync(groupID);
 
             if(group == null)
             {
-                return null;
+                throw new NotFoundException("Can not found group for delete");
             }
             
-           return  await this.DeleteSoftAsync(groupID);
+             await this.DeleteSoftAsync(groupID);
+            return true;
         }
 
-        public async Task<int> UpdateGroupAsync(GroupEntity group)
+        public async Task<bool> UpdateGroupAsync(GroupEntity group)
         {
             var result = await this.UpdateAsync(group);
-            return result;
+            return result != 0 ? true : throw new BadRequestException("Can not update group");
         }
     }
 }
