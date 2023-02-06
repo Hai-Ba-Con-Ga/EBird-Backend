@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230204011655_Initial")]
+    [Migration("20230205044626_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,6 +256,48 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("RefreshToken");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("RoomCity");
+
+                    b.Property<Guid>("CreateById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RoomCreateById");
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("RoomCreateDateTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("RoomName");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("RoomStatus");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateById");
+
+                    b.ToTable("Room");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.VerifcationStoreEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -319,6 +361,17 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreateBy")
+                        .WithMany("Rooms")
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreateBy");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("Birds");
@@ -326,6 +379,8 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Groups");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>

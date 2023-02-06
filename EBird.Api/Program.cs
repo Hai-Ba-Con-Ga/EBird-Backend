@@ -1,9 +1,11 @@
 using AutoWrapper;
 using EBird.Api.Configurations;
+using EBird.Api.Filters;
 using EBird.Application.AppConfig;
 using EBird.Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
@@ -34,13 +36,21 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 builder.Services.AddSettingService(configuration);
 builder.Services.AddDbService(configuration);
-// builder.Services.AddDbLocalService();
+//builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
 //register Application Service
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidateModelStateFilter>();
+});
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen(c =>

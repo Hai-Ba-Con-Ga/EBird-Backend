@@ -14,6 +14,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IBirdTypeService, BirdTypeService>();
             services.AddScoped<IBirdService, BirdService>();
             services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IRoomService, RoomService>();
 
         }
     }

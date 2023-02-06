@@ -34,15 +34,17 @@ namespace EBird.Infrastructure.Context
                 .HasMany(acc => acc.Birds)
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
+            //Config for one to many relationship between AccountEntity and RoomEntity
         }
 
         #region DbSet
-        public DbSet<AccountEntity> accounts { get; set; } = null!;
-        public DbSet<RefreshTokenEntity> refreshTokens { get; set; } = null!;
-        public DbSet<VerifcationStoreEntity> verifcationStores { get; set; } = null!;
+        public DbSet<AccountEntity> Accounts { get; set; } = null!;
+        public DbSet<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
+        public DbSet<VerifcationStoreEntity> VerifcationStores { get; set; } = null!;
 
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
+        public DbSet<RoomEntity> Rooms { get; set; }
 
         #endregion
     }
