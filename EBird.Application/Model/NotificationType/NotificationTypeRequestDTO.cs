@@ -11,12 +11,12 @@ namespace EBird.Application.Model.NotificationType
 {
     public class NotificationTypeRequestDTO
     {
-        [Required]
-        [MaxLength(100)]
+        [Required(ErrorMessage = "Notification type code is required")]
+        [StringLength(50, ErrorMessage = "Notification type code cannot be longer than 50 characters")]
         public string TypeCode { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        [Required(ErrorMessage = "Notifiaction Type Name is required")]
+        [StringLength(50, ErrorMessage = "Notification Type name cannot be longer than 50 characters")]
         public string TypeName { get; set; }
     }
 }

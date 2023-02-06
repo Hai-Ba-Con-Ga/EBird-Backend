@@ -15,19 +15,9 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(string notificationTypeCode)
+        public async Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(Guid Id)
         {
-            NotificationTypeEntity _entity = await GetNotificationTypeByCodeAsync(notificationTypeCode);
-
-            if (_entity == null)
-            {
-                return null;
-            }
-            _entity.IsDeleted = true;
-
-            await this.UpdateAsync(_entity);
-
-            return _entity;
+            return await DeleteSoftAsync(Id);
         }
 
         public async Task<NotificationTypeEntity> GetNotificationTypeByCodeAsync(string notificationTypeCode)
@@ -38,11 +28,7 @@ namespace EBird.Infrastructure.Repositories
         public async Task<bool> IsExistNotificationTypeCode(string notificationTypeCode)
         {
             var result = await this.FindWithCondition(x => x.TypeCode == notificationTypeCode);
-            if (result == null)
-            {
-                return false;
-            }
-            return true;
+            return result != null;
         }
 
         public async Task<List<NotificationTypeEntity>> GetAllNotificationTypesActiveAsync()
