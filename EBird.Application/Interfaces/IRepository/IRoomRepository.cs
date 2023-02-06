@@ -12,8 +12,8 @@ namespace EBird.Application.Interfaces.IRepository
     {
         Task<List<RoomEntity>> GetRoomsActiveAsync();
         Task<RoomEntity> GetRoomActiveAsync(Guid roomId);
-        Task<RoomEntity> AddRoomAsync(RoomEntity room);
-        Task<int> UpdateRoomAsync(RoomEntity room);
-        Task<RoomEntity> SoftDeleteRoomAsync(Guid roomId);
+        Task<bool> AddRoomAsync(RoomEntity room);
+        Task<bool> UpdateRoomAsync(RoomEntity room);
+        Task<bool> SoftDeleteRoomAsync(Guid roomId);
     }
 }

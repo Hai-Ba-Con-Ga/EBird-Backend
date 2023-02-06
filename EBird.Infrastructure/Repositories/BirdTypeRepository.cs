@@ -32,7 +32,7 @@ namespace EBird.Infrastructure.Repositories
 
             if(rowEffect == 0)
             {
-                return false;
+                throw new BadRequestException("Can not delete bird type");
             }
 
             return true;
@@ -69,7 +69,7 @@ namespace EBird.Infrastructure.Repositories
 
             if(rowEffect == 0)
             {
-                return false;
+                throw new  BadRequestException("Can not update bird type");
             }
             
             return true;
@@ -83,7 +83,7 @@ namespace EBird.Infrastructure.Repositories
             
             if(rowEffect == 0)
             {
-                return false;
+                throw new BadRequestException("Can not add bird type");
             }
             
             return true;

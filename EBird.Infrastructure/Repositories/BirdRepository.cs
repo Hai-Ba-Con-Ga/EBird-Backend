@@ -84,7 +84,6 @@ namespace EBird.Infrastructure.Repositories
                 throw new BadRequestException("Can not update bird");
             }
             return true;
-            ;
         }
     }
 }

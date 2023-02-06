@@ -25,14 +25,14 @@ namespace EBird.Api.Controllers
 
         // get all
         [HttpGet("all")]
-        public async Task<ActionResult<Response<List<RoomDTO>>>> Get()
+        public async Task<ActionResult<Response<List<RoomResponseDTO>>>> Get()
         {
-            Response<List<RoomDTO>> response = null;
+            Response<List<RoomResponseDTO>> response = null;
             try
             {
                 var responseData = await _roomService.GetRooms();
 
-                response = Response<List<RoomDTO>>.Builder()
+                response = Response<List<RoomResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.Created)
                     .SetMessage("Get room list is success")
@@ -44,7 +44,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<List<RoomDTO>>.Builder()
+                    response = Response<List<RoomResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -52,7 +52,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<List<RoomDTO>>.Builder()
+                response = Response<List<RoomResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -64,14 +64,14 @@ namespace EBird.Api.Controllers
 
         // GET by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<RoomDTO>>> Get(Guid id)
+        public async Task<ActionResult<Response<RoomResponseDTO>>> Get(Guid id)
         {
-            Response<RoomDTO> response = null;
+            Response<RoomResponseDTO> response = null;
             try
             {
                 var responseData = await _roomService.GetRoom(id);
 
-                response = Response<RoomDTO>.Builder()
+                response = Response<RoomResponseDTO>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.Created)
                     .SetMessage("Get room is success")
@@ -83,7 +83,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<RoomDTO>.Builder()
+                    response = Response<RoomResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -91,7 +91,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<RoomDTO>.Builder()
+                response = Response<RoomResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -102,18 +102,18 @@ namespace EBird.Api.Controllers
 
         // POST create
         [HttpPost]
-        public async Task<ActionResult<Response<RoomCreateDTO>>> Post([FromBody] RoomCreateDTO RoomCreateDTO)
+        public async Task<ActionResult<Response<string>>> Post([FromBody] RoomCreateDTO RoomCreateDTO)
         {
-            Response<RoomCreateDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _roomService.AddRoom(RoomCreateDTO);
+                await _roomService.AddRoom(RoomCreateDTO);
                 
-                response = Response<RoomCreateDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.Created)
                     .SetMessage("Create room is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -121,7 +121,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<RoomCreateDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -129,7 +129,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<RoomCreateDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -139,18 +139,18 @@ namespace EBird.Api.Controllers
         }
         // PUT update 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<RoomUpdateDTO>>> Put(Guid id, [FromBody] RoomUpdateDTO roomUpdateDTO)
+        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] RoomUpdateDTO roomUpdateDTO)
         {
-            Response<RoomUpdateDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _roomService.UpdateRoom(id, roomUpdateDTO);
+                await _roomService.UpdateRoom(id, roomUpdateDTO);
 
-                response = Response<RoomUpdateDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Update room is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -158,7 +158,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<RoomUpdateDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -166,7 +166,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<RoomUpdateDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -177,18 +177,18 @@ namespace EBird.Api.Controllers
 
         // DELETE 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<RoomDTO>>> Delete(Guid id)
+        public async Task<ActionResult<Response<string>>> Delete(Guid id)
         {
-            Response<RoomDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _roomService.DeleteRoom(id);
+                await _roomService.DeleteRoom(id);
 
-                response = Response<RoomDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Delete room is success")
-                    .SetData(responseData);
+                    .SetData("");
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -196,7 +196,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<RoomDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -204,7 +204,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<RoomDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");

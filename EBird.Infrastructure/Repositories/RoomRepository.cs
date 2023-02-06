@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using System;
@@ -16,15 +17,15 @@ namespace EBird.Infrastructure.Repositories
             
         }
 
-        public async Task<RoomEntity> AddRoomAsync(RoomEntity room)
+        public async Task<bool> AddRoomAsync(RoomEntity room)
         {
             room.CreateDateTime = DateTime.Now;
-            var res = await this.CreateAsync(room);
-            if (res > 0)
+            var rowEffect = await this.CreateAsync(room);
+            if (rowEffect == 0)
             {
-                return room;
+                throw new BadRequestException("Can not add room");
             }
-            return null;
+            return true;
         }
 
         public async Task<RoomEntity> GetRoomActiveAsync(Guid roomId)
@@ -37,15 +38,22 @@ namespace EBird.Infrastructure.Repositories
             return await this.GetAllActiveAsync();
         }
 
-        public async Task<RoomEntity> SoftDeleteRoomAsync(Guid roomId)
+        public async Task<bool> SoftDeleteRoomAsync(Guid roomId)
         {
-            return await this.DeleteSoftAsync(roomId);
+            var result = await this.DeleteSoftAsync(roomId);
+
+            if(result == null) throw new BadRequestException("Can not delete room");
+            
+            return true;
         }
 
-        public async Task<int> UpdateRoomAsync(RoomEntity room)
+        public async Task<bool> UpdateRoomAsync(RoomEntity room)
         {
-            var res = await this.UpdateAsync(room);
-            return res;
+            var rowEffect = await this.UpdateAsync(room);
+
+            if(rowEffect == 0) throw new BadRequestException("Can not update room");
+            
+            return true;
         }
     }
 }

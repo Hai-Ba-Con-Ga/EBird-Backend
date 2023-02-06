@@ -23,12 +23,7 @@ namespace EBird.Application.Services
 
         public async Task DeleteBirdType(Guid birdTypeID)
         {
-                var birdTypeDeleted = await _repository.BirdType.DeleteSoftAsync(birdTypeID);
-
-                if(birdTypeDeleted == null)
-                {
-                    throw new NotFoundException("Bird type not found");
-                }   
+            await _repository.BirdType.DeleteSoftAsync(birdTypeID);
         }
 
         public async Task DeleteBirdType(string birdTypeCode)
@@ -38,12 +33,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Invalid bird type code");
             }
 
-            var isSuccess = await _repository.BirdType.SoftDeleteAsync(birdTypeCode);
-
-            if(isSuccess == false)
-            {
-                throw new BadRequestException("Can not delete bird type");
-            }
+            await _repository.BirdType.SoftDeleteAsync(birdTypeCode);
         }
 
         public async Task<List<BirdTypeResponseDTO>> GetAllBirdType()
@@ -78,7 +68,7 @@ namespace EBird.Application.Services
 
             if(birdTypeResult == null)
             {
-                throw new NotFoundException("Bird type not found");
+                throw new NotFoundException("Bird type can not found");
             }
 
             var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
@@ -92,12 +82,7 @@ namespace EBird.Application.Services
 
             var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
 
-            bool isSuccess = await _repository.BirdType.AddBirdTypeAsync(birdType);
-            
-            if(isSuccess == false)
-            {
-                throw new Exception("Can insert data to database");
-            }
+            await _repository.BirdType.AddBirdTypeAsync(birdType);
         }
         
         public async Task UpdateBirdType(Guid id, BirdTypeRequestDTO birdTypeDTO)
@@ -113,12 +98,7 @@ namespace EBird.Application.Services
 
             _mapper.Map(birdTypeDTO, birdType);
 
-            int rowEffect = await _repository.BirdType.UpdateAsync(birdType);
-
-            if(rowEffect == 0)
-            {
-                throw new Exception("Can update data to database");
-            }
+            await _repository.BirdType.UpdateBirdTypeAsync(birdType);
         }
     }
 }
