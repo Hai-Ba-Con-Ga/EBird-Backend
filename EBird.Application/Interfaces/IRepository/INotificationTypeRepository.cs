@@ -9,11 +9,11 @@ namespace EBird.Application.Interfaces.IRepository
 {
     public interface INotificationTypeRepository : IGenericRepository<NotificationTypeEntity>
     {
-        Task<List<NotificationTypeEntity>> GetNotificationTypesActiveAsync();
+        Task<List<NotificationTypeEntity>> GetAllNotificationTypesActiveAsync();
         Task<NotificationTypeEntity> GetNotificationTypeActiveAsync(Guid notificationTypeId);
-        Task<NotificationTypeEntity> AddNotificationType(NotificationTypeEntity notificationType);
+        Task<NotificationTypeEntity> AddNotificationTypeAsync(NotificationTypeEntity notificationType);
         Task<int> UpdateNotificationTypeAsync(NotificationTypeEntity notificationType);
-        Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(Guid notificationTypeId);
+        Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(string notificationTypeId);
 
     }
 }

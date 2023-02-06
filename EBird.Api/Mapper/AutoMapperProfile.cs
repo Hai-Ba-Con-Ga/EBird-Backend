@@ -5,6 +5,7 @@ using EBird.Application.Model.Bird;
 using EBird.Application.Model.BirdType;
 using EBird.Application.Model.Group;
 using EBird.Application.Model.Notification;
+using EBird.Application.Model.NotificationType;
 using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 
@@ -24,6 +25,9 @@ namespace EBird.Api.Mapper
             CreateMap<NotificationEntity, NotificationDTO>().ReverseMap();
             CreateMap<NotificationEntity, NotificationUpdateDTO>().ReverseMap();
             CreateMap<NotificationEntity, NotificationCreateDTO>().ReverseMap();
+
+            CreateMap<NotificationTypeEntity, NotificationTypeRequestDTO>().ReverseMap();
+            CreateMap<NotificationTypeEntity, NotificationTypeDTO>().ReverseMap();
         }
     }
 }

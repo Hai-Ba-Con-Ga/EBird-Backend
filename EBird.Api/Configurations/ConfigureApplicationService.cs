@@ -16,6 +16,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INotificationTypeService, NotificationTypeService>();
         }
     }
 }

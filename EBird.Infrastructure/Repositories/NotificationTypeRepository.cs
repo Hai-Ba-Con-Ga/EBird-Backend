@@ -15,29 +15,59 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public Task<NotificationTypeEntity> AddNotificationType(NotificationTypeEntity notificationType)
+        public async Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(string notificationTypeCode)
         {
-            throw new NotImplementedException();
+            NotificationTypeEntity _entity = await GetNotificationTypeByCodeAsync(notificationTypeCode);
+
+            if (_entity == null)
+            {
+                return null;
+            }
+            _entity.IsDeleted = true;
+
+            await this.UpdateAsync(_entity);
+
+            return _entity;
         }
 
-        public Task<NotificationTypeEntity> GetNotificationTypeActiveAsync(Guid notificationTypeId)
+        public async Task<NotificationTypeEntity> GetNotificationTypeByCodeAsync(string notificationTypeCode)
         {
-            throw new NotImplementedException();
+            return await this.FindWithCondition(x => x.TypeCode == notificationTypeCode);
         }
 
-        public Task<List<NotificationTypeEntity>> GetNotificationTypesActiveAsync()
+        public async Task<bool> IsExistNotificationTypeCode(string notificationTypeCode)
         {
-            throw new NotImplementedException();
+            var result = await this.FindWithCondition(x => x.TypeCode == notificationTypeCode);
+            if (result == null)
+            {
+                return false;
+            }
+            return true;
         }
 
-        public Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(Guid notificationTypeId)
+        public async Task<List<NotificationTypeEntity>> GetAllNotificationTypesActiveAsync()
         {
-            throw new NotImplementedException();
+            return await this.GetAllActiveAsync();
         }
 
-        public Task<int> UpdateNotificationTypeAsync(NotificationTypeEntity notificationType)
+        public async Task<NotificationTypeEntity> GetNotificationTypeActiveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await this.GetByIdAsync(id);
+        }
+
+        public async Task<int> UpdateNotificationTypeAsync(NotificationTypeEntity notificationType)
+        {
+            return await this.UpdateAsync(notificationType);
+        }
+
+        public async Task<NotificationTypeEntity> AddNotificationTypeAsync(NotificationTypeEntity notificationType)
+        {
+            var addEntity = await this.CreateAsync(notificationType);
+            if (addEntity == 0)
+            {
+                return null;
+            }
+            return notificationType;
         }
     }
 }
