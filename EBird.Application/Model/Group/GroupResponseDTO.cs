@@ -7,10 +7,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EBird.Application.Interfaces.IMapper;
 
 namespace EBird.Application.Model.Group
 {
-    public class GroupResponseDTO
+    public class GroupResponseDTO : IMapFrom<GroupEntity>
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

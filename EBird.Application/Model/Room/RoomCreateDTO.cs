@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model
 {
-    public class RoomCreateDTO 
+    public class RoomCreateDTO : RoomUpdateDTO
     {
         [Required(ErrorMessage = "CreateById is required")]
         public Guid CreateById { get; set; }

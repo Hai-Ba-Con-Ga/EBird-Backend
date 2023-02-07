@@ -1,3 +1,4 @@
+using System.Reflection;
 using EBird.Application.Services;
 using EBird.Application.Services.IServices;
 using MailKit;
@@ -16,6 +17,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IRoomService, RoomService>();
 
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
     }
 }
