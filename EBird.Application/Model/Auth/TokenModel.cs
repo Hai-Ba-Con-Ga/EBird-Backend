@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EBird.Application.Model
+namespace EBird.Application.Model.Auth
 {
     public class TokenModel
     {

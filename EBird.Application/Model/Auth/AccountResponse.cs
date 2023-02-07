@@ -2,7 +2,7 @@
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 
-namespace EBird.Application.Model
+namespace EBird.Application.Model.Auth
 {
     public class AccountResponse : IMapFrom<AccountEntity>
     {

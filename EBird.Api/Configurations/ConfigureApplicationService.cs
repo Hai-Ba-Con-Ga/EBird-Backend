@@ -16,6 +16,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IBirdService, BirdService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IRuleService, RuleService>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
