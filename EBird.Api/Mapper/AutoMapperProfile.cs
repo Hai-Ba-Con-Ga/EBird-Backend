@@ -1,10 +1,11 @@
 using AutoMapper;
 using EBird.Api.UserFeatures.Requests;
-using EBird.Application.Model;
+using EBird.Application.Model.Auth;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.BirdType;
 using EBird.Application.Model.Group;
 using EBird.Application.Model.PagingModel;
+using EBird.Application.Model.Rule;
 using EBird.Domain.Entities;
 
 namespace EBird.Api.Mapper
@@ -27,6 +28,9 @@ namespace EBird.Api.Mapper
             CreateMap<GroupEntity, GroupResponseDTO>().ReverseMap();
             CreateMap<GroupRequestDTO, GroupEntity>();
             CreateMap<GroupCreateDTO, GroupEntity>();
+            //rule
+            CreateMap<CreateRuleRequest, RuleEntity>();
+            CreateMap<UpdateRuleRequest, RuleEntity>();
         }
     }
 }

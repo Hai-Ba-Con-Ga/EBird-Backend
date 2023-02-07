@@ -1,3 +1,4 @@
+using System.Data;
 using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,10 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
             //Config for one to many relationship between AccountEntity and RoomEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Rules)
+                .WithOne(r => r.Account)
+                .HasForeignKey(r => r.CreateById);
         }
 
         #region DbSet
@@ -45,6 +50,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<RuleEntity> Rules { get; set; }
 
         #endregion
     }

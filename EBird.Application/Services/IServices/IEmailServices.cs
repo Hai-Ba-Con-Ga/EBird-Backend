@@ -1,4 +1,4 @@
-﻿using EBird.Application.Model;
+﻿using EBird.Application.Model.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;

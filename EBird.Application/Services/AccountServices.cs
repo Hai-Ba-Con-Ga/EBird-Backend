@@ -3,7 +3,7 @@ using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
-using EBird.Application.Model;
+using EBird.Application.Model.Auth;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using Response;
@@ -78,7 +78,7 @@ namespace EBird.Application.Services
             }
             
         }
-        public async Task ChangePassword(Guid id, Model.ChangePasswordModel model)
+        public async Task ChangePassword(Guid id, ChangePasswordModel model)
         {
             var account = await _accountRepository.GetByIdAsync(id);
             if (account == null)
