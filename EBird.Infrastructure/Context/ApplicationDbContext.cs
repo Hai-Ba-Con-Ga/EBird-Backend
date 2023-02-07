@@ -69,6 +69,11 @@ namespace EBird.Infrastructure.Context
                 .HasForeignKey(r => r.RecieverId)
                 .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Notifications)
+                .WithOne(r => r.Account)
+                .HasForeignKey(r => r.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.SentMessagePrivates)
                 .WithOne(r => r.Sent)
                 .HasForeignKey(r => r.SentId)
@@ -151,7 +156,7 @@ namespace EBird.Infrastructure.Context
 
         public DbSet<NotificationEntity> Notifications { get; set; }
         public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
-        
+
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<PostEntity> Posts { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }

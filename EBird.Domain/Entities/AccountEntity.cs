@@ -62,6 +62,8 @@ namespace EBird.Domain.Entities
         public ICollection<GroupMemberEntity> GroupMembers { get; set; } = null!;
         public ICollection<MessagePrivateEntity> SentMessagePrivates { get; set; } = null!;
         public ICollection<MessagePrivateEntity> ReceiveMessagePrivates { get; set; } = null!;
+        public ICollection<NotificationEntity> Notifications { get; set; } = null!;
+
 
 
 
