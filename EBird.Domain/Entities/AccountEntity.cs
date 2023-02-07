@@ -60,6 +60,10 @@ namespace EBird.Domain.Entities
         public ICollection<FriendshipEntity> InviterFriendships { get; set; } = null!;
         public ICollection<FriendshipEntity> RecieverFriendships { get; set; } = null!;
         public ICollection<GroupMemberEntity> GroupMembers { get; set; } = null!;
+        public ICollection<MessagePrivateEntity> SentMessagePrivates { get; set; } = null!;
+        public ICollection<MessagePrivateEntity> ReceiveMessagePrivates { get; set; } = null!;
+
+
 
     }
 }

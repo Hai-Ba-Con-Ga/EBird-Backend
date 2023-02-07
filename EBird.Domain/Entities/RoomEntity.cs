@@ -39,6 +39,8 @@ namespace EBird.Domain.Entities
 
         //relationship
         public ICollection<GroupEntity>? Groups { get; set; }
+        public ICollection<RequestEntity>? Requests { get; set; }
+
 
     }
 }

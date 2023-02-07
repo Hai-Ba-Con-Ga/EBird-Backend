@@ -44,5 +44,10 @@ namespace EBird.Domain.Entities
 
         //relationship
         public ICollection<GroupMemberEntity>? GroupMembers { get; set; }
+        public ICollection<MessageGroupEntity>? SentMessageGroups { get; set; }
+        public ICollection<MessageGroupEntity>? ReceiveMessageGroups { get; set; }
+        public ICollection<RequestEntity>? Requests { get; set; }
+
+
     }
 }

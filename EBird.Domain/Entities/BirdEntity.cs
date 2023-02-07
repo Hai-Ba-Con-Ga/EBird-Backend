@@ -59,5 +59,7 @@ namespace EBird.Domain.Entities
         //relationship
         public ICollection<BirdResourceEntity>? BirdResources { get; set; }
         public ICollection<MatchBirdEntity>? MatchBirds { get; set; }
+        public ICollection<RequestEntity>? Requests { get; set; }
+
     }
 }

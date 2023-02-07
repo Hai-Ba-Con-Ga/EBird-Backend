@@ -20,9 +20,9 @@ namespace EBird.Api.Configurations
                 Console.WriteLine("Connection option is null");
                 return;
             }
-            Console.WriteLine(connectionOption.DefaultConnection ?? "Connection string is null");
+            Console.WriteLine(connectionOption.CloudConnection ?? "Connection string is null");
             services.AddDbContext<ApplicationDbContext>(options =>
-                                                       options.UseSqlServer(connectionOption.DefaultConnection,
+                                                       options.UseSqlServer(connectionOption.CloudConnection,
                                                                             x => x.MigrationsAssembly("EBird.Infrastructure")));
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
         }

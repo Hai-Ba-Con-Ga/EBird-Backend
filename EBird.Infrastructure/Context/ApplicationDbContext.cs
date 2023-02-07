@@ -21,7 +21,8 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<BirdTypeEntity>()
                 .HasMany(bt => bt.Birds)
                 .WithOne(b => b.BirdType)
-                .HasForeignKey(b => b.BirdTypeId);
+                .HasForeignKey(b => b.BirdTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             // Config for one to many relationship between AccountEntity and GroupEntity
@@ -48,11 +49,13 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.HandledReports)
                 .WithOne(r => r.HandledBy)
-                .HasForeignKey(r => r.HandledById);
+                .HasForeignKey(r => r.HandledById)
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.CreatedReports)
                 .WithOne(r => r.CreatedBy)
-                .HasForeignKey(r => r.CreatedById);
+                .HasForeignKey(r => r.CreatedById)
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between AccountEntity and FriendshipEntity
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.InviterFriendships)
@@ -65,6 +68,60 @@ namespace EBird.Infrastructure.Context
                 .WithOne(r => r.Reciever)
                 .HasForeignKey(r => r.RecieverId)
                 .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.SentMessagePrivates)
+                .WithOne(r => r.Sent)
+                .HasForeignKey(r => r.SentId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReceiveMessagePrivates)
+                .WithOne(r => r.Receive)
+                .HasForeignKey(r => r.ReceiveId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RoomEntity>()
+                .HasMany(room => room.Groups)
+                .WithOne(r => r.Room)
+                .HasForeignKey(r => r.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RoomEntity>()
+                .HasMany(room => room.Requests)
+                .WithOne(r => r.Room)
+                .HasForeignKey(r => r.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BirdEntity>()
+                .HasMany(b => b.MatchBirds)
+                .WithOne(r => r.Bird)
+                .HasForeignKey(r => r.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.GroupMembers)
+                .WithOne(r => r.Group)
+                .HasForeignKey(r => r.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.Requests)
+                .WithOne(r => r.Group)
+                .HasForeignKey(r => r.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.SentMessageGroups)
+                .WithOne(r => r.Sent)
+                .HasForeignKey(r => r.SentId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.ReceiveMessageGroups)
+                .WithOne(r => r.Receive)
+                .HasForeignKey(r => r.ReceiveId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BirdEntity>()
+                .HasMany(g => g.Requests)
+                .WithOne(r => r.Bird)
+                .HasForeignKey(r => r.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+
+
         }
 
         #region DbSet
