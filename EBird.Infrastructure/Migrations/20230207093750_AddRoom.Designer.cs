@@ -3,6 +3,8 @@ using System;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,57 +12,62 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230207093750_AddRoom")]
+    partial class AddRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("RoleString")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar")
+                        .HasColumnType("varchar(20)")
                         .HasColumnName("Role");
 
                     b.Property<string>("Username")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -71,20 +78,20 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Age")
                         .HasColumnType("int")
                         .HasColumnName("BirdAge");
 
                     b.Property<Guid>("BirdTypeId")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("BirdTypeId");
 
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdColor");
 
                     b.Property<DateTime>("CreatedDatetime")
@@ -101,25 +108,25 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnName("BirdElo");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("OwnerId");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdStatus");
 
-                    b.Property<float>("Weight")
+                    b.Property<double>("Weight")
                         .HasColumnType("float")
                         .HasColumnName("BirdWeight");
 
@@ -136,25 +143,25 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDatetime")
                         .HasColumnType("datetime")
                         .HasColumnName("BirdTypeCreatedDatetime");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("TypeCode")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdTypeCode");
 
                     b.Property<string>("TypeName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("BirdTypeName");
 
                     b.HasKey("Id");
@@ -169,36 +176,36 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDatetime")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasColumnName("GroupCreateDatetime");
 
                     b.Property<Guid>("CreatedById")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<int>("MaxELO")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("GroupMaxELO");
 
                     b.Property<int>("MinELO")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasColumnName("GroupMinELO");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("GroupName");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar")
+                        .HasColumnType("varchar(20)")
                         .HasColumnName("GroupStatus");
 
                     b.HasKey("Id");
@@ -212,35 +219,35 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AccountId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ExpiredAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsRevoked")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUsed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("JwtId")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -253,16 +260,16 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("RoomCity");
 
                     b.Property<Guid>("CreateById")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("RoomCreateById");
 
                     b.Property<DateTime>("CreateDateTime")
@@ -270,18 +277,18 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnName("RoomCreateDateTime");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("RoomName");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("RoomStatus");
 
                     b.HasKey("Id");
@@ -291,51 +298,22 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("Room");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.RuleEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CreateById")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreateDateTime")
-                        .HasColumnType("datetime");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreateById");
-
-                    b.ToTable("Rule");
-                });
-
             modelBuilder.Entity("EBird.Domain.Entities.VerifcationStoreEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AccountId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -394,17 +372,6 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("CreateBy");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.RuleEntity", b =>
-                {
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
-                        .WithMany("Rules")
-                        .HasForeignKey("CreateById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("Birds");
@@ -414,8 +381,6 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Rooms");
-
-                    b.Navigation("Rules");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>

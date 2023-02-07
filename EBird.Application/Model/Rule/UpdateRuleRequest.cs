@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Model.Rule;
-public class UpdateRuleRequest {
+public class UpdateRuleRequest : IMapFrom<RuleEntity>
+{
     [Required(ErrorMessage = "Title is required")]
     [MaxLength(100)]
     public string Title { get; set; }

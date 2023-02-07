@@ -52,7 +52,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
         options.SuppressModelStateInvalidFilter = true;
     });
 
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+//builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -86,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options => options.EnablePersistAuthorization());
     app.UseDeveloperExceptionPage();
+    await app.Services.ApplyMigration();
     await app.Services.DbInitializer();
 }
 app.UseSwagger();

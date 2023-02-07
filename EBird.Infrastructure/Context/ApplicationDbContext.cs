@@ -52,6 +52,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<RuleEntity> Rules { get; set; }
 
+        public DbSet<GroupEntity> Groups { get; set; }
         #endregion
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EBird.Api.UserFeatures.Requests;
+using EBird.Application.Model.Auth;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;

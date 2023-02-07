@@ -6,10 +6,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Model.Group
 {
-    public class GroupRequestDTO
+    public class GroupRequestDTO : IMapTo<GroupEntity>
     {
         [Required]
         [MaxLength(50)]
