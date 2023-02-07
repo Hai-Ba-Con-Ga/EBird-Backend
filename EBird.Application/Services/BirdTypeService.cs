@@ -40,7 +40,7 @@ namespace EBird.Application.Services
         {
             var listBirdType = await _repository.BirdType.GetAllBirdTypeActiveAsync();
             
-             return _mapper.Map<List<BirdTypeResponseDTO>>(listBirdType);
+             return _mapper.Map<List<BirdTypeEntity>, List<BirdTypeResponseDTO>>(listBirdType);
         }
 
         public async Task<BirdTypeResponseDTO> GetBirdType(string birdTypeCode)

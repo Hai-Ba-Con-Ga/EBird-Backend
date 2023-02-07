@@ -1,4 +1,6 @@
 ﻿using Duende.IdentityServer.Models;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Bird
 {
-    public class BirdRequestDTO
+    public class BirdRequestDTO : IMapTo<BirdEntity>
     {
         [Required(ErrorMessage = "Bird name is required")]
         [StringLength(50, ErrorMessage = "Bird name cannot be longer than 50 characters")]

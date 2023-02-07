@@ -1,9 +1,10 @@
-﻿using EBird.Domain.Entities;
+﻿using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 
 namespace EBird.Application.Model
 {
-    public class AccountResponse
+    public class AccountResponse : IMapFrom<AccountEntity>
     {
         public Guid Id { get; init; }
         public string? Email { get; set; }

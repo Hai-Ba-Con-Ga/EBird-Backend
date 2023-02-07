@@ -48,7 +48,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-
+                
                 response = Response<List<BirdTypeResponseDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -125,7 +125,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-
+                System.Console.WriteLine("ex: " + ex.Message);
                 response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -135,9 +135,9 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // PATCH : update exist bird type
-        [HttpPost("{id}")]
-        public async Task<ActionResult<Response<string>>> Post(Guid id, [FromBody] BirdTypeRequestDTO birdTypeDTO)
+        // Put : update exist bird type
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] BirdTypeRequestDTO birdTypeDTO)
         {
             Response<string> response = null;
             try

@@ -5,10 +5,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Model
 {
-    public class RoomResponseDTO
+    public class RoomResponseDTO : IMapFrom<RoomEntity>
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
