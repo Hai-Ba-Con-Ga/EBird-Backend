@@ -34,9 +34,9 @@ namespace EBird.Domain.Entities
         public PlaceEntity Place { get; set; } = null!;
 
         // Relationship
-        public ICollection<MatchResourceEntity> MatchResources { get; set; }
-        public ICollection<MatchBirdEntity> MatchBirds { get; set; }
-        //public ICollection<MatchMessageEntity> MatchMessages { get; set; }
+        public ICollection<MatchResourceEntity>? MatchResources { get; set; }
+        public ICollection<MatchBirdEntity>? MatchBirds { get; set; }
+        public ICollection<MatchMessageEntity>? MatchMessages { get; set; }
 
 
     }

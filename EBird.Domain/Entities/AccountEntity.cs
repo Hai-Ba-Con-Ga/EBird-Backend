@@ -57,8 +57,8 @@ namespace EBird.Domain.Entities
 
         public ICollection<BirdTypeEntity> BirdTypes { get; set; } = null!;
         public ICollection<AccountResourceEntity> AccountResources { get; set; } = null!;
-        public ICollection<FriendshipEntity> InviterFriendships { get; set; } = null!;
-        public ICollection<FriendshipEntity> RecieverFriendships { get; set; } = null!;
+        //public ICollection<FriendshipEntity> InviterFriendships { get; set; } = null!;
+        //public ICollection<FriendshipEntity> RecieverFriendships { get; set; } = null!;
         public ICollection<GroupMemberEntity> GroupMembers { get; set; } = null!;
 
     }
