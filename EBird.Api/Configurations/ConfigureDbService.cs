@@ -46,6 +46,12 @@ namespace EBird.Api.Configurations
                 scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             await DatabaseInitializer.InitializeAsync(dbContext);
         }
+        public static async Task ApplyMigration(this IServiceProvider services){
+            using var scope = services.CreateScope();
+            await using ApplicationDbContext dbContext =
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await dbContext.Database.MigrateAsync();
+        }
 
     }
 }
