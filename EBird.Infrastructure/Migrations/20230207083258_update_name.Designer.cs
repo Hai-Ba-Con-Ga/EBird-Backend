@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230207023722_add_room")]
-    partial class add_room
+    [Migration("20230207083258_update_name")]
+    partial class update_name
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -251,6 +251,38 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("RefreshToken");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CreateById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ResourceCreateById");
+
+                    b.Property<string>("DataLink")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar")
+                        .HasColumnName("ResourceDataLink");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("ResourceDescription");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateById");
+
+                    b.ToTable("Resource");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -356,6 +388,17 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreateBy")
+                        .WithMany("Resources")
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreateBy");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "CreateBy")
@@ -374,6 +417,8 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Groups");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Resources");
 
                     b.Navigation("Rooms");
                 });

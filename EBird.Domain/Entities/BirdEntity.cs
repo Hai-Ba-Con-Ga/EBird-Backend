@@ -55,5 +55,8 @@ namespace EBird.Domain.Entities
         [Column("OwnerId")]
         public Guid OwnerId { get; set; }
         public AccountEntity Owner { get; set; }
+
+        //collection
+        public ICollection<Bird_Resource> Bird_Resources { get; set; }
     }
 }

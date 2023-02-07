@@ -3,6 +3,7 @@ using System;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230207081532_add_resource_entity")]
+    partial class add_resource_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
@@ -278,7 +280,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("CreateById");
 
-                    b.ToTable("Resource");
+                    b.ToTable("Resources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>

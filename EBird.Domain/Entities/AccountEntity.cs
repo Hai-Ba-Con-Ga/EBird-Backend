@@ -49,7 +49,7 @@ namespace EBird.Domain.Entities
         public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
         public ICollection<GroupEntity> Groups { get; set; } = null!;
         public ICollection<RoomEntity> Rooms { get; set; } = null!;
-
         public ICollection<BirdEntity> Birds { get; set; } = null!;
+        public ICollection<ResourceEntity> Resources { get; set; } = null!;
     }
 }
