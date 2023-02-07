@@ -27,7 +27,12 @@ namespace EBird.Domain.Entities
         [Required]
         public DateTime CreatedDatetime { get; set; }
 
+        //Pk
+        [ForeignKey("CreatedById")]
+        public Guid CreatedById { get; set; }
+        public AccountEntity CreatedBy { get; set; } = null!;
+
         //relationship
-        public ICollection<BirdEntity> Birds { get; set; }
+        public ICollection<BirdEntity>? Birds { get; set; }
     }
 }

@@ -36,8 +36,13 @@ namespace EBird.Domain.Entities
         //forgein key
         [ForeignKey("CreatedById")]
         public Guid CreatedById { get; set; }
-        public AccountEntity CreatedBy;
+        public AccountEntity? CreatedBy;
 
-        //room id 
+        [ForeignKey("RoomId")]
+        public Guid RoomId { get; set; }
+        public RoomEntity? Room { get; set; }
+
+        //relationship
+        public ICollection<GroupMemberEntity>? GroupMembers { get; set; }
     }
 }
