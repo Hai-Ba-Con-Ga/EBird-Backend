@@ -8,6 +8,15 @@ namespace EBird.Domain.Entities
     [Table("Match_Bird")]
     public class MatchBirdEntity : BaseEntity
     {
+        [Column(TypeName = "bit")]
+        public bool? Result { get; set; }
+
+        [Column(TypeName = "int")]
+        public int? AfterElo { get; set; }
+
+        [Column(TypeName = "int")]
+        public int? BeforeElo { get; set; }
+
         //PK
         [ForeignKey("MatchId")]
         public Guid MatchId { get; set; }
