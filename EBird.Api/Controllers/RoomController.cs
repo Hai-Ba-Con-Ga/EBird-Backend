@@ -2,11 +2,13 @@
 using EBird.Application.Exceptions;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Security.Claims;
 
 namespace EBird.Api.Controllers
 {
@@ -23,9 +25,9 @@ namespace EBird.Api.Controllers
             _mapper = mapper;
         }
 
-        // get all
+
         [HttpGet("all")]
-        public async Task<ActionResult<Response<List<RoomResponseDTO>>>> Get()
+        public async Task<ActionResult<Response<List<RoomResponseDTO>>>> GetRooms()
         {
             Response<List<RoomResponseDTO>> response = null;
             try
@@ -62,9 +64,8 @@ namespace EBird.Api.Controllers
         }
 
 
-        // GET by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<RoomResponseDTO>>> Get(Guid id)
+        public async Task<ActionResult<Response<RoomResponseDTO>>> GetRoom(Guid id)
         {
             Response<RoomResponseDTO> response = null;
             try
@@ -100,44 +101,40 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // POST create
+
+
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> Post([FromBody] RoomCreateDTO RoomCreateDTO)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> CreateRoom([FromBody] RoomCreateDTO RoomCreateDTO)
         {
-            Response<string> response = null;
+            var response = new Response<string>();
+            string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            response ??= Response<string>.Builder().SetSuccess(false)
+                .SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Not Allow to access");
+
             try
             {
-                await _roomService.AddRoom(RoomCreateDTO);
-                
-                response = Response<string>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
-                    .SetMessage("Create room is success")
-                    .SetData("");
-
+                Guid id = Guid.Parse(rawId);
+                await _roomService.AddRoom(id, RoomCreateDTO);
+                response = Response<string>.Builder().SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK).SetMessage("Create room is success").SetData("");
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
-                            .SetMessage(ex.Message);
-
+                    response = Response<string>.Builder().SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException)ex).StatusCode).SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
-
-                response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-
+                response = Response<string>.Builder().SetSuccess(false)
+                    .SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage("Internal Server Error");
                 return StatusCode((int)response.StatusCode, response);
             }
         }
-        // PUT update 
+
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] RoomUpdateDTO roomUpdateDTO)
         {
