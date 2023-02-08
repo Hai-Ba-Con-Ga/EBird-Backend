@@ -38,14 +38,14 @@ namespace EBird.Infrastructure.Context
                 .HasForeignKey(r => r.CreateById);
             //Config for many to many relationship between BirdEntity and Resource
             modelBuilder.Entity<BirdEntity>()
-                .HasMany(b => b.Bird_Resources)
+                .HasMany(b => b.BirdResources)
                 .WithOne(br => br.BirdEntity)
                 .HasForeignKey(br => br.BirdId);
             modelBuilder.Entity<ResourceEntity>()
-                .HasMany(r => r.Bird_Resource)
+                .HasMany(r => r.BirdResource)
                 .WithOne(br => br.ResourceEntity)
                 .HasForeignKey(br => br.ResourceId);
-            modelBuilder.Entity<Bird_Resource>()
+            modelBuilder.Entity<BirdResource>()
                 .HasIndex(br => new {br.BirdId, br.ResourceId});
             //config for many to many relationship between AccountEntity and Resource
             modelBuilder.Entity<AccountEntity>()
@@ -53,10 +53,10 @@ namespace EBird.Infrastructure.Context
                 .WithOne(ar => ar.AccountEntity)
                 .HasForeignKey(ar => ar.AccountId);
             modelBuilder.Entity<ResourceEntity>()
-                .HasMany(r => r.Bird_Resource)
+                .HasMany(r => r.BirdResource)
                 .WithOne(ar => ar.ResourceEntity)
                 .HasForeignKey(ar => ar.ResourceId);
-            modelBuilder.Entity<Account_Resource>()
+            modelBuilder.Entity<AccountResource>()
                 .HasIndex(ar => new {ar.AccountId, ar.ResourceId});
         }
 
@@ -70,8 +70,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<ResourceEntity> Resources { get; set; }
-        public DbSet<Bird_Resource> Bird_Resources { get; set; }
-        public DbSet<Account_Resource> Account_Resources { get; set; }
+        public DbSet<BirdResource> Bird_Resources { get; set; }
+        public DbSet<AccountResource> Account_Resources { get; set; }
         #endregion
     }
 }

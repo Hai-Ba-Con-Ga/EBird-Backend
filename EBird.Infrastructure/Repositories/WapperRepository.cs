@@ -25,6 +25,8 @@ namespace EBird.Infrastructure.Repositories
 
         private IRoomRepository _roomRepository;
 
+        private IResourceRepository _resourceRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -88,6 +90,18 @@ namespace EBird.Infrastructure.Repositories
                     _roomRepository = new RoomRepository(_context);
                 }
                 return _roomRepository;
+            }
+        }
+
+        public IResourceRepository Resource 
+        {
+            get 
+            {
+                if(_resourceRepository == null)
+                {
+                    _resourceRepository = new  ResourceRepository(_context);
+                }
+                return _resourceRepository;
             }
         }
     }

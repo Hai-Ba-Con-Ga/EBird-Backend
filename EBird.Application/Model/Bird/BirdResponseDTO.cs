@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using EBird.Application.Interfaces.IMapper;
+using EBird.Application.Model.Resource;
 using EBird.Domain.Entities;
 
 namespace EBird.Application.Model.Bird
@@ -21,5 +23,7 @@ namespace EBird.Application.Model.Bird
         public string Color { get; set; }
         public Guid BirdTypeId { get; set; }
         public Guid OwnerId { get; set; }
+        public DateTime CreatedDatetime { get; set; }
+        public ICollection<ResourceResponse>? ResourceList { get; set; }
     }
 }

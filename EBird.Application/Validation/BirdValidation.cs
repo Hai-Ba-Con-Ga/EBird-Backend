@@ -1,6 +1,7 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Model.Bird;
+using EBird.Application.Model.Resource;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class BirdValidation
+    public class BirdValidation : BaseValidation
     {
         public static async Task ValidateCreateBird(BirdCreateDTO birdDTO, IWapperRepository _repository)
         {
             //valid bird type id
             await ValidateBirdType(birdDTO, _repository);
             //validate owner id
-            await ValidateOwner(birdDTO, _repository);
+            await ValidateAccountId(birdDTO.OwnerId, _repository);
         }
 
         public static async Task ValidateUpdateBird(BirdRequestDTO birdDTO, IWapperRepository _repository)
@@ -33,17 +34,6 @@ namespace EBird.Application.Validation
             if(birdType == null)
             {
                 throw new BadRequestException("Bird type is not exist");
-            }
-        }
-
-        public static async Task ValidateOwner(BirdCreateDTO birdDTO, IWapperRepository _repository)
-        {
-            //valid bird type id
-            var birdType = await _repository.Account.GetByIdAsync(birdDTO.OwnerId);
-            
-            if(birdType == null)
-            {
-                throw new BadRequestException("Onwer account is not exist");
             }
         }
 

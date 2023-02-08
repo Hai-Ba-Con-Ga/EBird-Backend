@@ -1,4 +1,5 @@
 ﻿using Duende.IdentityServer.Models;
+using EBird.Application.Model.Resource;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,5 +13,6 @@ namespace EBird.Application.Model.Bird
     {
         [Required(ErrorMessage = "Onwer is required")]
         public Guid OwnerId { get; set; }
+        public List<ResourceCreateDTO>? ListResource {get; set; }
     }
 }

@@ -57,6 +57,6 @@ namespace EBird.Domain.Entities
         public AccountEntity Owner { get; set; }
 
         //collection
-        public ICollection<Bird_Resource> Bird_Resources { get; set; }
+        public ICollection<BirdResource> BirdResources { get; set; }
     }
 }

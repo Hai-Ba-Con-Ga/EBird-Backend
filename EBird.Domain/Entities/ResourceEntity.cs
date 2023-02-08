@@ -20,6 +20,10 @@ namespace EBird.Domain.Entities
         [MaxLength(100)]
         public string Description { get; set; }
 
+        [Column("CreateDate", TypeName ="datetime")]
+        [Required]
+        public DateTime CreateDate { get; set; }
+
         //CreateBy foreign key
         [Column("ResourceCreateById")]
         [Required]
@@ -27,8 +31,8 @@ namespace EBird.Domain.Entities
         public AccountEntity CreateBy { get; set; }
 
         //collection 
-        public ICollection<Bird_Resource> Bird_Resource { get; set; } = null!;
-        public ICollection<Account_Resource> Account_Resource { get; set; } = null!;
+        public ICollection<BirdResource> BirdResource { get; set; } = null!;
+        public ICollection<AccountResource> AccountResource { get; set; } = null!;
 
     }
 }

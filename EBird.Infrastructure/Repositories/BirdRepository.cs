@@ -25,13 +25,50 @@ namespace EBird.Infrastructure.Repositories
             bird.CreatedDatetime = DateTime.Now;
 
             int rowEffect = await this.CreateAsync(bird);
-            
-            if(rowEffect == 0)
+
+            if (rowEffect == 0)
             {
                 throw new BadRequestException("Bird is not created");
             }
-            
+
             return true;
+        }
+
+        public async Task<bool> AddBirdAsync(BirdEntity bird, List<ResourceEntity> resourceList)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _context.Birds.AddAsync(bird);
+                    int rowEffect = await _context.SaveChangesAsync();
+
+                    if (rowEffect == 0) throw new BadRequestException("Bird is can be added");
+
+                    Guid birdId = bird.Id;
+
+                    foreach (var rsrc in resourceList)
+                    {
+                        await _context.Resources.AddAsync(rsrc);
+                        rowEffect = await _context.SaveChangesAsync();
+
+                        if (rowEffect == 0) throw new BadRequestException("Resource is can be added");
+
+                        await _context.Bird_Resources.AddAsync(new BirdResource(rsrc.Id, birdId));
+                        rowEffect = await _context.SaveChangesAsync();
+
+                        if (rowEffect == 0) throw new BadRequestException("Bird_Resource is can be added");
+                    }
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw exception;
+                }
+                return true;
+            }
         }
 
         public async Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId)
@@ -42,7 +79,8 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<BirdEntity> GetBirdActiveAsync(Guid birdID)
         {
-            return await this.GetByIdActiveAsync(birdID);
+            var birdEntity = await this.GetByIdActiveAsync(birdID);
+            return birdEntity;
         }
 
         public async Task<List<BirdEntity>> GetBirdsActiveAsync()
@@ -68,8 +106,8 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<bool> SoftDeleteBirdAsync(Guid birdID)
         {
-            var result =  await this.DeleteSoftAsync(birdID);
-            if(result == null)
+            var result = await this.DeleteSoftAsync(birdID);
+            if (result == null)
             {
                 throw new BadRequestException("Bird is not deleted");
             }
@@ -79,7 +117,7 @@ namespace EBird.Infrastructure.Repositories
         public async Task<bool> UpdateBirdAsync(BirdEntity bird)
         {
             int rowEffect = await this.UpdateAsync(bird);
-            if(rowEffect == 0)
+            if (rowEffect == 0)
             {
                 throw new BadRequestException("Can not update bird");
             }

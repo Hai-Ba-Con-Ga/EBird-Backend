@@ -15,6 +15,7 @@ namespace EBird.Application.Interfaces.IRepository
         Task<List<BirdEntity>> GetBirdsActiveAsync();
         Task<BirdEntity> GetBirdActiveAsync(Guid birdID);
         Task<bool> AddBirdAsync(BirdEntity bird);
+        Task<bool> AddBirdAsync(BirdEntity bird, List<ResourceEntity> entity);
         Task<bool> UpdateBirdAsync(BirdEntity bird);
         Task<bool> SoftDeleteBirdAsync(Guid birdID);
         Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters);
