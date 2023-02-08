@@ -27,7 +27,8 @@ namespace EBird.Domain.Entities
         public AccountEntity CreateBy { get; set; }
 
         //collection 
-        public ICollection<Bird_Resource> Bird_Resource { get; set; }
+        public ICollection<Bird_Resource> Bird_Resource { get; set; } = null!;
+        public ICollection<Account_Resource> Account_Resource { get; set; } = null!;
 
     }
 }

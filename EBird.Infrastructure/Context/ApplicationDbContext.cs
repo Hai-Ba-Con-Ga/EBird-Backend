@@ -47,6 +47,17 @@ namespace EBird.Infrastructure.Context
                 .HasForeignKey(br => br.ResourceId);
             modelBuilder.Entity<Bird_Resource>()
                 .HasIndex(br => new {br.BirdId, br.ResourceId});
+            //config for many to many relationship between AccountEntity and Resource
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(a => a.Account_Resource)
+                .WithOne(ar => ar.AccountEntity)
+                .HasForeignKey(ar => ar.AccountId);
+            modelBuilder.Entity<ResourceEntity>()
+                .HasMany(r => r.Bird_Resource)
+                .WithOne(ar => ar.ResourceEntity)
+                .HasForeignKey(ar => ar.ResourceId);
+            modelBuilder.Entity<Account_Resource>()
+                .HasIndex(ar => new {ar.AccountId, ar.ResourceId});
         }
 
         #region DbSet
@@ -60,6 +71,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<ResourceEntity> Resources { get; set; }
         public DbSet<Bird_Resource> Bird_Resources { get; set; }
+        public DbSet<Account_Resource> Account_Resources { get; set; }
         #endregion
     }
 }

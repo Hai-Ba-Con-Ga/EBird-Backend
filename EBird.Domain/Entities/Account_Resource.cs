@@ -8,19 +8,19 @@ using EBird.Domain.Common;
 
 namespace EBird.Domain.Entities
 {
-    [Table("Bird_Resource")]
-    public class Bird_Resource : BaseEntity
+    [Table("Account_Resource")]
+    public class Account_Resource : BaseEntity
     {
+        //foreign key account
+        [Column("AccountId")]
+        [Required]
+        public Guid AccountId { get; set; }
+        public AccountEntity AccountEntity { get; set; }
+
         //foreign key resource
         [Column("ResourceId")]
         [Required]
         public Guid ResourceId { get; set; }
         public ResourceEntity ResourceEntity { get; set; }
-
-        //foreign key bird
-        [Column("BirdId")]
-        [Required]
-        public Guid BirdId { get; set; }
-        public BirdEntity BirdEntity { get; set; }
     }
 }
