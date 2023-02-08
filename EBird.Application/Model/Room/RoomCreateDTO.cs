@@ -10,7 +10,5 @@ namespace EBird.Application.Model
 {
     public class RoomCreateDTO : RoomUpdateDTO
     {
-        [Required(ErrorMessage = "CreateById is required")]
-        public Guid CreateById { get; set; }
     }
 }

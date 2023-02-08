@@ -25,12 +25,19 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task AddRoom(RoomCreateDTO roomCreateDTO)
+        public async Task AddRoom(Guid createById, RoomCreateDTO roomCreateDTO)
         {
-            await BaseValidation.ValidateAccountId(roomCreateDTO.CreateById, _repository);
-            
-            var roomEntity = _mapper.Map<RoomEntity>(roomCreateDTO);
-            
+            //await BaseValidation.ValidateAccountId(roomCreateDTO.CreateById, _repository);
+
+            //var roomEntity = _mapper.Map<RoomEntity>(roomCreateDTO);
+            var roomEntity = new RoomEntity()
+            {
+                Name = roomCreateDTO.Name,
+                Status = roomCreateDTO.Status,
+                City = roomCreateDTO.City,
+                CreateById = createById
+            };
+
             await _repository.Room.AddRoomAsync(roomEntity);
         }
 
