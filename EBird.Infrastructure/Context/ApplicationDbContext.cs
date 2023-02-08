@@ -40,6 +40,31 @@ namespace EBird.Infrastructure.Context
                 .HasMany(acc => acc.Rules)
                 .WithOne(r => r.Account)
                 .HasForeignKey(r => r.CreateById);
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Bird)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ResourceEntity>()
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.Resources)
+                .HasForeignKey(m => m.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
@@ -53,6 +78,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<RuleEntity> Rules { get; set; }
 
         public DbSet<GroupEntity> Groups { get; set; }
+        public DbSet<ResourceEntity> Resources { get; set; }
+        public DbSet<AccountResourceEntity> AccountResources { get; set; }
+        public DbSet<BirdResourceEntity> BirdResources { get; set; }
         #endregion
     }
 }
