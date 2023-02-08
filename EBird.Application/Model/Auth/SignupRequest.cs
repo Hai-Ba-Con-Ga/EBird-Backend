@@ -3,7 +3,7 @@ using EBird.Domain.Entities;
 using Newtonsoft.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
-namespace EBird.Api.UserFeatures.Requests
+namespace EBird.Application.Model.Auth
 {
     public class SignupRequest : IMapTo<AccountEntity>
     {

@@ -1,3 +1,4 @@
+using System.Data;
 using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -31,33 +32,41 @@ namespace EBird.Infrastructure.Context
                 .HasMany(acc => acc.Birds)
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
-            //Config for one to many relationship "create" between AccountEntity and Resource
+            //Config for one to many relationship between AccountEntity and Rules
             modelBuilder.Entity<AccountEntity>()
-                .HasMany(acc => acc.Resources)
-                .WithOne(r => r.CreateBy)
+                .HasMany(acc => acc.Rules)
+                .WithOne(r => r.Account)
                 .HasForeignKey(r => r.CreateById);
-            //Config for many to many relationship between BirdEntity and Resource
-            modelBuilder.Entity<BirdEntity>()
-                .HasMany(b => b.BirdResources)
-                .WithOne(br => br.BirdEntity)
-                .HasForeignKey(br => br.BirdId);
+            //Config for one to many relationship between AccountEntity and AccountResourceEntity
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between AccountResourceEntity and ResourceEntity
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between BirdEntity and BirdResourceEntity
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Bird)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between ResourceEntity and BirdResourceEntity
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship (create by) between AccountEntity and ResourceEntity
             modelBuilder.Entity<ResourceEntity>()
-                .HasMany(r => r.BirdResource)
-                .WithOne(br => br.ResourceEntity)
-                .HasForeignKey(br => br.ResourceId);
-            modelBuilder.Entity<BirdResource>()
-                .HasIndex(br => new {br.BirdId, br.ResourceId});
-            //config for many to many relationship between AccountEntity and Resource
-            modelBuilder.Entity<AccountEntity>()
-                .HasMany(a => a.Account_Resource)
-                .WithOne(ar => ar.AccountEntity)
-                .HasForeignKey(ar => ar.AccountId);
-            modelBuilder.Entity<ResourceEntity>()
-                .HasMany(r => r.BirdResource)
-                .WithOne(ar => ar.ResourceEntity)
-                .HasForeignKey(ar => ar.ResourceId);
-            modelBuilder.Entity<AccountResource>()
-                .HasIndex(ar => new {ar.AccountId, ar.ResourceId});
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.Resources)
+                .HasForeignKey(m => m.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
@@ -68,10 +77,12 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<RuleEntity> Rules { get; set; }
+
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<ResourceEntity> Resources { get; set; }
-        public DbSet<BirdResource> Bird_Resources { get; set; }
-        public DbSet<AccountResource> Account_Resources { get; set; }
+        public DbSet<AccountResourceEntity> AccountResources { get; set; }
+        public DbSet<BirdResourceEntity> BirdResources { get; set; }
         #endregion
     }
 }

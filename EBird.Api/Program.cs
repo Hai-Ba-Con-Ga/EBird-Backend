@@ -35,7 +35,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultTokenProviders();
 
 builder.Services.AddSettingService(configuration);
-// builder.Services.AddDbService(configuration);
+//builder.Services.AddDbService(configuration);
 builder.Services.AddDbLocalService();
 
 //register Repository
@@ -86,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options => options.EnablePersistAuthorization());
     app.UseDeveloperExceptionPage();
+    await app.Services.ApplyMigration();
     await app.Services.DbInitializer();
 }
 app.UseSwagger();

@@ -1,38 +1,26 @@
-using System;
-using System.Collections.Generic;
+using EBird.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using EBird.Domain.Common;
-
 namespace EBird.Domain.Entities
 {
     [Table("Resource")]
     public class ResourceEntity : BaseEntity
     {
-        [Column("ResourceDataLink", TypeName ="varchar")]
-        [MaxLength(255)]
-        [Required]
-        public string DataLink { get; set; }
+        public Guid CreateById { get; set; }
+        public AccountEntity Account { get; set; } = null!;
 
-        [Column("ResourceDescription", TypeName ="nvarchar")]
-        [MaxLength(100)]
-        public string Description { get; set; }
+        [Column(TypeName = "text")]
+        public string? Datalink { get; set; }
+
+        [Column(TypeName = "varchar")]
+        public string? Description { get; set; }
 
         [Column("CreateDate", TypeName ="datetime")]
         [Required]
         public DateTime CreateDate { get; set; }
 
-        //CreateBy foreign key
-        [Column("ResourceCreateById")]
-        [Required]
-        public Guid CreateById { get; set; }
-        public AccountEntity CreateBy { get; set; }
+        public ICollection<AccountResourceEntity> AccountResources { get; set; }
 
-        //collection 
-        public ICollection<BirdResource> BirdResource { get; set; } = null!;
-        public ICollection<AccountResource> AccountResource { get; set; } = null!;
-
+        public ICollection<BirdResourceEntity> BirdResources { get; set; }
     }
 }

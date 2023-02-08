@@ -1,5 +1,5 @@
 ﻿using EBird.Application.AppConfig;
-using EBird.Application.Model;
+using EBird.Application.Model.Auth;
 using EBird.Application.Services.IServices;
 using MailKit.Security;
 using Microsoft.Extensions.Options;

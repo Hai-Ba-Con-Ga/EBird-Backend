@@ -1,11 +1,12 @@
 ﻿using Duende.IdentityServer.Models;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace EBird.Api.UserFeatures.Requests
+namespace EBird.Application.Model.Auth
 {
-    public class UpdateAccountRequest
+    public class UpdateAccountRequest : IMapTo<AccountEntity>
     {
-
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
         [Required(ErrorMessage = "FirstName is required")]
