@@ -1,4 +1,4 @@
-﻿using EBird.Application.Model;
+﻿using EBird.Application.Model.Auth;
 using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Response;

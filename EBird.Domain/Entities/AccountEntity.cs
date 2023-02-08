@@ -11,7 +11,6 @@ namespace EBird.Domain.Entities
     {
         [Column(TypeName = "varchar")]
         [MaxLength(255)]
-        [AllowNull]
         public string? Password { get; set; }
 
         [Column(TypeName = "varchar")]
@@ -49,8 +48,8 @@ namespace EBird.Domain.Entities
         public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
         public ICollection<GroupEntity> Groups { get; set; } = null!;
         public ICollection<RoomEntity> Rooms { get; set; } = null!;
-
         public ICollection<BirdEntity> Birds { get; set; } = null!;
+        public ICollection<RuleEntity> Rules { get; set; } = null!;
         public ICollection<NotificationEntity> Notifications { get; set; } = null!;
     }
 }

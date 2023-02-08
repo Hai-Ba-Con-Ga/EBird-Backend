@@ -11,7 +11,7 @@ namespace EBird.Application.Validation
 {
     public class BirdValidation
     {
-        public static async Task ValidateBird(BirdDTO birdDTO, IWapperRepository _repository)
+        public static async Task ValidateCreateBird(BirdCreateDTO birdDTO, IWapperRepository _repository)
         {
             //valid bird type id
             await ValidateBirdType(birdDTO, _repository);
@@ -19,7 +19,13 @@ namespace EBird.Application.Validation
             await ValidateOwner(birdDTO, _repository);
         }
 
-        public static async Task ValidateBirdType(BirdDTO birdDTO, IWapperRepository _repository)
+        public static async Task ValidateUpdateBird(BirdRequestDTO birdDTO, IWapperRepository _repository)
+        {
+            //valid bird type id
+            await ValidateBirdType(birdDTO, _repository);
+        }
+
+        public static async Task ValidateBirdType(BirdRequestDTO birdDTO, IWapperRepository _repository)
         {
             //valid bird type id
             var birdType = await _repository.BirdType.GetBirdTypeActiveAsync(birdDTO.BirdTypeId);
@@ -30,7 +36,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateOwner(BirdDTO birdDTO, IWapperRepository _repository)
+        public static async Task ValidateOwner(BirdCreateDTO birdDTO, IWapperRepository _repository)
         {
             //valid bird type id
             var birdType = await _repository.Account.GetByIdAsync(birdDTO.OwnerId);

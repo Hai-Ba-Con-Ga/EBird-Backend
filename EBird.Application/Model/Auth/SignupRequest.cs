@@ -1,10 +1,11 @@
-﻿using EBird.Domain.Entities;
+﻿using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 using Newtonsoft.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
-namespace EBird.Api.UserFeatures.Requests
+namespace EBird.Application.Model.Auth
 {
-    public class SignupRequest
+    public class SignupRequest : IMapTo<AccountEntity>
     {
         [Required (ErrorMessage ="Password is required")]
         [StringLength(20, ErrorMessage = "Password cannot be longer than 20 characters")]

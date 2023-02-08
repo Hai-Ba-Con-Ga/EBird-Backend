@@ -1,5 +1,4 @@
-﻿using EBird.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Duende.IdentityServer.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,13 +6,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Model.Group
 {
-    public class GroupDTO
+    public class GroupRequestDTO : IMapTo<GroupEntity>
     {
-        [MaxLength(50)]
         [Required]
+        [MaxLength(50)]
         public string Name { get; set; }
 
         [Required]
@@ -24,14 +25,8 @@ namespace EBird.Application.Model.Group
         [Range(0, double.MaxValue, ErrorMessage = "Min ELO must be greater than 0")]
         public int MinELO { get; set; }
 
+        [Required]
         [MaxLength(20)]
         public string Status { get; set; }
-
-        public DateTime? CreateDatetime { get; set; }
-
-        //forgein key
-
-        public Guid CreatedById { get; set; }
-
     }
 }

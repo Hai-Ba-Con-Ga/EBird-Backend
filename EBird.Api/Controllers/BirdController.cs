@@ -27,15 +27,14 @@ namespace EBird.Api.Controllers
 
         // GET: get all
         [HttpGet("all")]
-        public async Task<ActionResult<Response<IList<BirdDTO>>>> Get([FromQuery] BirdParameters parameters)
+        public async Task<ActionResult<Response<IList<BirdResponseDTO>>>> Get([FromQuery] BirdParameters parameters)
         {
-            Response<IList<BirdDTO>> response = null;
+            Response<IList<BirdResponseDTO>> response = null;
             try
             {
-                IList<BirdDTO> listBirdDTO = null;
-                if (parameters.PageSize == 0)
+                IList<BirdResponseDTO> listBirdDTO = null;
+                if(parameters.PageSize == 0)
                 {
-                    System.Console.WriteLine("params is null");
                     listBirdDTO = await _birdService.GetBirds();
                 }
                 else
@@ -44,244 +43,242 @@ namespace EBird.Api.Controllers
 
                     var metaData = new
                     {
-                        ((PagedList<BirdDTO>)listBirdDTO).CurrentPage,
-                        ((PagedList<BirdDTO>)listBirdDTO).TotalPages,
-                        ((PagedList<BirdDTO>)listBirdDTO).PageSize,
-                        ((PagedList<BirdDTO>)listBirdDTO).HasNext,
-                        ((PagedList<BirdDTO>)listBirdDTO).HasPrevious,
-                        ((PagedList<BirdDTO>)listBirdDTO).TotalCount,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).CurrentPage,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).TotalPages,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).PageSize,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).HasNext,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).HasPrevious,
+                        ((PagedList<BirdResponseDTO>) listBirdDTO).TotalCount,
                     };
 
                     Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
                 }
 
-                response = Response<IList<BirdDTO>>.Builder()
+                response = Response<IList<BirdResponseDTO>>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Get all birds successful")
                     .SetData(listBirdDTO);
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<IList<BirdDTO>>.Builder()
+                    response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
-                response = Response<IList<BirdDTO>>.Builder()
+                response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
 
         // GET : get bird by id 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<BirdDTO>>> Get(Guid id)
+        public async Task<ActionResult<Response<BirdResponseDTO>>> Get(Guid id)
         {
-            Response<BirdDTO> response = null;
+            Response<BirdResponseDTO> response = null;
             try
             {
                 var birdDTO = await _birdService.GetBird(id);
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<BirdResponseDTO>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Get bird successful")
                     .SetData(birdDTO);
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<BirdDTO>.Builder()
+                    response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
 
         // POST : create bird
         [HttpPost]
-        public async Task<ActionResult<Response<BirdDTO>>> Post([FromBody] BirdDTO birdDTO)
+        public async Task<ActionResult<Response<string>>> Post([FromBody] BirdCreateDTO birdDTO)
         {
-            Response<BirdDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _birdService.AddBird(birdDTO);
+                await _birdService.AddBird(birdDTO);
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
+                    .SetStatusCode((int) HttpStatusCode.Created)
                     .SetMessage("Create bird successful")
-                    .SetData(responseData);
+                    .SetData("");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
 
-                if (ex is BadRequestException)
+                if(ex is BadRequestException)
                 {
-                    response = Response<BirdDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
 
         // PUT : update bird
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<BirdDTO>>> Put(Guid id, [FromBody] BirdDTO birdDTO)
+        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] BirdRequestDTO birdDTO)
         {
-            Response<BirdDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _birdService.UpdateBird(id, birdDTO);
+                await _birdService.UpdateBird(id, birdDTO);
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Update bird successful")
-                    .SetData(responseData);
+                    .SetData("");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is NotFoundException || ex is BadRequestException)
+                if(ex is NotFoundException || ex is BadRequestException)
                 {
-                    response = Response<BirdDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                            .SetSuccess(false)
-                           .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                           .SetStatusCode((int) HttpStatusCode.InternalServerError)
                            .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
 
         // DELETE : delete bird
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<BirdDTO>>> Delete(Guid id)
+        public async Task<ActionResult<Response<string>>> Delete(Guid id)
         {
-            Response<BirdDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _birdService.DeleteBird(id);
+                await _birdService.DeleteBird(id);
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Delete bird successful")
-                    .SetData(responseData);
+                    .SetData("");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is NotFoundException || ex is BadRequestException)
+                if(ex is NotFoundException || ex is BadRequestException)
                 {
-                    response = Response<BirdDTO>.Builder()
+                    response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine(ex.Message);
 
-                response = Response<BirdDTO>.Builder()
+                response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
+        
         // GET: get all by account id
         [HttpGet("owner")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<List<BirdDTO>>>> GetAllByOwner()
+        public async Task<ActionResult<Response<List<BirdResponseDTO>>>> GetAllByOwner()
         {
-            Response<List<BirdDTO>> response = null;
+            Response<List<BirdResponseDTO>> response = null;
             try
             {
                 string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (rawId == null)
+                if(rawId == null)
                 {
                     throw new UnauthorizedException("Not allowed to access");
                 }
 
                 Guid accountId = Guid.Parse(rawId);
 
-                Console.WriteLine(accountId);
-
                 var responseData = await _birdService.GetAllBirdByAccount(accountId);
 
-                response = Response<List<BirdDTO>>.Builder()
+                response = Response<List<BirdResponseDTO>>.Builder()
                    .SetSuccess(true)
-                   .SetStatusCode((int)HttpStatusCode.OK)
+                   .SetStatusCode((int) HttpStatusCode.OK)
                    .SetMessage("Get bird by account id is successful")
                    .SetData(responseData);
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException || ex is UnauthorizedException)
+                if(ex is BadRequestException || ex is NotFoundException || ex is UnauthorizedException)
                 {
-                    response = Response<List<BirdDTO>>.Builder()
+                    response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<List<BirdDTO>>.Builder()
+                response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
     }

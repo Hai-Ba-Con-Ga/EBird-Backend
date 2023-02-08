@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EBird.Api.UserFeatures.Requests
+namespace EBird.Application.Model.Auth
 {
     public class CheckEmailRequest
     {

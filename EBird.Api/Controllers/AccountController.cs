@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EBird.Api.UserFeatures.Requests;
+using EBird.Application.Model.Auth;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
-using EBird.Application.Model;
+using EBird.Application.Model.Auth;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;

@@ -15,7 +15,7 @@ namespace EBird.Api.Filters
             if (!context.ModelState.IsValid)
             {
                 var errors = string.Join("; ", context.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                var response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage("Invalid request").SetData(errors);
+                var response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(errors);
                 context.Result = new BadRequestObjectResult(response);
             }
         }

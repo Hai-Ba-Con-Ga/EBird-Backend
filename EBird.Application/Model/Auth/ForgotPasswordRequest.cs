@@ -1,4 +1,4 @@
-﻿namespace EBird.Api.UserFeatures.Requests
+﻿namespace EBird.Application.Model.Auth
 {
     public class ForgotPasswordRequest
     {
