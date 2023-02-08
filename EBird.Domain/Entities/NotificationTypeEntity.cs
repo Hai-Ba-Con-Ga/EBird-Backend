@@ -16,15 +16,15 @@ namespace EBird.Domain.Entities
         [Required]
         [Column("TypeCode", TypeName = "varchar")]
         [MaxLength(100)]
-        public string TypeCode { get; set;}
+        public string TypeCode { get; set; } = null!;
 
         [Required]
         [Column("TypeName", TypeName = "varchar")]
         [MaxLength(100)]
-        public string TypeName { get; set;}
+        public string TypeName { get; set; } = null!;
 
 
         // relationship
-        public ICollection<NotificationEntity> Notifications { get; set; }
+        public ICollection<NotificationEntity>? Notifications { get; set; }
     }
 }

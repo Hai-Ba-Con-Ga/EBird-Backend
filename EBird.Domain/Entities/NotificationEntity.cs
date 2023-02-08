@@ -12,28 +12,23 @@ namespace EBird.Domain.Entities
     [Table("Notification")]
     public class NotificationEntity : BaseEntity
     {
-        //[Column("NotiTypeCode", TypeName = "varchar")]
-        //[MaxLength(50)]
-        //public string NotiTypeCode { get; set; }
-
-
         [Column("Content", TypeName = "text")]
         [MaxLength(50)]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [Required]
         [Column("CreateDateTime", TypeName = "datetime")]
-        public DateTime CreateDateTime { get; set; }
-
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
 
         //PK accountID
         [ForeignKey("AccountId")]
         public Guid AccountId { get; set; }
-        public AccountEntity Account;
+        public AccountEntity Account = null!;
 
         //PK NotificationType
+        [ForeignKey("NotificationTypeId")]
         public Guid NotificatoinTypeId { get; set; }
-        public NotificationTypeEntity NotificationType;
+        public NotificationTypeEntity NotificationType = null!;
 
     }
 }
