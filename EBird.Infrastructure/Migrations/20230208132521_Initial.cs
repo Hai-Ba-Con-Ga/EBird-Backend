@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class Intitial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -112,21 +112,20 @@ namespace EBird.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ResourceDataLink = table.Column<string>(type: "varchar", maxLength: 255, nullable: false),
-                    ResourceDescription = table.Column<string>(type: "nvarchar", maxLength: 100, nullable: false),
+                    CreateById = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Datalink = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "varchar", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    ResourceCreateById = table.Column<Guid>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Resource", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Resource_Account_ResourceCreateById",
-                        column: x => x.ResourceCreateById,
+                        name: "FK_Resource_Account_CreateById",
+                        column: x => x.CreateById,
                         principalTable: "Account",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -147,6 +146,28 @@ namespace EBird.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Room_Account_RoomCreateById",
                         column: x => x.RoomCreateById,
+                        principalTable: "Account",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rule",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreateById = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar", maxLength: 100, nullable: true),
+                    CreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rule_Account_CreateById",
+                        column: x => x.CreateById,
                         principalTable: "Account",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -187,67 +208,62 @@ namespace EBird.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Account_Resource",
+                name: "AccountResources",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ResourceId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ResourceEntityId = table.Column<Guid>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Account_Resource", x => x.Id);
+                    table.PrimaryKey("PK_AccountResources", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Account_Resource_Account_AccountId",
+                        name: "FK_AccountResources_Account_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Account",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Account_Resource_Resource_ResourceEntityId",
-                        column: x => x.ResourceEntityId,
+                        name: "FK_AccountResources_Resource_ResourceId",
+                        column: x => x.ResourceId,
                         principalTable: "Resource",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bird_Resource",
+                name: "BirdResources",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ResourceId = table.Column<Guid>(type: "TEXT", nullable: false),
                     BirdId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ResourceId = table.Column<Guid>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bird_Resource", x => x.Id);
+                    table.PrimaryKey("PK_BirdResources", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bird_Resource_Bird_BirdId",
+                        name: "FK_BirdResources_Bird_BirdId",
                         column: x => x.BirdId,
                         principalTable: "Bird",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Bird_Resource_Resource_ResourceId",
+                        name: "FK_BirdResources_Resource_ResourceId",
                         column: x => x.ResourceId,
                         principalTable: "Resource",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Account_Resource_AccountId_ResourceId",
-                table: "Account_Resource",
-                columns: new[] { "AccountId", "ResourceId" });
+                name: "IX_AccountResources_AccountId",
+                table: "AccountResources",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Account_Resource_ResourceEntityId",
-                table: "Account_Resource",
-                column: "ResourceEntityId");
+                name: "IX_AccountResources_ResourceId",
+                table: "AccountResources",
+                column: "ResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bird_BirdTypeId",
@@ -260,13 +276,13 @@ namespace EBird.Infrastructure.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bird_Resource_BirdId_ResourceId",
-                table: "Bird_Resource",
-                columns: new[] { "BirdId", "ResourceId" });
+                name: "IX_BirdResources_BirdId",
+                table: "BirdResources",
+                column: "BirdId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bird_Resource_ResourceId",
-                table: "Bird_Resource",
+                name: "IX_BirdResources_ResourceId",
+                table: "BirdResources",
                 column: "ResourceId");
 
             migrationBuilder.CreateIndex(
@@ -286,23 +302,28 @@ namespace EBird.Infrastructure.Migrations
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Resource_ResourceCreateById",
+                name: "IX_Resource_CreateById",
                 table: "Resource",
-                column: "ResourceCreateById");
+                column: "CreateById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Room_RoomCreateById",
                 table: "Room",
                 column: "RoomCreateById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rule_CreateById",
+                table: "Rule",
+                column: "CreateById");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Account_Resource");
+                name: "AccountResources");
 
             migrationBuilder.DropTable(
-                name: "Bird_Resource");
+                name: "BirdResources");
 
             migrationBuilder.DropTable(
                 name: "Group");
@@ -312,6 +333,9 @@ namespace EBird.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Room");
+
+            migrationBuilder.DropTable(
+                name: "Rule");
 
             migrationBuilder.DropTable(
                 name: "VerifcationStore");

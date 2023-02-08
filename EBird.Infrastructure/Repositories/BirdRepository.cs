@@ -54,7 +54,7 @@ namespace EBird.Infrastructure.Repositories
 
                         if (rowEffect == 0) throw new BadRequestException("Resource is can be added");
 
-                        await _context.Bird_Resources.AddAsync(new BirdResource(rsrc.Id, birdId));
+                        await _context.BirdResources.AddAsync(new BirdResourceEntity(rsrc.Id, birdId));
                         rowEffect = await _context.SaveChangesAsync();
 
                         if (rowEffect == 0) throw new BadRequestException("Bird_Resource is can be added");

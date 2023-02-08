@@ -60,13 +60,13 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<ICollection<ResourceResponse>> GetResourcesByBird(Guid birdId)
         {
-            var resultQeury = from br in _context.Bird_Resources
+            var resultQeury = from br in _context.BirdResources
                             join r in _context.Resources on br.ResourceId equals r.Id
                             where br.BirdId == birdId
                             select new ResourceResponse
                             {
                                 Id = r.Id,
-                                DataLink = r.DataLink,
+                                DataLink = r.Datalink,
                                 Description = r.Description,
                                 CreateDate = r.CreateDate,
                                 CreateById = r.CreateById
