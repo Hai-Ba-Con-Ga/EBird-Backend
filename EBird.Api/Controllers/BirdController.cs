@@ -1,6 +1,7 @@
 using EBird.Application.Exceptions;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
+using EBird.Application.Model.Resource;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -110,7 +111,8 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-
+                Console.WriteLine($"Error: {ex.Message}");
+                
                 response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -139,7 +141,6 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-
                 if(ex is BadRequestException)
                 {
                     response = Response<string>.Builder()

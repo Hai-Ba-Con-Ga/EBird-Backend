@@ -38,5 +38,6 @@ namespace EBird.Application.Model.Bird
         //forgeinkey
         [Required(ErrorMessage = "Bird type is required")]
         public Guid BirdTypeId { get; set; }
+
     }
 }
