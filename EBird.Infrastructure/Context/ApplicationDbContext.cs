@@ -17,7 +17,6 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<BirdTypeEntity>()
                 .HasIndex(b => b.TypeCode)
                 .IsUnique(true);
-
             //Config for NotificationTypeEntity
             modelBuilder.Entity<NotificationTypeEntity>()
                 .HasIndex(b => b.TypeCode)
@@ -28,8 +27,6 @@ namespace EBird.Infrastructure.Context
                 .HasMany(bt => bt.Birds)
                 .WithOne(b => b.BirdType)
                 .HasForeignKey(b => b.BirdTypeId);
-
-
             // Config for one to many relationship between AccountEntity and GroupEntity
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(a => a.Groups)
@@ -40,11 +37,41 @@ namespace EBird.Infrastructure.Context
                 .HasMany(acc => acc.Birds)
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId);
-            //Config for one to many relationship between AccountEntity and RoomEntity
+            //Config for one to many relationship between AccountEntity and Rules
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rules)
                 .WithOne(r => r.Account)
                 .HasForeignKey(r => r.CreateById);
+            //Config for one to many relationship between AccountEntity and AccountResourceEntity
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between AccountResourceEntity and ResourceEntity
+            modelBuilder.Entity<AccountResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.AccountResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between BirdEntity and BirdResourceEntity
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Bird)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between ResourceEntity and BirdResourceEntity
+            modelBuilder.Entity<BirdResourceEntity>()
+                .HasOne(m => m.Resource)
+                .WithMany(mt => mt.BirdResources)
+                .HasForeignKey(m => m.ResourceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship (create by) between AccountEntity and ResourceEntity
+            modelBuilder.Entity<ResourceEntity>()
+                .HasOne(m => m.Account)
+                .WithMany(mt => mt.Resources)
+                .HasForeignKey(m => m.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
                 .WithOne(b => b.CreateBy)
@@ -75,6 +102,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
 
         public DbSet<GroupEntity> Groups { get; set; }
+        public DbSet<ResourceEntity> Resources { get; set; }
+        public DbSet<AccountResourceEntity> AccountResources { get; set; }
+        public DbSet<BirdResourceEntity> BirdResources { get; set; }
         #endregion
     }
 }

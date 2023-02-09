@@ -72,6 +72,30 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("Account");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("AccountResources");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -135,6 +159,30 @@ namespace EBird.Infrastructure.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Bird");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.BirdResourceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BirdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BirdId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("BirdResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
@@ -254,6 +302,31 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("RefreshToken");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreateById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Datalink")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("varchar");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateById");
+
+                    b.ToTable("Resource");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -334,6 +407,32 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateById");
+
+                    b.ToTable("Rule");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.VerifcationStoreEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -345,6 +444,25 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VerifcationStore");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("AccountResources")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
+                        .WithMany("AccountResources")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Resource");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -366,6 +484,25 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.BirdResourceEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.BirdEntity", "Bird")
+                        .WithMany("BirdResources")
+                        .HasForeignKey("BirdId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.ResourceEntity", "Resource")
+                        .WithMany("BirdResources")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Bird");
+
+                    b.Navigation("Resource");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
@@ -383,6 +520,17 @@ namespace EBird.Infrastructure.Migrations
                         .WithMany("RefreshTokens")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("Resources")
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -412,20 +560,36 @@ namespace EBird.Infrastructure.Migrations
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
+                    b.Navigation("AccountResources");
+
                     b.Navigation("Birds");
 
                     b.Navigation("Groups");
 
                     b.Navigation("RefreshTokens");
 
+                    b.Navigation("Resources");
+
                     b.Navigation("Rooms");
 
                     b.Navigation("Rules");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
+                {
+                    b.Navigation("BirdResources");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
                 {
                     b.Navigation("Birds");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
+                {
+                    b.Navigation("AccountResources");
+
+                    b.Navigation("BirdResources");
                 });
 #pragma warning restore 612, 618
         }

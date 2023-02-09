@@ -33,7 +33,20 @@ namespace EBird.Application.Services
 
             BirdEntity birdEntity = _mapper.Map<BirdEntity>(birdDTO);
 
-            await _repository.Bird.AddBirdAsync(birdEntity);
+            var resourceDTOList = birdDTO.ListResource;
+
+            if (resourceDTOList == null)
+            {
+                await _repository.Bird.AddBirdAsync(birdEntity);
+            }
+            else
+            {
+                await BirdValidation.ValidateCreateResourceList(resourceDTOList, _repository);
+
+                var resourceEntityList = _mapper.Map<List<ResourceEntity>>(resourceDTOList);
+
+                await _repository.Bird.AddBirdAsync(birdEntity, resourceEntityList);
+            }
         }
 
         public async Task DeleteBird(Guid birdID)
@@ -45,13 +58,15 @@ namespace EBird.Application.Services
         {
             var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
 
-            if(birdEntity == null)
+            if (birdEntity == null)
             {
                 throw new NotFoundException("Can not found bird");
             }
 
             var birdDTO = _mapper.Map<BirdResponseDTO>(birdEntity);
 
+            birdDTO.ResourceList = await _repository.Resource.GetResourcesByBird(birdDTO.Id);
+            
             return birdDTO;
         }
 
@@ -59,12 +74,17 @@ namespace EBird.Application.Services
         {
             var listBirdEntity = await _repository.Bird.GetBirdsActiveAsync();
 
-            if(listBirdEntity.Count == 0)
+            if (listBirdEntity.Count == 0)
             {
                 throw new NotFoundException("Can not found bird");
             }
 
             var listBirdDTO = _mapper.Map<List<BirdResponseDTO>>(listBirdEntity);
+
+            foreach (var birdDto in listBirdDTO)
+            {
+                birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
+            }
 
             return listBirdDTO;
         }
@@ -78,6 +98,10 @@ namespace EBird.Application.Services
             var birdListDTO = _mapper.Map<PagedList<BirdResponseDTO>>(birdList);
             birdListDTO.MapMetaData(birdList);
 
+            foreach (var birdDto in birdListDTO)
+            {
+                birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
+            }
 
             return birdListDTO;
         }
@@ -88,7 +112,7 @@ namespace EBird.Application.Services
 
             var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
 
-            if(birdEntity == null)
+            if (birdEntity == null)
             {
                 throw new NotFoundException("Can not found bird for update");
             }
@@ -101,11 +125,20 @@ namespace EBird.Application.Services
         public async Task<List<BirdResponseDTO>> GetAllBirdByAccount(Guid accountId)
         {
             var listBirdEntity = await _repository.Bird.GetAllBirdActiveByAccountId(accountId);
-            if(listBirdEntity.Count == 0)
+            
+            if (listBirdEntity.Count == 0)
             {
                 throw new NotFoundException("Can not found bird");
             }
-            return _mapper.Map<List<BirdResponseDTO>>(listBirdEntity);
+
+            var birdListDto = _mapper.Map<List<BirdResponseDTO>>(listBirdEntity);
+
+            foreach (var birdDto in birdListDto)
+            {
+                birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
+            }
+
+            return birdListDto;
         }
 
     }

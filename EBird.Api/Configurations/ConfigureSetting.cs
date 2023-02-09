@@ -8,6 +8,8 @@ public static class ConfigureSetting
     {
         services.Configure<GoogleSetting>(configuration.GetSection(GoogleSetting.GoogleSettingString));
         services.Configure<MailSetting>(configuration.GetSection(MailSetting.MailSettingString));
+        services.Configure<AppSetting>(configuration.GetSection(AppSetting.AppSettingString));
+
         return services;
     }
 }
