@@ -74,7 +74,7 @@ namespace EBird.Api.Controllers
 
                 response = Response<RoomResponseDTO>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get room is success")
                     .SetData(responseData);
 
@@ -117,7 +117,7 @@ namespace EBird.Api.Controllers
                 Guid id = Guid.Parse(rawId);
                 await _roomService.AddRoom(id, RoomCreateDTO);
                 response = Response<string>.Builder().SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK).SetMessage("Create room is success").SetData("");
+                    .SetStatusCode((int)HttpStatusCode.Created).SetMessage("Create room is success").SetData("");
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)

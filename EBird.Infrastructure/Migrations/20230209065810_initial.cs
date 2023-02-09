@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -42,6 +42,22 @@ namespace EBird.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BirdType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Places",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar", maxLength: 150, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar", maxLength: 100, nullable: false),
+                    Longitude = table.Column<string>(type: "nvarchar", maxLength: 100, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Places", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -327,6 +343,9 @@ namespace EBird.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Group");
+
+            migrationBuilder.DropTable(
+                name: "Places");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
