@@ -22,17 +22,16 @@ namespace EBird.Application.Services
             _repository = repository;
         }
 
-        public async Task CreatePlace(PlaceRequestDTO request)
+        public async Task<Guid> CreatePlace(PlaceRequestDTO request)
         {
-            if(request == null)
+            if (request == null)
             {
                 throw new BadRequestException("request is null");
             }
 
             var placeEntity = _mapper.Map<PlaceEntity>(request);
 
-            await _repository.Place.CreatePlace(placeEntity);
-
+            return await _repository.Place.CreatePlace(placeEntity);
         }
 
         public async Task DeletepPlace(Guid placeId)
@@ -55,6 +54,12 @@ namespace EBird.Application.Services
         public async Task UpdatePlace(Guid placeId, PlaceRequestDTO request)
         {
             var entity = await _repository.Place.GetPlace(placeId);
+
+            if (entity == null)
+            {
+                throw new BadRequestException("Entity is not exist");
+            }
+
             _repository.Place.UpdatePlace(entity);
         }
     }

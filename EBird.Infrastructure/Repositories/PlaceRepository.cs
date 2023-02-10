@@ -15,14 +15,15 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<bool> CreatePlace(PlaceEntity entity)
+        public async Task<Guid> CreatePlace(PlaceEntity entity)
         {
+            entity.CreatedDate = DateTime.Now;
             var result = await this.CreateAsync(entity);
             if (result == 0)
             {
                 throw new BadRequestException("Can not create place");
             }
-            return true;
+            return entity.Id;
         }
 
         public async Task<bool> DeletePlace(Guid entityId)
@@ -30,7 +31,7 @@ namespace EBird.Infrastructure.Repositories
             var result = await this.DeleteAsync(entityId);
             if (result == null)
             {
-                throw new BadRequestException("Can not delete place");
+                throw new BadRequestException("Entity is not exist");
             }
             return true;
         }
@@ -38,10 +39,6 @@ namespace EBird.Infrastructure.Repositories
         public async Task<PlaceEntity> GetPlace(Guid id)
         {
             var result = await this.GetByIdActiveAsync(id);
-            if(result == null)
-            {
-                throw new NotFoundException("can not find place");
-            }
             return result;
         }
 

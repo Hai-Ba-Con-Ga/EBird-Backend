@@ -8,7 +8,7 @@ namespace EBird.Application.Services.IServices
 {
     public interface IPlaceService
     {
-        public Task CreatePlace(PlaceRequestDTO request);
+        public Task<Guid> CreatePlace(PlaceRequestDTO request);
         public Task DeletepPlace(Guid placeId);
         public Task UpdatePlace(Guid placeId, PlaceRequestDTO request);
         public Task<ICollection<PlaceResponseDTO>> GetPlaces();

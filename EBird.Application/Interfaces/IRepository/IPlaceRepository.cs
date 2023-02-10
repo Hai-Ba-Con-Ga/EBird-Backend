@@ -8,7 +8,7 @@ namespace EBird.Application.Interfaces.IRepository
 {
     public interface IPlaceRepository
     {
-        public Task<bool> CreatePlace(PlaceEntity entity);
+        public Task<Guid> CreatePlace(PlaceEntity entity);
         public Task<bool> DeletePlace(Guid entityId);
         public Task<bool> UpdatePlace(PlaceEntity entity);
         public Task<PlaceEntity> GetPlace(Guid id); 

@@ -33,5 +33,7 @@ namespace EBird.Domain.Entities
         [Column("CreatedDate", TypeName ="datetime")]
         [Required]
         public DateTime CreatedDate { get; set; }
+
+        public ICollection<RequestEntity> Requests { get; set; }
     }
 }
