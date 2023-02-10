@@ -19,8 +19,9 @@ namespace EBird.Api.Controllers
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
 
-        public ChatRoomController(IHubContext<ChatHub> hubContext)
+        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IHubContext<ChatHub> hubContext)
         {
+            _chatRoomRepository = chatRoomRepository;
             _hubContext = hubContext;
         }
 
@@ -45,14 +46,14 @@ namespace EBird.Api.Controllers
             return StatusCode((int)HttpStatusCode.OK, response);
         }
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> CreateChatRoom(string roomName){
+        public async Task<ActionResult<Response<string>>> CreateChatRoom(CreateRoomView room){
             var newChatRoom = new ChatRoomEntity(){
-                Name = roomName
+                Name = room.Name
             };
             await _chatRoomRepository.CreateAsync(newChatRoom);
             await _hubContext.Clients.All.SendAsync("addChatRoom", new RoomView(){
                 Id = newChatRoom.Id.ToString(),
-                Name = roomName
+                Name = room.Name
             });
             var response = Response<string>.Builder().SetMessage("Created Successfully").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
