@@ -91,7 +91,7 @@ namespace EBird.Application.Services
 
         public async Task<PagedList<BirdResponseDTO>> GetBirdsByPagingParameters(BirdParameters parameters)
         {
-            BirdValidation.ValidateBirdParameter(parameters);
+            BirdValidation.ValidateParameter(parameters);
 
             var birdList = await _repository.Bird.GetBirdsActiveAsync(parameters);
 
