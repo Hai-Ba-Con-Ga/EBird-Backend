@@ -6,114 +6,54 @@ using Microsoft.AspNetCore.SignalR;
 namespace EBird.Application.Hubs;
 public class ChatHub : Hub
 {
-    private static readonly List<UserView> _Connections = new List<UserView>();
-    private readonly static Dictionary<string, string> _ConnectionsMap = new Dictionary<string, string>();
-
-    private readonly IGenericRepository<MessageEntity> _messageRepository;
-    private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
-    private readonly IGenericRepository<ParticipantEntity> _participantRepository;
-    private readonly IGenericRepository<AccountEntity> _accountRepository;
-
-    public ChatHub(IGenericRepository<MessageEntity> messageRepository, IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<ParticipantEntity> participantRepository)
+    private readonly List<UserConnection> _Connections = new List<UserConnection>();
+    private readonly Dictionary<string, UserConnection> _ConnectionsMap;
+    public ChatHub(List<UserConnection> Connections, Dictionary<string, UserConnection> ConnectionsMap)
     {
-        _messageRepository = messageRepository;
-        _chatRoomRepository = chatRoomRepository;
-        _participantRepository = participantRepository;
+        _Connections = Connections;
+        _ConnectionsMap = ConnectionsMap;
     }
-    private string IdentityName
+    public override Task OnDisconnectedAsync(Exception exception)
     {
-        get { return Context.User.Identity.Name; }
-    }
-
-    public async Task SendPrivate(string receiverId, string message)
-    {
-        if (_ConnectionsMap.TryGetValue(receiverId, out string userId))
+        if (_ConnectionsMap.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
         {
-            var sender = _Connections.Where(u => u.UserId == IdentityName).FirstOrDefault();
-            if (!string.IsNullOrEmpty(message.Trim()))
-            {
-                var messageView = new MessageView()
-                {
-                    FromUserId = sender.UserId,
-                    Content = message,
-                    FromFullName = sender.FullName,
-                    FromUserName = sender.UserName,
-                    Timestamp = DateTime.Now
-                };
-                await Clients.Client(userId).SendAsync("newMessage", messageView);
-                await Clients.Caller.SendAsync("newMessage", messageView);
-            }
+            _ConnectionsMap.Remove(Context.ConnectionId);
+            Clients.Group(userConnection.RoomId).SendAsync("ReceiveMessage", $"{userConnection.UserId} has left");
+            SendUsersConnected(userConnection.RoomId);
+        }
+
+        return base.OnDisconnectedAsync(exception);
+    }
+    public Task SendUsersConnected(string roomId)
+    {
+        var users = _ConnectionsMap.Values
+            .Where(c => c.RoomId == roomId)
+            .Select(c => c.UserId);
+
+        return Clients.Group(roomId).SendAsync("UsersInRoom", users);
+    }
+    public async Task JoinRoom(UserConnection userConnection)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.RoomId);
+
+        _ConnectionsMap[Context.ConnectionId] = userConnection;
+
+        await Clients.Group(userConnection.RoomId).SendAsync("ReceiveMessage", $"{userConnection.UserId} has joined {userConnection.RoomId}");
+
+        await SendUsersConnected(userConnection.RoomId);
+    }
+    public async Task SendMessage(string message)
+    {
+        if (_ConnectionsMap.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
+        {
+            await Clients.Group(userConnection.RoomId).SendAsync("ReceiveMessage", userConnection.UserId, message);
         }
     }
-    public async Task Join(string roomId)
-    {
-        try
-        {
-            var user = _Connections.Where(u => u.UserId == IdentityName).FirstOrDefault();
-            if (user != null && user.CurrentRoomId != roomId)
-            {
-                // Remove user from others list
-                if (!string.IsNullOrEmpty(user.CurrentRoomId))
-                    await Clients.OthersInGroup(user.CurrentRoomId).SendAsync("removeUser", user);
 
-                // Join to new chat room
-                await Leave(user.CurrentRoomId);
-                await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
-                user.CurrentRoomId = roomId;
 
-                // Tell others to update their list of users
-                await Clients.OthersInGroup(roomId).SendAsync("addUser", user);
-            }
-        }
-        catch (Exception ex)
-        {
-            await Clients.Caller.SendAsync("onError", "You failed to join the chat room!" + ex.Message);
-        }
-    }
-    public async Task Leave(string roomId)
-    {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId);
-    }
-    public IEnumerable<UserView> GetUsers(string roomId)
-    {
-        return _Connections.Where(u => u.CurrentRoomId == roomId).ToList();
-    }
-    public override async Task OnConnectedAsync()
-    {
-        try
-        {
-            var account = await _accountRepository.FindWithCondition(c => c.Id.ToString() == IdentityName);
-            var user = new UserView()
-            {
-                UserId = account.Id.ToString(),
-                UserName = account.Username,
-                FullName = account.FirstName
 
-            };
-            if (!_Connections.Any(u => u.UserId == IdentityName))
-            {
-                _Connections.Add(user);
-                _ConnectionsMap.Add(IdentityName, Context.ConnectionId);
-            }
-            await Clients.Caller.SendAsync("getProfile", user);
-        }
-        catch (Exception ex)
-        {
-            await Clients.Caller.SendAsync("onError", "You failed to join the chat room!" + ex.Message);
-        }
-        await base.OnConnectedAsync();
-    }
-    public override async Task OnDisconnectedAsync(Exception exception)
-    {
-        var user = _Connections.Where(u => u.UserId == IdentityName).FirstOrDefault();
-        if (user != null)
-        {
-            _Connections.Remove(user);
-            _ConnectionsMap.Remove(IdentityName);
-            await Clients.OthersInGroup(user.CurrentRoomId).SendAsync("removeUser", user);
-        }
-        await base.OnDisconnectedAsync(exception);
-    }
+
+
 
 
 }
