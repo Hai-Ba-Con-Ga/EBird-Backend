@@ -48,7 +48,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<RoomResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -86,7 +86,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<RoomResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -109,9 +109,10 @@ namespace EBird.Api.Controllers
         {
             var response = new Response<string>();
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            response ??= Response<string>.Builder().SetSuccess(false)
-                .SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Not Allow to access");
-
+            response ??= Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.NotFound)
+                            .SetMessage("Not Allow to access");
             try
             {
                 Guid id = Guid.Parse(rawId);
@@ -125,7 +126,7 @@ namespace EBird.Api.Controllers
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder().SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode).SetMessage(ex.Message);
+                        .SetStatusCode((int) HttpStatusCode.BadRequest).SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
                 response = Response<string>.Builder().SetSuccess(false)
@@ -157,7 +158,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -195,7 +196,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);

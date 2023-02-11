@@ -54,7 +54,7 @@ namespace EBird.Application.Services
 
             if(birdTypeResult == null)
             {
-                throw new NotFoundException("Bird type not found");
+                throw new BadRequestException("Bird type not found");
             }
 
             var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
@@ -65,11 +65,6 @@ namespace EBird.Application.Services
         public async Task<BirdTypeResponseDTO> GetBirdType(Guid birdTypeID)
         {
             var birdTypeResult = await _repository.BirdType.GetBirdTypeActiveAsync(birdTypeID);
-
-            if(birdTypeResult == null)
-            {
-                throw new NotFoundException("Bird type can not found");
-            }
 
             var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
 
@@ -93,7 +88,7 @@ namespace EBird.Application.Services
 
             if(birdType == null)
             {
-                throw new NotFoundException("Can not found bird type for updating");
+                throw new BadRequestException("Can not found bird type for updating");
             }
 
             _mapper.Map(birdTypeDTO, birdType);

@@ -69,11 +69,12 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
+
                 response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -106,12 +107,11 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine($"Error: {ex.Message}");
                 
                 response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
@@ -145,7 +145,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -179,11 +179,11 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is NotFoundException || ex is BadRequestException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -221,7 +221,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -264,7 +264,7 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException || ex is UnauthorizedException)
+                if(ex is BadRequestException || ex is UnauthorizedException)
                 {
                     response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)

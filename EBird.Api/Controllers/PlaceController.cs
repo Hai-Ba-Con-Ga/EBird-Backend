@@ -53,16 +53,6 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                if (ex is NotFoundException)
-                {
-                    response = Response<List<PlaceResponseDTO>>.Builder()
-                        .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
-                        .SetMessage(ex.Message);
-
-                    return StatusCode((int)HttpStatusCode.OK, response);
-                }
-
                 response = Response<List<PlaceResponseDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -101,16 +91,6 @@ namespace EBird.Api.Controllers
                         .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
-                }
-
-                if (ex is NotFoundException)
-                {
-                    response = Response<PlaceResponseDTO>.Builder()
-                        .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
-                        .SetMessage(ex.Message);
-
-                    return StatusCode((int)HttpStatusCode.OK, response);
                 }
 
                 response = Response<PlaceResponseDTO>.Builder()

@@ -43,7 +43,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<BirdTypeResponseDTO>>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -82,7 +82,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<BirdTypeResponseDTO>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -120,11 +120,12 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
+
                 response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -157,7 +158,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -196,7 +197,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
