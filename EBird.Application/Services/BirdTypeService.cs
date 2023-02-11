@@ -7,6 +7,7 @@ using EBird.Application.Validation;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
 using EBird.Application.Model.BirdType;
+using EBird.Application.Interfaces.IValidation;
 
 namespace EBird.Application.Services
 {
@@ -15,10 +16,13 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
 
-        public BirdTypeService(IWapperRepository repository, IMapper mapper)
+        private IUnitOfValidation _unitOfValidation;
+
+        public BirdTypeService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation)
         {
             _repository = repository;
             _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
         }
 
         public async Task DeleteBirdType(Guid birdTypeID)
@@ -73,7 +77,7 @@ namespace EBird.Application.Services
 
         public async Task<Guid> AddBirdType(BirdTypeRequestDTO birdTypeDTO)
         {
-            await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
+            await _unitOfValidation.BirdType.ValidateBirdTypeDTO(birdTypeDTO);
 
             var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
 
@@ -84,7 +88,7 @@ namespace EBird.Application.Services
         
         public async Task UpdateBirdType(Guid id, BirdTypeRequestDTO birdTypeDTO)
         {
-            await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
+            await _unitOfValidation.BirdType.ValidateBirdTypeDTO(birdTypeDTO);
 
             var birdType = await _repository.BirdType.GetByIdAsync(id);
 

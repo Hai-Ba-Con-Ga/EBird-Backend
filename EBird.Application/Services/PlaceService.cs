@@ -60,7 +60,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Entity is not exist");
             }
 
-            _repository.Place.UpdatePlace(entity);
+           await _repository.Place.UpdatePlace(entity);
         }
     }
 }

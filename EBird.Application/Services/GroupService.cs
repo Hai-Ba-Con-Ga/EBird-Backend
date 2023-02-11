@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Group;
 using EBird.Application.Services.IServices;
 using EBird.Application.Validation;
@@ -20,15 +21,18 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
 
-        public GroupService(IWapperRepository repository, IMapper mapper)
+        private IUnitOfValidation _unitOfValidation;
+
+        public GroupService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation)
         {
             _repository = repository;
             _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
         }
 
         public async Task<Guid> AddGroup(GroupCreateDTO groupDTO)
         {
-            await GroupValidation.ValidateGroup(groupDTO, _repository);
+            _unitOfValidation.Group.ValidateGroup(groupDTO);
 
             var groupEntity = _mapper.Map<GroupEntity>(groupDTO);
 
@@ -62,7 +66,7 @@ namespace EBird.Application.Services
 
         public async Task UpdateGroup(Guid groupId, GroupRequestDTO groupUpdateDTO)
         {
-            await GroupValidation.ValidateGroup(groupUpdateDTO, _repository);
+            _unitOfValidation.Group.ValidateGroup(groupUpdateDTO);
 
             var groupEntity = await _repository.Group.GetGroupActiveAsync(groupId);
 
