@@ -19,11 +19,14 @@ namespace EBird.Api.Controllers
     {
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
+        private readonly IGenericRepository<AccountEntity> _accountRepository;
 
-        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IHubContext<ChatHub> hubContext)
+
+        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IHubContext<ChatHub> hubContext)
         {
             _chatRoomRepository = chatRoomRepository;
             _hubContext = hubContext;
+            _accountRepository = accountRepository;
         }
 
         [HttpGet]
@@ -58,7 +61,7 @@ namespace EBird.Api.Controllers
             response = Response<ChatRoomEntity>.Builder().SetData(chatRoom).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }
-        [HttpPost]
+        [HttpPost("create-group")]
         public async Task<ActionResult<Response<string>>> CreateChatRoomGroup(CreateChatRoomGroup room)
         {
             var newChatRoom = new ChatRoomEntity()
@@ -70,10 +73,44 @@ namespace EBird.Api.Controllers
             await _chatRoomRepository.CreateAsync(newChatRoom);
             await _hubContext.Clients.All.SendAsync("addChatRoom", new RoomView()
             {
-                Id = newChatRoom.Id.ToString(),
+                Id = newChatRoom.Id,
                 Name = room.Name
             });
             var response = Response<string>.Builder().SetMessage("Created Successfully").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            return StatusCode((int)HttpStatusCode.OK, response);
+        }
+        [HttpPost("create-private")]
+        public async Task<ActionResult<Response<string>>> CreateChatRoomPrivate(CreateChatRoomPrivate room)
+        {
+            var account = await _accountRepository.GetByIdActiveAsync(room.ReceiverId);
+            var response = new Response<string>();
+            if (account == null)
+            {
+                response = Response<string>.Builder().SetMessage("Account not found").SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound);
+                return StatusCode((int)HttpStatusCode.NotFound, response);
+            }
+            var newChatRoom = new ChatRoomEntity()
+            {
+                Name = account.FirstName + " " + account.LastName,
+                TypeChatRoom = room.TypeChatRoom,
+                Participants = new List<ParticipantEntity>()
+                {
+                    new ParticipantEntity()
+                    {
+                        AccountId = room.ReceiverId,
+                        ChatRoomId = room.ReceiverId
+                    },
+                    new ParticipantEntity()
+                    {
+                        AccountId = Guid.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier)),
+                        ChatRoomId = Guid.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    }
+                }
+            };
+
+            await _chatRoomRepository.CreateAsync(newChatRoom);
+            await _hubContext.Clients.All.SendAsync("addChatRoom", new RoomView() { Id = newChatRoom.Id, Name = newChatRoom.Name });
+            response = Response<string>.Builder().SetMessage("Created Successfully").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }
         [HttpPost("add-participant")]
