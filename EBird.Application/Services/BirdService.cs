@@ -27,13 +27,14 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task AddBird(BirdCreateDTO birdDTO)
+        public async Task<Guid> AddBird(BirdCreateDTO birdDTO)
         {
             await BirdValidation.ValidateCreateBird(birdDTO, _repository);
 
             BirdEntity birdEntity = _mapper.Map<BirdEntity>(birdDTO);
 
             var resourceDTOList = birdDTO.ListResource;
+
 
             if (resourceDTOList == null)
             {
@@ -47,6 +48,7 @@ namespace EBird.Application.Services
 
                 await _repository.Bird.AddBirdAsync(birdEntity, resourceEntityList);
             }
+            return birdEntity.Id;
         }
 
         public async Task DeleteBird(Guid birdID)

@@ -124,18 +124,18 @@ namespace EBird.Api.Controllers
 
         // POST : create bird
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> Post([FromBody] BirdCreateDTO birdDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] BirdCreateDTO birdDTO)
         {
-            Response<string> response = null;
+            Response<Guid> response = null;
             try
             {
-                await _birdService.AddBird(birdDTO);
+               var id = await _birdService.AddBird(birdDTO);
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.Created)
                     .SetMessage("Create bird successful")
-                    .SetData("");
+                    .SetData(id);
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -143,7 +143,7 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException)
                 {
-                    response = Response<string>.Builder()
+                    response = Response<Guid>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
@@ -151,7 +151,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");

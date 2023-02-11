@@ -26,13 +26,15 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task AddGroup(GroupCreateDTO groupDTO)
+        public async Task<Guid> AddGroup(GroupCreateDTO groupDTO)
         {
             await GroupValidation.ValidateGroup(groupDTO, _repository);
 
             var groupEntity = _mapper.Map<GroupEntity>(groupDTO);
 
             await _repository.Group.AddGroupAsync(groupEntity);
+
+            return groupEntity.Id;
         }
 
         public async Task DeleteGroup(Guid groupId)

@@ -71,13 +71,15 @@ namespace EBird.Application.Services
             return birdTypeResultDTO;
         }
 
-        public async Task AddBirdType(BirdTypeRequestDTO birdTypeDTO)
+        public async Task<Guid> AddBirdType(BirdTypeRequestDTO birdTypeDTO)
         {
             await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
 
             var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
 
             await _repository.BirdType.AddBirdTypeAsync(birdType);
+            
+            return birdType.Id;
         }
         
         public async Task UpdateBirdType(Guid id, BirdTypeRequestDTO birdTypeDTO)
