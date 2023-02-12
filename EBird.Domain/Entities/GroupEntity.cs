@@ -38,6 +38,6 @@ namespace EBird.Domain.Entities
         public Guid CreatedById { get; set; }
         public AccountEntity CreatedBy;
 
-        //room id 
+        public ICollection<RequestEntity> Requests { get; set; }
     }
 }

@@ -95,7 +95,7 @@ namespace EBird.Infrastructure.Repositories
         /// <returns></returns>
         public async Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
         {
-            var birds = _context.Set<BirdEntity>().AsNoTracking();
+            var birds = dbSet.AsNoTracking();
             birds = birds.OrderByDescending(b => b.Elo);
 
             PagedList<BirdEntity> pagedList = new PagedList<BirdEntity>();

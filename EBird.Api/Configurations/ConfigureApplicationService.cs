@@ -20,6 +20,8 @@ namespace EBird.Api.Configurations
             services.AddScoped<IRuleService, RuleService>();
             services.AddSingleton<ICloudStorage, GoogleCloudStorageService>();
             services.AddScoped<IFileServices, FileServices>();
+            services.AddScoped<IPlaceService, PlaceService>();
+            services.AddScoped<IRequestService, RequestService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
     }
