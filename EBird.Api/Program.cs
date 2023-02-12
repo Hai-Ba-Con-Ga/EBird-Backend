@@ -109,5 +109,7 @@ app.UseAuthentication();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<RequestHub>("/requestHub");
+
 
 app.Run();
