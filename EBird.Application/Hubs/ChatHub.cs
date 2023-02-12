@@ -1,11 +1,15 @@
+using System.Net;
 using System.Security.Claims;
 using EBird.Application.Extensions;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model.Chat;
 using EBird.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
+
 namespace EBird.Application.Hubs;
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class ChatHub : Hub
 {
     private readonly static string _Connections = "Connections";
@@ -30,13 +34,7 @@ public class ChatHub : Hub
         try
         {
             var chatRoomId = Context.GetHttpContext().Request.Query["chatRoomId"].ToString();
-            // var rawUserId = httpContext.Request.Query["userId"].ToString();
 
-            // if (string.IsNullOrEmpty(rawUserId))
-            // {
-            //     throw new ArgumentException("User Id is not valid");
-            // }
-            // Guid userId = Guid.Parse(rawUserId);
             var userId = Context.User.GetUserId();
 
             var checkJoinChatRoom = await _chatRoomRepository.FindWithCondition(x => x.Id.ToString() == chatRoomId && x.Participants.Any(y => y.AccountId == userId));
@@ -76,15 +74,6 @@ public class ChatHub : Hub
             var chatRoomId = Context.GetHttpContext().Request.Query["chatRoomId"].ToString();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatRoomId);
             var userId = Context.User.GetUserId();
-
-
-            // var rawUserId = this.Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // if (string.IsNullOrEmpty(rawUserId))
-            // {
-            //     throw new ArgumentException("User Id is not valid");
-            // }
-            // Guid userId = Guid.Parse(rawUserId);
-
             await Groups.AddToGroupAsync(Context.ConnectionId, chatRoomId);
             var account = await _accountRepository.GetByIdActiveAsync(userId);
             var userView = new UserView()
@@ -105,12 +94,6 @@ public class ChatHub : Hub
     }
     public async Task SendMessage(string message)
     {
-        // var chatRoomId = OnlineUsers.FirstOrDefault(x => x.Value.Contains(Context.ConnectionId)).Key.ChatRoomId;
-        // var rawUserId = this.Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        // if (string.IsNullOrEmpty(rawUserId))
-        // {
-        //     throw new ArgumentException("User Id is not valid");
-        // }
         try
         {
             var chatRoomId = Context.GetHttpContext().Request.Query["chatRoomId"].ToString();
