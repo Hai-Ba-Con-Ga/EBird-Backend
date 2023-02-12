@@ -4,7 +4,7 @@ namespace EBird.Application.Model.Chat
     {
         public string UserId { get; set; }
 
-        public string RoomId { get; set; }
+        public string ChatRoomId { get; set; }
     }
 
 }
