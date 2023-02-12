@@ -59,7 +59,7 @@ public class ChatHub : Hub
                 CurrentRoomId = chatRoomId
 
             };
-            await Clients.Group(chatRoomId).SendAsync("UserActive", userView, $"{userView.FullName} has joined {chatRoomId}");
+            await Clients.Group(chatRoomId).SendAsync(HubEvents.UserActive, userView, $"{userView.FullName} has joined {chatRoomId}");
         }
         catch (Exception ex)
         {
@@ -84,7 +84,7 @@ public class ChatHub : Hub
                 CurrentRoomId = chatRoomId
 
             };
-            await Clients.Group(chatRoomId).SendAsync("UserActive", userView, $"{userView.FullName} has left {chatRoomId}");
+            await Clients.Group(chatRoomId).SendAsync(HubEvents.UserActive, userView, $"{userView.FullName} has left {chatRoomId}");
         }
         catch (Exception ex)
         {
@@ -108,7 +108,7 @@ public class ChatHub : Hub
                     SenderId = userId,
                     Timestamp = DateTime.Now
                 };
-                await Clients.Group(chatRoomId).SendAsync("NewMessage", userId, newMessage);
+                await Clients.Group(chatRoomId).SendAsync(HubEvents.NewMessage, userId, newMessage);
                 await _messageRepository.CreateAsync(newMessage);
             }
         }
