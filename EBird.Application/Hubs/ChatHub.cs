@@ -165,7 +165,7 @@ public class ChatHub : Hub
             CurrentRoomId = chatRoomId
 
         };
-        await Clients.Group(chatRoomId).SendAsync("ReceiveMessage", userView, $"{userView.FullName} has joined {chatRoomId}");
+        await Clients.Group(chatRoomId).SendAsync("UserActive", userView, $"{userView.FullName} has joined {chatRoomId}");
     }
     public override async Task OnDisconnectedAsync(Exception exception)
     {
@@ -194,11 +194,11 @@ public class ChatHub : Hub
                 CurrentRoomId = chatRoomId
 
             };
-            await Clients.Group(chatRoomId).SendAsync("ReceiveMessage", userView, $"{userView.FullName} has left {chatRoomId}");
+            await Clients.Group(chatRoomId).SendAsync("UserActive", userView, $"{userView.FullName} has left {chatRoomId}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("send message =============================== \n %s",e.Message);
+            Console.WriteLine("send message =============================== \n %s", ex.Message);
 
             Console.WriteLine(ex.Message);
         }
@@ -230,14 +230,13 @@ public class ChatHub : Hub
                     SenderId = userId,
                     Timestamp = DateTime.Now
                 };
+                await Clients.Group(chatRoomId).SendAsync("NewMessage", userId, newMessage);
                 await _messageRepository.CreateAsync(newMessage);
-                await Clients.Group(chatRoomId).SendAsync("NewMessage", newMessage);
-                Console.WriteLine("Send message");
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine("send message =============================== \n %s",e.Message);
+            Console.WriteLine("send message =============================== \n %s", e.Message);
         }
     }
 

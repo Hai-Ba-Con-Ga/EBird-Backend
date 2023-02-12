@@ -11,16 +11,34 @@ const connection = new signalR.HubConnectionBuilder()
 	.configureLogging(signalR.LogLevel.Information)
 	.build();
 
-connection.on('ReceiveMessage', (user, message) => {
-	console.log(`${user}: ${message}`);
-});
+	const start = async () => {
+		await connection
+			.start()
+			.then(() => {
+				console.log('Connected to SignalR hub.');
+			})
+			.catch((error) => {
+				console.error('Error connecting to SignalR hub:', error);
+			});
+		await connection.on('UserActive', (user, message) => {
+			console.log('=============================================');
+			console.log(user, message);
+			console.log(message)
+			console.log('=============================================');
 
-connection
-	.start()
-	.then(() => {
-		console.log('Connected to SignalR hub.');
-		connection.invoke('SendMessage', JSON.stringify("hello"));
-	})
-	.catch((error) => {
-		console.error('Error connecting to SignalR hub:', error);
-	});
+		});
+
+		await connection.on('NewMessage', (user, message) => {
+			console.log('=============================================');
+			console.log(user);
+			console.log(message);
+			console.log('=============================================');
+
+		});
+		connection.invoke('SendMessage', 'Hello');
+	};
+	
+	 start();
+	
+
+	

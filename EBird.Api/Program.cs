@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -44,6 +45,9 @@ builder.Services.AddRepositories();
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
 builder.Services.AddSignalR();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidateModelStateFilter>();
