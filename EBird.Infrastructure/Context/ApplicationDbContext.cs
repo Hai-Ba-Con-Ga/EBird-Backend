@@ -72,6 +72,31 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Resources)
                 .HasForeignKey(m => m.CreateById)
                 .OnDelete(DeleteBehavior.NoAction);
+        //Config for RequestEntity
+            //Config for one to many relationship (create by) between AccountEntity and RequestEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.CreatedBy)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.CreatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between RequestEntity and BirdEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Bird)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between RequestEntity and GroupEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Group)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between RequestEntity and PlaceEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Place)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.PlaceId)
+                .OnDelete(DeleteBehavior.NoAction);        
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
                 .WithOne(b => b.CreateBy)
@@ -105,6 +130,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<ResourceEntity> Resources { get; set; }
         public DbSet<AccountResourceEntity> AccountResources { get; set; }
         public DbSet<BirdResourceEntity> BirdResources { get; set; }
+        public DbSet<PlaceEntity> Places { get; set; }
+        public DbSet<RequestEntity> Requests { get; set; }
         #endregion
     }
 }

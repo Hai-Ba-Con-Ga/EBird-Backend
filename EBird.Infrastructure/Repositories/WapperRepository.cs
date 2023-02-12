@@ -26,6 +26,10 @@ namespace EBird.Infrastructure.Repositories
         private IRoomRepository _roomRepository;
 
         private IResourceRepository _resourceRepository;
+        
+        private IPlaceRepository _placeRepository;
+        
+        private IRequestRepository _requestRepository;
 
         private INotificationRepository _NotificationRepository;
 
@@ -106,6 +110,29 @@ namespace EBird.Infrastructure.Repositories
                     _resourceRepository = new  ResourceRepository(_context);
                 }
                 return _resourceRepository;
+            }
+        }
+        public IPlaceRepository Place 
+        {
+            get 
+            {
+                if(_placeRepository == null)
+                {
+                    _placeRepository = new  PlaceRepository(_context);
+                }
+                return _placeRepository;
+            }
+        }
+
+        public IRequestRepository Request
+        {
+            get
+            {
+                if(_requestRepository == null)
+                {
+                    _requestRepository = new RequestRepository(_context);
+                }
+                return _requestRepository;
             }
         }
         public INotificationRepository Notification

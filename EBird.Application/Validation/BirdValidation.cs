@@ -1,6 +1,7 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Model.Bird;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Resource;
 using System;
 using System.Collections.Generic;
@@ -37,20 +38,6 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static void ValidateBirdParameter(BirdParameters parameters)
-        {
-            if(parameters == null)
-            {
-                throw new BadRequestException("Paging parameters is invalid");
-            }
-            if(parameters.PageNumber <= 0)
-            {
-                throw new BadRequestException("Page number is invalid");
-            }
-            if(parameters.PageSize <= 0)
-            {
-                throw new BadRequestException("Page size is invalid");
-            }
-        }
+        
     }
 }
