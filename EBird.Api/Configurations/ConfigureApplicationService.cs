@@ -1,4 +1,5 @@
 using System.Reflection;
+using EBird.Api.RuleSettings;
 using EBird.Application.Interfaces;
 using EBird.Application.Services;
 using EBird.Application.Services.IServices;
@@ -23,6 +24,10 @@ namespace EBird.Api.Configurations
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IRequestService, RequestService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            //config rule settings
+            services.AddSingleton<IRuleSetting, RuleSetting>();
+            services.AddScoped<IScoringService, ScoringService>();
         }
     }
 }
