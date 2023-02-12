@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.SignalR;
 namespace EBird.Application.Hubs;
 public class ChatHub : Hub
 {
-    private readonly List<UserConnection> _Connections = new List<UserConnection>();
-    private readonly Dictionary<string, UserConnection> _ConnectionsMap;
-    public ChatHub(List<UserConnection> Connections, Dictionary<string, UserConnection> ConnectionsMap)
-    {
-        _Connections = Connections;
-        _ConnectionsMap = ConnectionsMap;
-    }
+    private readonly static string _Connections = "Connections";
+    private readonly static Dictionary<string, UserConnection> _ConnectionsMap = new Dictionary<string, UserConnection>();
+    // public ChatHub(Dictionary<string, UserConnection> ConnectionsMap)
+    // {
+    //     _Connections = "Connections";
+    //     _ConnectionsMap = ConnectionsMap;
+    // }
     public override Task OnDisconnectedAsync(Exception exception)
     {
         if (_ConnectionsMap.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
@@ -24,10 +24,11 @@ public class ChatHub : Hub
 
         return base.OnDisconnectedAsync(exception);
     }
+
     public Task SendUsersConnected(string roomId)
     {
         var users = _ConnectionsMap.Values
-            .Where(c => c.RoomId == roomId)
+        .Where(c => c.RoomId == roomId)
             .Select(c => c.UserId);
 
         return Clients.Group(roomId).SendAsync("UsersInRoom", users);

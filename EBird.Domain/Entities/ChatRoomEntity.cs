@@ -15,7 +15,7 @@ public class ChatRoomEntity : BaseEntity
         private set { TypeChatRoom = Enum.Parse<TypeChatRoom>(value); }
     }
     [NotMapped]
-    public TypeChatRoom TypeChatRoom { get; set; }
+    public TypeChatRoom TypeChatRoom { get; set; } = TypeChatRoom.Group;
     public ICollection<ParticipantEntity> Participants { get; set; } = null!;
     public ICollection<MessageEntity> Messages { get; set; } = null!;
 }

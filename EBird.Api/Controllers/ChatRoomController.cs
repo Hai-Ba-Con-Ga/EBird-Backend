@@ -12,7 +12,7 @@ using Response;
 
 namespace EBird.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    
     [Route("chat-room")]
     [ApiController]
     public class ChatRoomController : ControllerBase
@@ -29,6 +29,7 @@ namespace EBird.Api.Controllers
             _accountRepository = accountRepository;
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet]
         public async Task<ActionResult<Response<List<ChatRoomEntity>>>> GetChatRoom()
         {
@@ -109,7 +110,7 @@ namespace EBird.Api.Controllers
             };
 
             await _chatRoomRepository.CreateAsync(newChatRoom);
-            await _hubContext.Clients.All.SendAsync("addChatRoom", new RoomView() { Id = newChatRoom.Id, Name = newChatRoom.Name });
+    
             response = Response<string>.Builder().SetMessage("Created Successfully").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }
@@ -131,7 +132,6 @@ namespace EBird.Api.Controllers
                 chatRoom.Participants.Add(participantEntity);
             }
             await _chatRoomRepository.UpdateAsync(chatRoom);
-            await _hubContext.Clients.Group(participant.ChatRoomId.ToString()).SendAsync("addParticipant", participant);
             response = Response<string>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }
@@ -140,8 +140,6 @@ namespace EBird.Api.Controllers
         public async Task<ActionResult<Response<string>>> DeleteChatRoom(Guid id)
         {
             var deleteChatRoom = await _chatRoomRepository.DeleteSoftAsync(id);
-            await _hubContext.Clients.All.SendAsync("removeChatRoom", id.ToString());
-            await _hubContext.Clients.Group(id.ToString()).SendAsync("onRoomDeleted");
             var response = Response<string>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }

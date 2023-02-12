@@ -15,11 +15,14 @@ public class MessageController : ControllerBase
     private readonly IHubContext<ChatHub> _hubContext;
     private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
     private readonly IGenericRepository<MessageEntity> _messageRepository;
+    private readonly IGenericRepository<AccountEntity> _accountRepository;
 
-    public MessageController(IHubContext<ChatHub> hubContext, IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<MessageEntity> messageRepository)
+
+    public MessageController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IHubContext<ChatHub> hubContext)
     {
-        _hubContext = hubContext;
         _chatRoomRepository = chatRoomRepository;
+        _hubContext = hubContext;
+        _accountRepository = accountRepository;
         _messageRepository = messageRepository;
     }
     [HttpGet("{id}")]
@@ -71,30 +74,32 @@ public class MessageController : ControllerBase
 
     }
     [HttpPost]
-    public async Task<ActionResult<Response<MessageView>>> CreateMessage(CreateMessage message)
+    public async Task<ActionResult<Response<MessageView>>> CreateMessage([FromBody] CreateMessage message)
     {
         var response = new Response<MessageView>();
         try
         {
 
             var room = await _chatRoomRepository.GetByIdAsync(message.RoomId);
-            if (room == null)
+            var account = await _accountRepository.GetByIdActiveAsync(message.FromUserId);
+            if (room == null || account == null)
             {
-                return Response<MessageView>.Builder().SetMessage("Success").SetSuccess(false).SetStatusCode((int)HttpStatusCode.OK);
+                response = Response<MessageView>.Builder().SetMessage("Success").SetSuccess(false).SetStatusCode((int)HttpStatusCode.OK);
+                return StatusCode((int)HttpStatusCode.OK, response);
             }
-            await _messageRepository.CreateAsync(new MessageEntity()
+            var newMessage = new MessageEntity()
             {
                 Content = message.Content,
                 Timestamp = message.Timestamp,
-                SenderId = message.FromUserId,
-                ChatRoomId = room.Id
-            });
-            await _hubContext.Clients.Group(message.RoomId.ToString()).SendAsync("newMessage", message);
+                SenderId = account.Id,
+                ChatRoomId = room.Id,
+            };
+            await _messageRepository.CreateAsync(newMessage);
             response = Response<MessageView>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            response = Response<MessageView>.Builder().SetSuccess(false).SetMessage("Invalid");
+            response = Response<MessageView>.Builder().SetSuccess(false).SetMessage(ex.Message).SetStatusCode((int)HttpStatusCode.InternalServerError);
         }
 
         return StatusCode((int)HttpStatusCode.OK, response);
@@ -105,7 +110,6 @@ public class MessageController : ControllerBase
     {
         var mess = await _messageRepository.FindWithCondition(x => x.Id == messageId);
         await _messageRepository.DeleteSoftAsync(messageId);
-        await _hubContext.Clients.Group(mess.ChatRoomId.ToString()).SendAsync("ReceiveMessage", messageId.ToString());
         var response = Response<MessageEntity>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         return StatusCode((int)HttpStatusCode.OK, response);
     }
