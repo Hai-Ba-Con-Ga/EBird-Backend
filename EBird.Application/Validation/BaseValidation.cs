@@ -12,7 +12,14 @@ namespace EBird.Application.Validation
 {
     public class BaseValidation
     {
-        public static async Task ValidateAccountId(Guid accountID, IWapperRepository _repository)
+        protected IWapperRepository _repository;
+
+        public BaseValidation(IWapperRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task ValidateAccountId(Guid accountID)
         {
             var account = await _repository.Account.GetByIdActiveAsync(accountID);
             if (account == null)
@@ -21,7 +28,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateGroupId(Guid? groupId, IWapperRepository _repository)
+        public async Task ValidateGroupId(Guid? groupId)
         {
             if (groupId != null)
             {
@@ -33,7 +40,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateBirdId(Guid birdId, IWapperRepository _repository)
+        public async Task ValidateBirdId(Guid birdId)
         {
             var bird = await _repository.Bird.GetBirdActiveAsync(birdId);
             if (bird == null)
@@ -42,7 +49,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidatePlaceId(Guid placeId, IWapperRepository _repository)
+        public async Task ValidatePlaceId(Guid placeId)
         {
             var place = await _repository.Place.GetPlace(placeId);
             if (place == null)
@@ -51,14 +58,14 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateCreateResourceList(List<ResourceCreateDTO> rsrcList, IWapperRepository _repository)
+        public async Task ValidateCreateResourceList(List<ResourceCreateDTO> rsrcList)
         {
             try
             {
                 foreach (var rsrc in rsrcList)
                 {
                     Guid createById = rsrc.CreateById;
-                    await ValidateAccountId(createById, _repository);
+                    await ValidateAccountId(createById);
                 }
             }
             catch (BadRequestException)
@@ -67,7 +74,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateRequestId(Guid id, IWapperRepository _repository)
+        public async Task ValidateRequestId(Guid id)
         {
             var request = await _repository.Request.GetRequest(id);
             if (request == null)
@@ -76,17 +83,17 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static void ValidateParameter(QueryStringParameters parameters)
+        public void ValidateParameter(QueryStringParameters parameters)
         {
-            if(parameters == null)
+            if (parameters == null)
             {
                 throw new BadRequestException("Paging parameters is invalid");
             }
-            if(parameters.PageNumber < 0)
+            if (parameters.PageNumber < 0)
             {
                 throw new BadRequestException("Page number is invalid");
             }
-            if(parameters.PageSize < 0)
+            if (parameters.PageSize < 0)
             {
                 throw new BadRequestException("Page size is invalid");
             }

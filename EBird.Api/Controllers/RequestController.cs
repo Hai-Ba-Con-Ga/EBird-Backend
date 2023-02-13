@@ -73,7 +73,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine("error: " + ex.Message);
                 response = Response<ICollection<RequestResponse>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)

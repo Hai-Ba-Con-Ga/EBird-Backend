@@ -25,7 +25,7 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task AddRoom(Guid createById, RoomCreateDTO roomCreateDTO)
+        public async Task<Guid> AddRoom(Guid createById, RoomCreateDTO roomCreateDTO)
         {
             //await BaseValidation.ValidateAccountId(roomCreateDTO.CreateById, _repository);
 
@@ -39,6 +39,8 @@ namespace EBird.Application.Services
             };
 
             await _repository.Room.AddRoomAsync(roomEntity);
+
+            return roomEntity.Id;
         }
 
         public async Task DeleteRoom(Guid roomId)

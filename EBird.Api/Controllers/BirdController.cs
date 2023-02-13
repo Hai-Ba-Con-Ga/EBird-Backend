@@ -69,11 +69,12 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
+
                 response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
@@ -106,12 +107,11 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
-                Console.WriteLine($"Error: {ex.Message}");
                 
                 response = Response<BirdResponseDTO>.Builder()
                             .SetSuccess(false)
@@ -124,18 +124,18 @@ namespace EBird.Api.Controllers
 
         // POST : create bird
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> Post([FromBody] BirdCreateDTO birdDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] BirdCreateDTO birdDTO)
         {
-            Response<string> response = null;
+            Response<Guid> response = null;
             try
             {
-                await _birdService.AddBird(birdDTO);
+               var id = await _birdService.AddBird(birdDTO);
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.Created)
                     .SetMessage("Create bird successful")
-                    .SetData("");
+                    .SetData(id);
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -143,15 +143,15 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException)
                 {
-                    response = Response<string>.Builder()
+                    response = Response<Guid>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -179,11 +179,11 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is NotFoundException || ex is BadRequestException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -221,7 +221,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -264,7 +264,7 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException || ex is UnauthorizedException)
+                if(ex is BadRequestException || ex is UnauthorizedException)
                 {
                     response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)

@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.BirdType;
 using EBird.Domain.Entities;
 using System;
@@ -11,32 +12,39 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class BirdTypeValidation
+    public class BirdTypeValidation : BaseValidation, IBirdTypeValidation
     {
-        public static async Task ValidateBirdTypeDTO(BirdTypeRequestDTO birdType, IWapperRepository _repository)
+        // private IWapperRepository _repository;
+
+        public BirdTypeValidation(IWapperRepository repository) : base(repository)
         {
-            if(birdType == null)
+        }
+
+        public async Task ValidateBirdTypeDTO(BirdTypeRequestDTO birdType)
+        {
+            if (birdType == null)
             {
                 throw new BadRequestException("Data is null");
             }
 
-            var result = await ValidateBirdTypeCode(birdType.TypeCode, _repository);
+            var result = await ValidateBirdTypeCode(birdType.TypeCode);
 
-            if(result == false)
+            if (result == false)
             {
                 throw new BadRequestException("Bird type code already exists");
             }
-            
+
         }
 
-        public static async Task<bool> ValidateBirdTypeCode(string birdTypeCode, IWapperRepository _repository)
+        public async Task<bool> ValidateBirdTypeCode(string birdTypeCode)
         {
             bool isExist = await _repository.BirdType.IsExistBirdTypeCode(birdTypeCode);
-            if(isExist == false)
+            if (isExist == false)
             {
                 return true;
             }
             return false;
         }
     }
+    
 }
