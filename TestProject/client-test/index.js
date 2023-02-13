@@ -11,7 +11,7 @@ const connection = new signalR.HubConnectionBuilder()
     {
       transport: signalR.HttpTransportType.WebSocket,
       headers: {
-        Authorization: `bearer ${token1}`,
+        Authorization: `bearer ${token}`,
       },
     }
   )
@@ -38,7 +38,7 @@ const start = async () => {
     console.log(message);
     console.log("=============================================");
   });
-  await connection.invoke("SendMessage", JSON.stringify('hello'));
+  await connection.invoke("SendMessage", "hello hihi");
 };
 
 ///////////////////////////////////////////////////
