@@ -22,7 +22,7 @@ namespace EBird.Application.Services
 
         private double GetEloDifference(double seftElo, double competitorElo)
         {
-            return 1 / (1 + 10 * ((competitorElo - seftElo) / 400));
+            return 1 / (1 + Math.Pow(10, ((competitorElo - seftElo) / 400)));
         }
 
         private double GetWinEloInRoom(double eloDifference, double currentElo)
