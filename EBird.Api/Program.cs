@@ -24,10 +24,9 @@ builder.Services.AddCors(options =>
          buider =>
          {
              buider
-              .AllowAnyMethod()
+            .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials()
-            .WithOrigins("http://localhost:8080");
+            .AllowCredentials();
          });
 });
 

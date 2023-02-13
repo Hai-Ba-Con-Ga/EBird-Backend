@@ -99,7 +99,7 @@ namespace EBird.Api.Controllers
                     new ParticipantEntity()
                     {
                         AccountId = Guid.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier)),
-                        ChatRoomId = Guid.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier))
+                        ChatRoomId =  room.ReceiverId
                     }
                 }
             };
