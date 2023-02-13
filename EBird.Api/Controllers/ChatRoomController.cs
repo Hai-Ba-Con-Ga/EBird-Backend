@@ -1,5 +1,6 @@
 using System.Net;
 using System.Security.Claims;
+using AutoMapper;
 using EBird.Application.Hubs;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model.Chat;
@@ -20,12 +21,14 @@ namespace EBird.Api.Controllers
         
         private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
         private readonly IGenericRepository<AccountEntity> _accountRepository;
+        private readonly IMapper _mapper;
 
 
-        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository)
+        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IMapper mapper)
         {
             _chatRoomRepository = chatRoomRepository;
             _accountRepository = accountRepository;
+            _mapper = mapper;
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]

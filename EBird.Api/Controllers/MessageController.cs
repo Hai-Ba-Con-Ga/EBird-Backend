@@ -1,4 +1,5 @@
 using System.Net;
+using AutoMapper;
 using EBird.Application.Hubs;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model.Chat;
@@ -16,93 +17,66 @@ public class MessageController : ControllerBase
     private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
     private readonly IGenericRepository<MessageEntity> _messageRepository;
     private readonly IGenericRepository<AccountEntity> _accountRepository;
+    private readonly IMapper _mapper;
 
 
-    public MessageController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IHubContext<ChatHub> hubContext)
+    public MessageController(IHubContext<ChatHub> hubContext, IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<MessageEntity> messageRepository, IGenericRepository<AccountEntity> accountRepository, IMapper mapper)
     {
-        _chatRoomRepository = chatRoomRepository;
         _hubContext = hubContext;
-        _accountRepository = accountRepository;
+        _chatRoomRepository = chatRoomRepository;
         _messageRepository = messageRepository;
+        _accountRepository = accountRepository;
+        _mapper = mapper;
     }
     [HttpGet("{id}")]
     public async Task<ActionResult<Response<MessageView>>> GetMessageById(Guid id)
     {
-        var message = await _messageRepository.GetByIdAsync(id);
+        var message = (await _messageRepository.WhereAsync(m => m.Id == id, "Sender")).FirstOrDefault();
+        var response = new Response<MessageView>();
         if (message == null)
         {
-            return Response<MessageView>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            response = Response<MessageView>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            return StatusCode((int)HttpStatusCode.OK, response);
         }
+        Console.WriteLine(message.Sender.FirstName);
         var messageView = new MessageView()
         {
             Content = message.Content,
             Timestamp = message.Timestamp,
             FromUserId = message.SenderId,
-            FromUserName = message.Sender.Username,
-            FromFullName = message.Sender.FirstName,
+            FromFullName = message.Sender.FirstName + " " + message.Sender.LastName,
             RoomId = message.ChatRoomId
         };
-        var response = Response<MessageView>.Builder().SetData(messageView).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+        response = Response<MessageView>.Builder().SetData(messageView).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         return StatusCode((int)HttpStatusCode.OK, response);
     }
     [HttpGet("room/{roomId}")]
     public async Task<ActionResult<Response<List<MessageView>>>> GetMessageByRoomId(Guid roomId)
     {
 
-        var messages = await _messageRepository.FindAllWithCondition(x => x.ChatRoomId == roomId);
-        if (messages == null)
+        var messagesList = await _messageRepository.WhereAsync(x => x.ChatRoomId == roomId, "Sender");
+        if (messagesList == null)
         {
             return Response<List<MessageView>>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         }
-        messages = messages.OrderByDescending(x => x.Timestamp).ToList();
-        var messageViews = new List<MessageView>();
-        foreach (var message in messages)
+        messagesList = messagesList.OrderByDescending(x => x.Timestamp).ToList();
+        var messageViewList = new List<MessageView>();
+        foreach (var message in messagesList)
         {
             var messageView = new MessageView()
             {
                 Content = message.Content,
                 Timestamp = message.Timestamp,
                 FromUserId = message.SenderId,
-                FromUserName = message.Sender.Username,
-                FromFullName = message.Sender.FirstName,
+                FromFullName = message.Sender.FirstName + " " + message.Sender.LastName,
                 RoomId = message.ChatRoomId
             };
-            messageViews.Add(messageView);
+            messageViewList.Add(messageView);
         }
-        var response = Response<List<MessageView>>.Builder().SetData(messageViews).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+
+        var response = Response<List<MessageView>>.Builder().SetData(messageViewList).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
         return StatusCode((int)HttpStatusCode.OK, response);
 
-    }
-    [HttpPost]
-    public async Task<ActionResult<Response<MessageView>>> CreateMessage([FromBody] CreateMessage message)
-    {
-        var response = new Response<MessageView>();
-        try
-        {
-
-            var room = await _chatRoomRepository.GetByIdAsync(message.RoomId);
-            var account = await _accountRepository.GetByIdActiveAsync(message.FromUserId);
-            if (room == null || account == null)
-            {
-                response = Response<MessageView>.Builder().SetMessage("Success").SetSuccess(false).SetStatusCode((int)HttpStatusCode.OK);
-                return StatusCode((int)HttpStatusCode.OK, response);
-            }
-            var newMessage = new MessageEntity()
-            {
-                Content = message.Content,
-                Timestamp = message.Timestamp,
-                SenderId = account.Id,
-                ChatRoomId = room.Id,
-            };
-            await _messageRepository.CreateAsync(newMessage);
-            response = Response<MessageView>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
-        }
-        catch (Exception ex)
-        {
-            response = Response<MessageView>.Builder().SetSuccess(false).SetMessage(ex.Message).SetStatusCode((int)HttpStatusCode.InternalServerError);
-        }
-
-        return StatusCode((int)HttpStatusCode.OK, response);
     }
 
     [HttpDelete("{messageId}")]
