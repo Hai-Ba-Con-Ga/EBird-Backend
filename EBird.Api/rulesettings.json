@@ -1,0 +1,7 @@
+{
+    "ScoringWeight" : {
+        "KWeightRoom" : 64,
+        "KWeightGroup" : 128
+    }
+}
+    

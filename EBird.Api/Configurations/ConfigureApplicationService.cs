@@ -1,4 +1,5 @@
 using System.Reflection;
+using EBird.Api.RuleSettings;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Services;
@@ -28,6 +29,10 @@ namespace EBird.Api.Configurations
             services.AddScoped<IUnitOfValidation, UnitOfValidation>();
             //register AutoMapper services
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            //config rule settings
+            services.AddSingleton<IRuleSetting, RuleSetting>();
+            services.AddScoped<IScoringService, ScoringService>();
         }
     }
 }
