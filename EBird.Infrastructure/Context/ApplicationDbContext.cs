@@ -1,8 +1,9 @@
 using System.Data;
 using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EBird.Infrastructure.Context
 {
@@ -86,12 +87,38 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.GroupId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //Config for one to many relationship between RequestEntity and PlaceEntity
+            //Config for one to one relationship between RequestEntity and PlaceEntity
             modelBuilder.Entity<RequestEntity>()
                 .HasOne(m => m.Place)
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.PlaceId)
-                .OnDelete(DeleteBehavior.NoAction);        
+                .OnDelete(DeleteBehavior.NoAction);   
+            //Config HasConversation MatchEntity and Enum MatchStatus
+            modelBuilder.Entity<MatchEntity>()
+                .Property(m => m.MatchStatus)
+                .HasConversion<string>();   
+            //Config for one to many relationship between MatchEntity and PlaceEntity
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.Place)
+                .WithMany(mt => mt.Matches)
+                .HasForeignKey(m => m.PlaceId)
+                .OnDelete(DeleteBehavior.NoAction);  
+            //Config for one to many relationship between MatchEntity and MatchBirdEntity
+            modelBuilder.Entity<MatchEntity>()
+                .HasMany(m => m.MatchBirds)
+                .WithOne(mt => mt.Match)
+                .HasForeignKey(mt => mt.MatchId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between BirdEntity and MatchBirdEntity
+            modelBuilder.Entity<MatchBirdEntity>()
+                .HasOne(m => m.Bird)
+                .WithMany(mt => mt.MatchBirds)
+                .HasForeignKey(m => m.BirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config HasConversation MatchBirdEntity and Enum MatchBirdResult
+            modelBuilder.Entity<MatchBirdEntity>()
+                .Property(m => m.Result)
+                .HasConversion<string>();  
         }
 
         #region DbSet
@@ -110,6 +137,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdResourceEntity> BirdResources { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
+        public DbSet<MatchEntity> Matches { get; set; }
+        public DbSet<MatchBirdEntity> MatchBirds { get; set; }
         #endregion
     }
 }

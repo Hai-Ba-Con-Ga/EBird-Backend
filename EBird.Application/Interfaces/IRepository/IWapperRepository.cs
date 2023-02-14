@@ -18,5 +18,7 @@ namespace EBird.Application.Interfaces
         public IResourceRepository Resource { get; }
         public IPlaceRepository Place { get; }
         public IRequestRepository Request { get; }
+        public IGenericRepository<MatchBirdEntity> MatchBird { get; }
+        public IMatchRepository Match { get; }
     }
 }

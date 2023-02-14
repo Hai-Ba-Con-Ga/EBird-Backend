@@ -31,6 +31,9 @@ namespace EBird.Infrastructure.Repositories
         
         private IRequestRepository _requestRepository;
 
+        private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
+        private IMatchRepository _matchRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -129,6 +132,30 @@ namespace EBird.Infrastructure.Repositories
                     _requestRepository = new RequestRepository(_context);
                 }
                 return _requestRepository;
+            }
+        }
+
+        public IGenericRepository<MatchBirdEntity> MatchBird
+        {
+            get
+            {
+                if(_matchBirdRepository == null)
+                {
+                    _matchBirdRepository = new GenericRepository<MatchBirdEntity>(_context);
+                }
+                return _matchBirdRepository;
+            }
+        }
+
+        public IMatchRepository Match
+        {
+            get
+            {
+                if(_matchRepository == null)
+                {
+                    _matchRepository = new MatchRepository(_context);
+                }
+                return _matchRepository;
             }
         }
     }
