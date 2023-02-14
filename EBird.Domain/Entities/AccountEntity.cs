@@ -56,5 +56,6 @@ namespace EBird.Domain.Entities
         public ICollection<ParticipantEntity> Participants { get; set; } = null!;
         public ICollection<MessageEntity> Messages { get; set; } = null!;
         public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<NotificationEntity> Notifications { get; set; } = null!;
     }
 }

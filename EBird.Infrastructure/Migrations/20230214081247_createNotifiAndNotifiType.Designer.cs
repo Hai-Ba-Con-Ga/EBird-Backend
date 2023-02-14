@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230208020751_File")]
-    partial class File
+    [Migration("20230214081247_createNotifiAndNotifiType")]
+    partial class createNotifiAndNotifiType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -263,6 +263,112 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("Group");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.NotificationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(50)
+                        .HasColumnType("text")
+                        .HasColumnName("Content");
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreateDateTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("NotificatoinTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("NotificatoinTypeId");
+
+                    b.ToTable("Notification");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.NotificationTypeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TypeCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("TypeCode");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("TypeName");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypeCode")
+                        .IsUnique();
+
+                    b.ToTable("NotificationType");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Address");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Latitude")
+                        .IsRequired()
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Longitude");
+
+                    b.Property<string>("Longitude")
+                        .IsRequired()
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Longitude");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Places");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -304,6 +410,54 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("RefreshToken");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.RequestEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BirdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDatetime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreateDatetime");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PlaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("RequestDatetime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("RequestDatetime");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BirdId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("PlaceId");
+
+                    b.ToTable("Requests");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -313,11 +467,16 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<Guid>("CreateById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreateDate");
+
                     b.Property<string>("Datalink")
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -490,6 +649,25 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("CreatedBy");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.NotificationEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("Notifications")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.NotificationTypeEntity", "NotificationType")
+                        .WithMany("Notifications")
+                        .HasForeignKey("NotificatoinTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("NotificationType");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
@@ -499,6 +677,40 @@ namespace EBird.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.RequestEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.BirdEntity", "Bird")
+                        .WithMany("Requests")
+                        .HasForeignKey("BirdId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreatedBy")
+                        .WithMany("Requests")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.GroupEntity", "Group")
+                        .WithMany("Requests")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EBird.Domain.Entities.PlaceEntity", "Place")
+                        .WithMany("Requests")
+                        .HasForeignKey("PlaceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Bird");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Place");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
@@ -542,7 +754,11 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Navigation("Groups");
 
+                    b.Navigation("Notifications");
+
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Requests");
 
                     b.Navigation("Resources");
 
@@ -554,11 +770,28 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
                 {
                     b.Navigation("BirdResources");
+
+                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
                 {
                     b.Navigation("Birds");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.NotificationTypeEntity", b =>
+                {
+                    b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>
+                {
+                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
