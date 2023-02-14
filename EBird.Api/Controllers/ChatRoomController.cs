@@ -21,13 +21,15 @@ namespace EBird.Api.Controllers
         
         private readonly IGenericRepository<ChatRoomEntity> _chatRoomRepository;
         private readonly IGenericRepository<AccountEntity> _accountRepository;
+        private readonly IGenericRepository<ParticipantEntity> _participantRepository;
         private readonly IMapper _mapper;
 
 
-        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IMapper mapper)
+        public ChatRoomController(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<ParticipantEntity> participantRepository, IMapper mapper)
         {
             _chatRoomRepository = chatRoomRepository;
             _accountRepository = accountRepository;
+            _participantRepository = participantRepository;
             _mapper = mapper;
         }
 
@@ -46,7 +48,7 @@ namespace EBird.Api.Controllers
             try
             {
                 Guid accId = Guid.Parse(rawId);
-                var chatRooms = await _chatRoomRepository.FindAllWithCondition(x => x.Participants.Any(y => y.AccountId == accId));
+                var chatRooms = (await _chatRoomRepository.WhereAsync(x => x.Participants.Any(y => y.AccountId == accId), "Participants.Account")).ToList();
                 response = Response<List<ChatRoomEntity>>.Builder().SetData(chatRooms).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
 
             }
@@ -59,7 +61,7 @@ namespace EBird.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<ChatRoomEntity>>> GetChatRoomById(Guid id)
         {
-            var chatRoom = await _chatRoomRepository.GetByIdAsync(id);
+            var chatRoom = (await _chatRoomRepository.WhereAsync(x => x.Id == id, "Participants.Account")).FirstOrDefault();
             var response = new Response<ChatRoomEntity>();
             response = Response<ChatRoomEntity>.Builder().SetData(chatRoom).SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
@@ -122,14 +124,14 @@ namespace EBird.Api.Controllers
                 response = Response<string>.Builder().SetMessage("Chat room not found").SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound);
                 return StatusCode((int)HttpStatusCode.NotFound, response);
             }
-            var participantEntity = new ParticipantEntity();
-            participantEntity.ChatRoomId = participant.ChatRoomId;
-            foreach (var item in chatRoom.Participants)
-            {
-                participantEntity.AccountId = item.AccountId;
-                chatRoom.Participants.Add(participantEntity);
+            foreach (var chatRoomMember in participant.AccountId){
+                var newParticipant = new ParticipantEntity()
+                {
+                    AccountId = chatRoomMember,
+                    ChatRoomId = participant.ChatRoomId
+                };
+                await _participantRepository.CreateAsync(newParticipant);
             }
-            await _chatRoomRepository.UpdateAsync(chatRoom);
             response = Response<string>.Builder().SetMessage("Success").SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             return StatusCode((int)HttpStatusCode.OK, response);
         }

@@ -4,10 +4,10 @@ const signalR = require("@microsoft/signalr");
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 let token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0ZThlMzgzYS03MTgxLTRkM2ItOTA5OC1hYTc4OGZmY2U5ZjYiLCJpZCI6IjRlOGUzODNhLTcxODEtNGQzYi05MDk4LWFhNzg4ZmZjZTlmNiIsIm5hbWUiOiJLaGFuaCIsInJvbGUiOiJBZG1pbiIsImp0aSI6IjU0ODQ2NDk4LTFhZDAtNDc2Ny04YzE2LTVlZWMzMTQ1NGRkZSIsIm5iZiI6MTY3NjI2NjE3NiwiZXhwIjoxNjc2MzUyNTc2LCJpYXQiOjE2NzYyNjYxNzZ9.6A3fvYcUVf8B0PV2l_dp_zgB-Zdyz4hxOXtukUbZkmE`;
-let token1 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiMDZjMzUzZS1iMDMyLTRjZTYtOGZhZC04Nzg5MDExMWExOTMiLCJpZCI6ImIwNmMzNTNlLWIwMzItNGNlNi04ZmFkLTg3ODkwMTExYTE5MyIsIm5hbWUiOiJDb24iLCJyb2xlIjoiVXNlciIsImp0aSI6IjYxMWU4NmRiLWU3ODEtNDYyNy1hMWVjLWFlN2MyMjZiYjY1NCIsIm5iZiI6MTY3NjI2MDk5NiwiZXhwIjoxNjc2MzQ3Mzk2LCJpYXQiOjE2NzYyNjA5OTZ9.6GTg-rMWG5c6DvO4Pe4shStE7__WYnsc9lNVRpYwunc`;
+let token1 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0ZThlMzgzYS03MTgxLTRkM2ItOTA5OC1hYTc4OGZmY2U5ZjYiLCJpZCI6IjRlOGUzODNhLTcxODEtNGQzYi05MDk4LWFhNzg4ZmZjZTlmNiIsIm5hbWUiOiJLaGFuaCIsInJvbGUiOiJBZG1pbiIsImp0aSI6ImZiOWZmNjNhLWZhYTctNDVhYy04ZjM2LThhMThjZmU2ODhlZCIsIm5iZiI6MTY3NjM1Nzk5MCwiZXhwIjoxNjc2NDQ0MzkwLCJpYXQiOjE2NzYzNTc5OTB9.bmpPegTvL7rbmy-VHH_1flQSR-cDJj2QdZudC9FlVOs`;
 const connection = new signalR.HubConnectionBuilder()
   .withUrl(
-    "https://localhost:7137/chathub?chatRoomId=00CB5F6A-0122-4ECF-B759-C0D8C5DB5538",
+    "https://localhost:7137/chathub?chatRoomId=00cb5f6a-0122-4ecf-b759-c0d8c5db5538",
     {
       transport: signalR.HttpTransportType.WebSocket,
       headers: {
@@ -38,7 +38,7 @@ const start = async () => {
     console.log(message);
     console.log("=============================================");
   });
-  await connection.invoke("SendMessage", "hello");
+  await connection.invoke("SendMessage", "hello hiii");
 };
 
 ///////////////////////////////////////////////////
