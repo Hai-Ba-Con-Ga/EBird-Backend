@@ -24,58 +24,49 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<NotificationTypeRequestDTO> AddNotificationType(NotificationTypeRequestDTO notificationTypeRequestDTO)
+        public async Task AddNotificationType(NotificationTypeRequestDTO ntDTO)
         {
-            await notificationTypeValidation.ValidationNotificationType(notificationTypeRequestDTO, _repository);
-            var notificationTypeEntity = _mapper.Map<NotificationTypeEntity>(notificationTypeRequestDTO);
-
-            var updatedEntity = await _repository.NotificationType.AddNotificationTypeAsync(notificationTypeEntity);
-
-            if (updatedEntity == null)
-                throw new Exception("Can not add Notification Type to database");
-            return notificationTypeRequestDTO;
+            // check validation
+            await NotificationTypeValidation.ValidationNotificationType(ntDTO, _repository);
+            // convert DTO to Entity
+            var entity = _mapper.Map<NotificationTypeEntity>(ntDTO);
+            // update to DB
+            await _repository.NotificationType.AddNotificationTypeAsync(entity);
         }
 
-        public async Task<NotificationTypeDTO> DeleteNotificationType(Guid id)
+        public async Task UpdateNotificationType(Guid Id, NotificationTypeRequestDTO ntDTO)
         {
-            var result = await _repository.NotificationType.DeleteSoftAsync(id);
+            // check validation
+            await NotificationTypeValidation.ValidationNotificationType(ntDTO, _repository);
+            
+            var entity = await _repository.NotificationType.GetNotificationTypeActiveAsync(Id);
+            if (entity == null)
+                throw new NotFoundException("Can not found notification type for updating");
+
+            _mapper.Map(ntDTO, entity);
+            await _repository.NotificationType.UpdateNotificationTypeAsync(entity);
+        }
+
+        public async Task DeleteNotificationType(Guid id)
+        {
+            await _repository.NotificationType.DeleteSoftAsync(id);
+        }
+        public async Task<List<NotificationTypeDTO>> GetNotificationTypes()
+        {
+            var result = await _repository.NotificationType.GetAllNotificationTypesActiveAsync();
             if (result == null)
-                throw new NotFoundException("Notification type not found");
-
-            var birdTypeDeletedDTO = _mapper.Map<NotificationTypeDTO>(result);
-
-            return birdTypeDeletedDTO;
+                throw new NotFoundException("Notification Type not found");
+            return _mapper.Map<List<NotificationTypeDTO>>(result);
         }
 
         public async Task<NotificationTypeDTO> GetNotificationType(Guid Id)
         {
             var result = await _repository.NotificationType.GetNotificationTypeActiveAsync(Id);
-
             if (result == null)
                 throw new NotFoundException("Notification Type not found");
             return _mapper.Map<NotificationTypeDTO>(result);
         }
 
-        public async Task<List<NotificationTypeDTO>> GetNotificationTypes()
-        {
-            return _mapper.Map<List<NotificationTypeDTO>>(await _repository.NotificationType.GetAllNotificationTypesActiveAsync());
-        }
 
-        public async Task<NotificationTypeRequestDTO> UpdateNotificationType(Guid Id, NotificationTypeRequestDTO notificationTypeDTO)
-        {
-            await notificationTypeValidation.ValidationNotificationType(notificationTypeDTO, _repository);
-
-            var notificationType = await _repository.NotificationType.GetByIdAsync(Id);
-            if (notificationType == null)
-                throw new NotFoundException("Can not found notification type for updating");
-
-            _mapper.Map(notificationTypeDTO, notificationType);
-
-            int rowEffect = await _repository.NotificationType.UpdateAsync(notificationType);
-            if (rowEffect == 0)
-                throw new Exception("Can update notification type to database");
-
-            return notificationTypeDTO;
-        }
     }
 }

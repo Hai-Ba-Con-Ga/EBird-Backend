@@ -19,63 +19,49 @@ namespace EBird.Api.Controllers
             _notificationTypeService = notificationTypeService;
         }
 
-        // GET all
         [HttpGet("all")]
         public async Task<ActionResult<Response<List<NotificationTypeDTO>>>> Get()
         {
             Response<List<NotificationTypeDTO>> response;
             try
             {
-                var notificationTypeResponeList = await _notificationTypeService.GetNotificationTypes();
-
+                var responseData = await _notificationTypeService.GetNotificationTypes();
                 response = new Response<List<NotificationTypeDTO>>()
-                            .SetData(notificationTypeResponeList)
+                            .SetData(responseData)
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
-                            .SetMessage("Get notification type by id is successful");
-
-                return StatusCode((int)response.StatusCode, response);
+                            .SetMessage("Get notification type is successful");
             }
             catch (Exception ex)
             {
-
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<List<NotificationTypeDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException)ex).StatusCode)
                         .SetMessage(ex.Message);
-
                     return StatusCode((int)response.StatusCode, response);
                 }
-
                 response = Response<List<NotificationTypeDTO>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
-
-                return StatusCode((int)response.StatusCode, response);
             }
-
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        // GET by id
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<NotificationTypeDTO>>> Get(Guid id)
         {
             Response<NotificationTypeDTO> response;
             try
             {
-
                 var responseData = await _notificationTypeService.GetNotificationType(id);
-
                 response = new Response<NotificationTypeDTO>()
                             .SetData(responseData)
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Get notification type is successful");
-
-                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
@@ -85,133 +71,109 @@ namespace EBird.Api.Controllers
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException)ex).StatusCode)
                         .SetMessage(ex.Message);
-
                     return StatusCode((int)response.StatusCode, response);
                 }
-
                 response = Response<NotificationTypeDTO>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
-
-                return StatusCode((int)response.StatusCode, response);
             }
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        // POST  create new notification type
         [HttpPost]
-        public async Task<ActionResult<Response<NotificationTypeRequestDTO>>> Post([FromBody] NotificationTypeRequestDTO notificationTypeRequestDTO)
+        public async Task<ActionResult<Response<string>>> Post([FromBody] NotificationTypeRequestDTO notificationTypeRequestDTO)
         {
-            Response<NotificationTypeRequestDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _notificationTypeService.AddNotificationType(notificationTypeRequestDTO);
+                await _notificationTypeService.AddNotificationType(notificationTypeRequestDTO);
 
-                response = new Response<NotificationTypeRequestDTO>()
-                            .SetData(responseData)
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Create notification type is successful");
-
-                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<NotificationTypeRequestDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException)ex).StatusCode)
                         .SetMessage(ex.Message);
-
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<NotificationTypeRequestDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
-
-                return StatusCode((int)response.StatusCode, response);
             }
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        // Put : update exist notification type
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<NotificationTypeRequestDTO>>> Put(Guid id, [FromBody] NotificationTypeRequestDTO notificationTypeRequestDTO)
+        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] NotificationTypeRequestDTO ntDTO)
         {
-            Response<NotificationTypeRequestDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var responseData = await _notificationTypeService.UpdateNotificationType(id, notificationTypeRequestDTO);
-
-                response = new Response<NotificationTypeRequestDTO>()
-                            .SetData(responseData)
+                await _notificationTypeService.UpdateNotificationType(id, ntDTO);
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Update notification type is successful");
-
-                return response;
             }
-
             catch (Exception ex)
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<NotificationTypeRequestDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException)ex).StatusCode)
                         .SetMessage(ex.Message);
-
                     return StatusCode((int)response.StatusCode, response);
                 }
-
-                response = Response<NotificationTypeRequestDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
-
-                return StatusCode((int)response.StatusCode, response);
             }
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        // DELETE: delete notification type
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<NotificationTypeDTO>>> Delete(Guid id)
+        public async Task<ActionResult<Response<string>>> Delete(Guid id)
         {
-            Response<NotificationTypeDTO> response = null;
+            Response<string> response = null;
             try
             {
-                var notificationTypeReponse = await _notificationTypeService.DeleteNotificationType(id);
-
-                response = new Response<NotificationTypeDTO>()
-                            .SetData(notificationTypeReponse)
+                await _notificationTypeService.DeleteNotificationType(id);
+                response = new Response<string>()
+                            .SetData("")
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Delete notification type is successful");
-
-                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
-
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<NotificationTypeDTO>.Builder()
+                    response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode(((BaseHttpException)ex).StatusCode)
                         .SetMessage(ex.Message);
-
                     return StatusCode((int)response.StatusCode, response);
                 }
-
-                response = Response<NotificationTypeDTO>.Builder()
+                response = Response<string>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
-
-                return StatusCode((int)response.StatusCode, response);
             }
+            return StatusCode((int)response.StatusCode, response);
         }
     }
 }

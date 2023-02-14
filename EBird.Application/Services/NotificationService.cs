@@ -7,13 +7,13 @@ using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Model.Notification;
 using EBird.Application.Services.IServices;
+using EBird.Application.Validation;
 using EBird.Domain.Entities;
 
 namespace EBird.Application.Services
 {
     public class NotificationService : INotificationService
     {
-        
         private IWapperRepository _repository;
         private IMapper _mapper;
 
@@ -23,31 +23,24 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<NotificationCreateDTO> AddNotification(NotificationCreateDTO notificationCreateDTO)
+        public async Task AddNotification(NotificationCreateDTO notificationCreateDTO)
         {
-            // await NotificationValidation.ValidateNotification(NotificationDTO, _repository);
+            await NotificationValidation.ValidationNotificationType(notificationCreateDTO, _repository);
+            await BaseValidation.ValidateAccountId(notificationCreateDTO.AccountId, _repository);
 
-            NotificationEntity notificationEntity = _mapper.Map<NotificationEntity>(notificationCreateDTO);
+            NotificationEntity entity = _mapper.Map<NotificationEntity>(notificationCreateDTO);
 
-            notificationEntity = await _repository.Notification.AddNotificationAsync(notificationEntity);
-
-            if(notificationEntity == null)
-            {
+            entity = await _repository.Notification.AddNotificationAsync(entity);
+            if(entity == null)
                 throw new BadRequestException("Notification is not added");
-            }
-            
-            return notificationCreateDTO;
         }
 
         public async Task<NotificationDTO> DeleteNotification(Guid NotificationID)
         {
             var NotificationEntity = await _repository.Notification.SoftDeleteNotificationAsync(NotificationID);
-            
             if(NotificationEntity == null)
-            {
                 throw new NotFoundException("Not found Notification for delete");
-            }
-            
+
             return _mapper.Map<NotificationDTO>(NotificationEntity);
         }
 
@@ -56,9 +49,7 @@ namespace EBird.Application.Services
             var NotificationEntity = await _repository.Notification.GetNotificationActiveAsync(NotificationID);
             
             if(NotificationEntity == null)
-            {
                 throw new NotFoundException("Can not found Notification");
-            }
             
             var NotificationDTO = _mapper.Map<NotificationDTO>(NotificationEntity);
             
@@ -68,6 +59,8 @@ namespace EBird.Application.Services
         public async Task<List<NotificationDTO>> GetNotifications()
         {
             var listNotificationEntity = await _repository.Notification.GetNotificationsActiveAsync();
+            if (listNotificationEntity == null)
+                throw new NotFoundException("Can not found Notification");
             return _mapper.Map<List<NotificationDTO>>(listNotificationEntity);
         }
 
@@ -77,9 +70,7 @@ namespace EBird.Application.Services
             var NotificationEntity = await _repository.Notification.GetNotificationActiveAsync(NotificationID);
 
             if(NotificationEntity == null)
-            {
                 throw new NotFoundException("Can not found Notification");
-            }
 
             _mapper.Map(NotificationDTO, NotificationEntity);
 

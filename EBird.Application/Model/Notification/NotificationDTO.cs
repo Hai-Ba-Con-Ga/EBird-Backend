@@ -1,3 +1,5 @@
+using EBird.Application.Interfaces.IMapper;
+using EBird.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Notification
 {
-    public class NotificationDTO
+    public class NotificationDTO : IMapFrom<NotificationEntity>
     {
         public Guid Id { get; set; }
 

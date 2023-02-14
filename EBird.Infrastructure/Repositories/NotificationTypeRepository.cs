@@ -38,7 +38,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<NotificationTypeEntity> GetNotificationTypeActiveAsync(Guid id)
         {
-            return await this.GetByIdAsync(id);
+            return await this.GetByIdActiveAsync(id);
         }
 
         public async Task<int> UpdateNotificationTypeAsync(NotificationTypeEntity notificationType)

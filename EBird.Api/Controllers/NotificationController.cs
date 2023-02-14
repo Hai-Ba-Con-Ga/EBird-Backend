@@ -105,13 +105,12 @@ namespace EBird.Api.Controllers
             Response<NotificationCreateDTO> response = null;
             try
             {
-                var responseData = await _notificationService.AddNotification(notificationCreateDTO);
+                await _notificationService.AddNotification(notificationCreateDTO);
 
                 response = Response<NotificationCreateDTO>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.Created)
-                    .SetMessage("Create Notification is success")
-                    .SetData(responseData);
+                    .SetStatusCode((int)HttpStatusCode.Created)
+                    .SetMessage("Create Notification is success");
 
                 return StatusCode((int) response.StatusCode, response);
             }
