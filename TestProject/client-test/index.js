@@ -42,47 +42,47 @@ const start = async () => {
 };
 
 ///////////////////////////////////////////////////
-// const requestConnection = new signalR.HubConnectionBuilder()
-//   .withUrl(
-//     "https://localhost:7137/requesthub?groupId=7344B47E-291C-47AA-8706-08CB74E000B4",
-//     {
-//       transport: signalR.HttpTransportType.WebSocket,
-//       headers: {
-//         Authorization: `bearer ${token}`,
-//       },
-//     }
-//   )
-//   .configureLogging(signalR.LogLevel.Information)
-//   .build();
-// const requestStart = async () => {
-//   await requestConnection
-//     .start()
-//     .then(() => {
-//       console.log("Connected to SignalR hub.");
-//     })
-//     .catch((error) => {
-//       console.error("Error connecting to SignalR hub:", error);
-//     });
-//   await requestConnection.on("UserActive", (message) => {
-//     console.log("=============================================");
-//     console.log(message);
-//     console.log("=============================================");
-//   });
+const requestConnection = new signalR.HubConnectionBuilder()
+  .withUrl(
+    "https://localhost:7137/requesthub?groupId=7344B47E-291C-47AA-8706-08CB74E000B4",
+    {
+      transport: signalR.HttpTransportType.WebSocket,
+      headers: {
+        Authorization: `bearer ${token1}`,
+      },
+    }
+  )
+  .configureLogging(signalR.LogLevel.Information)
+  .build();
+const requestStart = async () => {
+  await requestConnection
+    .start()
+    .then(() => {
+      console.log("Connected to SignalR hub.");
+    })
+    .catch((error) => {
+      console.error("Error connecting to SignalR hub:", error);
+    });
+  await requestConnection.on("UserActive", (message) => {
+    console.log("=============================================");
+    console.log(message);
+    console.log("=============================================");
+  });
 
-//   await requestConnection.on("ReceiveRequest", (message) => {
-//     console.log("=============================================");
-//     console.log(message);
-//     console.log("=============================================");
-//   });
-//   requestConnection.invoke("SendRequest", {
-//     requestDatetime: "2023-02-12T09:49:56.805Z",
-//     status: "string",
-//     birdId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//     placeId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//     createdById: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//     groupId: "7344B47E-291C-47AA-8706-08CB74E000B4",
-//   });
-// };
+  await requestConnection.on("ReceiveRequest", (message) => {
+    console.log("=============================================");
+    console.log(message);
+    console.log("=============================================");
+  });
+  requestConnection.invoke("SendRequest", {
+    requestDatetime: "2023-02-17T09:49:56.805Z",
+    status: "string",
+    birdId: "62fcc08d-5239-471b-aa5e-51c1c5f4e053",
+    placeId: "e9bc64c8-6435-481f-806e-9be20b6a87b9",
+    createdById: "4E8E383A-7181-4D3B-9098-AA788FFCE9F6",
+    groupId: "7344B47E-291C-47AA-8706-08CB74E000B4",
+  });
+};
 
-start();
-//requestStart(); đang bugggggggggggggggg
+//start();
+requestStart();

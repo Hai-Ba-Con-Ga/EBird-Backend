@@ -3,6 +3,7 @@ using EBird.Application.Exceptions;
 using EBird.Application.Extensions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Chat;
 using EBird.Application.Model.Request;
 using EBird.Application.Validation;
@@ -22,37 +23,40 @@ namespace EBird.Application.Hubs
         private readonly IGenericRepository<AccountEntity> _accountRepository;
 
         private IWapperRepository _repository;
+        private IUnitOfValidation _unitOfValidation;
 
         private IMapper _mapper;
-        public RequestHub(IGenericRepository<RequestEntity> requestRepository, IGenericRepository<GroupEntity> groupRepository, IWapperRepository repository, IMapper mapper)
+        public RequestHub(IGenericRepository<RequestEntity> requestRepository, IGenericRepository<GroupEntity> groupRepository, IGenericRepository<AccountEntity> accountRepository, IWapperRepository repository, IUnitOfValidation unitOfValidation, IMapper mapper)
         {
             _requestRepository = requestRepository;
             _groupRepository = groupRepository;
+            _accountRepository = accountRepository;
             _repository = repository;
+            _unitOfValidation = unitOfValidation;
             _mapper = mapper;
         }
         public override async Task OnConnectedAsync()
-    {
-        try
         {
-            var groupIdRaw = Context.GetHttpContext().Request.Query["groupId"].ToString().ToLower();
+            try
+            {
+                var groupIdRaw = Context.GetHttpContext().Request.Query["groupId"].ToString().ToLower();
 
-            var userId = Context.User.GetUserId();
-            var groupId = Guid.Parse(groupIdRaw);
+                var userId = Context.User.GetUserId();
+                var groupId = Guid.Parse(groupIdRaw);
 
-            
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupIdRaw);
-            await UserConnected(new RequestUserConnection() { UserId = userId,  GroupId= groupId}, Context.ConnectionId);
-            var account = await _accountRepository.GetByIdActiveAsync(userId);
 
-            await Clients.Group(groupIdRaw).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has joined {groupId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupIdRaw);
+                await UserConnected(new RequestUserConnection() { UserId = userId, GroupId = groupId }, Context.ConnectionId);
+                var account = await _accountRepository.GetByIdActiveAsync(userId);
+
+                await Clients.Group(groupIdRaw).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has joined {groupId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
-    }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try
@@ -82,8 +86,7 @@ namespace EBird.Application.Hubs
             {
                 throw new BadRequestException("Request cannot be null");
             }
-            await RequestValidation.ValidateCreateRequest(requestDto, _repository);
-
+            await _unitOfValidation.Request.ValidateCreateRequest(requestDto);
 
             var requestEntity = _mapper.Map<RequestEntity>(requestDto);
             await Clients.Group(requestDto.GroupId.ToString()).SendAsync(HubEvents.ReceiveRequest, requestDto);
