@@ -7,6 +7,7 @@ using EBird.Application.Validation;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
 using EBird.Application.Model.BirdType;
+using EBird.Application.Interfaces.IValidation;
 
 namespace EBird.Application.Services
 {
@@ -15,10 +16,13 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
 
-        public BirdTypeService(IWapperRepository repository, IMapper mapper)
+        private IUnitOfValidation _unitOfValidation;
+
+        public BirdTypeService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation)
         {
             _repository = repository;
             _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
         }
 
         public async Task DeleteBirdType(Guid birdTypeID)
@@ -54,7 +58,7 @@ namespace EBird.Application.Services
 
             if(birdTypeResult == null)
             {
-                throw new NotFoundException("Bird type not found");
+                throw new BadRequestException("Bird type not found");
             }
 
             var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
@@ -66,34 +70,31 @@ namespace EBird.Application.Services
         {
             var birdTypeResult = await _repository.BirdType.GetBirdTypeActiveAsync(birdTypeID);
 
-            if(birdTypeResult == null)
-            {
-                throw new NotFoundException("Bird type can not found");
-            }
-
             var birdTypeResultDTO = _mapper.Map<BirdTypeResponseDTO>(birdTypeResult);
 
             return birdTypeResultDTO;
         }
 
-        public async Task AddBirdType(BirdTypeRequestDTO birdTypeDTO)
+        public async Task<Guid> AddBirdType(BirdTypeRequestDTO birdTypeDTO)
         {
-            await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
+            await _unitOfValidation.BirdType.ValidateBirdTypeDTO(birdTypeDTO);
 
             var birdType = _mapper.Map<BirdTypeEntity>(birdTypeDTO);
 
             await _repository.BirdType.AddBirdTypeAsync(birdType);
+            
+            return birdType.Id;
         }
         
         public async Task UpdateBirdType(Guid id, BirdTypeRequestDTO birdTypeDTO)
         {
-            await BirdTypeValidation.ValidateBirdTypeDTO(birdTypeDTO, _repository);
+            await _unitOfValidation.BirdType.ValidateBirdTypeDTO(birdTypeDTO);
 
             var birdType = await _repository.BirdType.GetByIdAsync(id);
 
             if(birdType == null)
             {
-                throw new NotFoundException("Can not found bird type for updating");
+                throw new BadRequestException("Can not found bird type for updating");
             }
 
             _mapper.Map(birdTypeDTO, birdType);

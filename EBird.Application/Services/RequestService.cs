@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Request;
 using EBird.Application.Services.IServices;
@@ -18,10 +19,13 @@ namespace EBird.Application.Services
         private IMapper _mapper;
         private IWapperRepository _repository;
 
-        public RequestService(IMapper mapper, IWapperRepository repository)
+        private IUnitOfValidation _unitOfValidation;
+
+        public RequestService(IMapper mapper, IWapperRepository repository, IUnitOfValidation unitOfValidation)
         {
             _mapper = mapper;
             _repository = repository;
+            _unitOfValidation = unitOfValidation;
         }
 
         public async Task<Guid> CreateRequest(RequestCreateDTO requestDto)
@@ -31,7 +35,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Request cannot be null");
             }
 
-            await RequestValidation.ValidateCreateRequest(requestDto, _repository);
+            await _unitOfValidation.Request.ValidateCreateRequest(requestDto);
 
             var requestEntity = _mapper.Map<RequestEntity>(requestDto);
 
@@ -51,7 +55,7 @@ namespace EBird.Application.Services
 
         public async Task<PagedList<RequestResponse>> GetRequests(RequestParameters parameters)
         {
-            RequestValidation.ValidateParameter(parameters);
+            _unitOfValidation.Request.ValidateParameter(parameters);
 
             var resultEntityList  = await _repository.Request.GetRequests(parameters);
 
@@ -69,7 +73,7 @@ namespace EBird.Application.Services
 
         public async Task UpdateRequest(Guid id, RequestUpdateDTO request)
         {
-            await RequestValidation.ValidateRequestId(id, _repository);
+            await _unitOfValidation.Request.ValidateRequestId(id);
 
             var requestEntity = await _repository.Request.GetRequest(id);
             

@@ -4,22 +4,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Request;
 
 namespace EBird.Application.Validation
 {
-    public class RequestValidation : BaseValidation
+    public class RequestValidation : BaseValidation, IRequestValidation
     {
-        public static async Task ValidateCreateRequest(RequestCreateDTO request, IWapperRepository _repository)
+        public RequestValidation(IWapperRepository repository) : base(repository)
         {
-            await ValidateAccountId(request.CreatedById, _repository);
-            await ValidateGroupId(request.GroupId, _repository);
-            await ValidateBirdId(request.BirdId, _repository);
-            await ValidatePlaceId(request.PlaceId, _repository);
-            await ValidateRequestDatetime(request.RequestDatetime, _repository);
         }
 
-        public static async Task ValidateRequestDatetime(DateTime requestDate, IWapperRepository _repository)
+        public async Task ValidateCreateRequest(RequestCreateDTO request)
+        {
+            await ValidateAccountId(request.CreatedById);
+            await ValidateGroupId(request.GroupId);
+            await ValidateBirdId(request.BirdId);
+            await ValidatePlaceId(request.PlaceId);
+            ValidateRequestDatetime(request.RequestDatetime);
+        }
+
+        public void ValidateRequestDatetime(DateTime requestDate)
         {
             if (requestDate < DateTime.Now)
             {

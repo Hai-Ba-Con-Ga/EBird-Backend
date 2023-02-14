@@ -11,7 +11,7 @@ namespace EBird.Application.Services.IServices
     {
         public Task<GroupResponseDTO> GetGroup(Guid groupId);
         public Task<List<GroupResponseDTO>> GetGroups();
-        public Task AddGroup(GroupCreateDTO groupDTO);
+        public Task<Guid> AddGroup(GroupCreateDTO groupDTO);
         public Task UpdateGroup(Guid groupId, GroupRequestDTO groupDTO);
         public Task DeleteGroup(Guid groupId);
     }

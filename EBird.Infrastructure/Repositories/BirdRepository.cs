@@ -40,6 +40,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
+                    bird.CreatedDatetime = DateTime.Now;
                     await _context.Birds.AddAsync(bird);
                     int rowEffect = await _context.SaveChangesAsync();
 
@@ -49,12 +50,13 @@ namespace EBird.Infrastructure.Repositories
 
                     foreach (var rsrc in resourceList)
                     {
+                        rsrc.CreateDate = DateTime.Now;
                         await _context.Resources.AddAsync(rsrc);
                         rowEffect = await _context.SaveChangesAsync();
 
                         if (rowEffect == 0) throw new BadRequestException("Resource is can be added");
 
-                        await _context.BirdResources.AddAsync(new BirdResourceEntity(rsrc.Id, birdId));
+                        await _context.BirdResources.AddAsync(new BirdResourceEntity(birdId, rsrc.Id));
                         rowEffect = await _context.SaveChangesAsync();
 
                         if (rowEffect == 0) throw new BadRequestException("Bird_Resource is can be added");

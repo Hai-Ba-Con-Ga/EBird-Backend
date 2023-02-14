@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
@@ -20,20 +21,23 @@ namespace EBird.Application.Services
     {
         private IWapperRepository _repository;
         private IMapper _mapper;
+        private IUnitOfValidation _unitOfValidation;
 
-        public BirdService(IWapperRepository repository, IMapper mapper)
+        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation)
         {
             _repository = repository;
             _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
         }
 
-        public async Task AddBird(BirdCreateDTO birdDTO)
+        public async Task<Guid> AddBird(BirdCreateDTO birdDTO)
         {
-            await BirdValidation.ValidateCreateBird(birdDTO, _repository);
+            await _unitOfValidation.Bird.ValidateCreateBird(birdDTO);
 
             BirdEntity birdEntity = _mapper.Map<BirdEntity>(birdDTO);
 
             var resourceDTOList = birdDTO.ListResource;
+
 
             if (resourceDTOList == null)
             {
@@ -41,12 +45,13 @@ namespace EBird.Application.Services
             }
             else
             {
-                await BirdValidation.ValidateCreateResourceList(resourceDTOList, _repository);
+                await _unitOfValidation.Bird.ValidateCreateResourceList(resourceDTOList);
 
                 var resourceEntityList = _mapper.Map<List<ResourceEntity>>(resourceDTOList);
 
                 await _repository.Bird.AddBirdAsync(birdEntity, resourceEntityList);
             }
+            return birdEntity.Id;
         }
 
         public async Task DeleteBird(Guid birdID)
@@ -91,7 +96,7 @@ namespace EBird.Application.Services
 
         public async Task<PagedList<BirdResponseDTO>> GetBirdsByPagingParameters(BirdParameters parameters)
         {
-            BirdValidation.ValidateParameter(parameters);
+            _unitOfValidation.Bird.ValidateParameter(parameters);
 
             var birdList = await _repository.Bird.GetBirdsActiveAsync(parameters);
 
@@ -108,7 +113,7 @@ namespace EBird.Application.Services
 
         public async Task UpdateBird(Guid birdID, BirdRequestDTO birdDTO)
         {
-            await BirdValidation.ValidateUpdateBird(birdDTO, _repository);
+            await _unitOfValidation.Bird.ValidateUpdateBird(birdDTO);
 
             var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
 
