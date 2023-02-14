@@ -25,6 +25,8 @@ namespace EBird.Api.Configurations
             services.AddScoped<IFileServices, FileServices>();
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IRequestService, RequestService>();
+            services.AddScoped<IMatchService, MatchService>();
+            services.AddScoped<IMatchBirdService, MatchBirdService>();
             //register Validation services
             services.AddScoped<IUnitOfValidation, UnitOfValidation>();
             //register AutoMapper services

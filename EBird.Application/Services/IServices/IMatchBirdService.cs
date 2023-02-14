@@ -8,7 +8,7 @@ using EBird.Domain.Entities;
 
 namespace EBird.Application.Services.IServices
 {
-    public interface IMatchBirdService : IMapTo<MatchBirdEntity>
+    public interface IMatchBirdService
     {
         public Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO);
     }
