@@ -22,16 +22,13 @@ namespace EBird.Test.ServicesTest
             mockAccountServices.Setup(x => x.GetAllAccount()).ReturnsAsync(new List<AccountResponse> { new AccountResponse() });
             _accountServices = mockAccountServices.Object;
         }
-
-        [SetUp]
-        public void Setup()
-        {
-        }
+  
         
         [Test]
-        public void AccountServices_GetAll()
+        public async Task AccountServices_GetAll()
         {
-            var result = _accountServices.GetAllAccount();
+            var result = await _accountServices.GetAllAccount();
+            Assert.AreEqual(result.Count, 2);
             Assert.IsNotNull(result);
         }
         
