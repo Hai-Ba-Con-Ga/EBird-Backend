@@ -1,0 +1,21 @@
+[
+    {
+      "Password": "12345",
+      "Username": "linhtk",
+      "Email": "tklinh2601@gmail.com",
+      "FirstName": "Khanh",
+      "LastName": "Linh",
+      "Description": "Hello World",
+      "Role": "Admin"
+    },
+    {
+      "Password": "12345",
+      "Username": "haibaconga",
+      "Email": "linhtruong2601@gmail.com",
+      "FirstName": "Con",
+      "LastName": "Ga",
+      "Description": "Ga chien nuoc mam",
+      "Role": "User"
+    }
+]
+  
