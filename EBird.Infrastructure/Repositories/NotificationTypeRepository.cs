@@ -1,4 +1,5 @@
-﻿using EBird.Application.Interfaces.IRepository;
+﻿using EBird.Application.Exceptions;
+using EBird.Application.Interfaces.IRepository;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using System;
@@ -46,14 +47,14 @@ namespace EBird.Infrastructure.Repositories
             return await this.UpdateAsync(notificationType);
         }
 
-        public async Task<NotificationTypeEntity> AddNotificationTypeAsync(NotificationTypeEntity notificationType)
+        public async Task<Guid> AddNotificationTypeAsync(NotificationTypeEntity notificationType)
         {
             var addEntity = await this.CreateAsync(notificationType);
             if (addEntity == 0)
             {
-                return null;
+                throw new BadRequestException("can not create notifiction type");
             }
-            return notificationType;
+            return notificationType.Id;
         }
     }
 }

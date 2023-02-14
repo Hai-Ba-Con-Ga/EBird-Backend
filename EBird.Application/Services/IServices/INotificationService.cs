@@ -10,7 +10,7 @@ namespace EBird.Application.Services.IServices
     {
         public Task<NotificationDTO> GetNotification(Guid NotificationId);
         public Task<List<NotificationDTO>> GetNotifications();
-        public Task AddNotification(NotificationCreateDTO NotificationDTO);
+        public Task<Guid> AddNotification(NotificationCreateDTO NotificationDTO);
         public Task<NotificationUpdateDTO> UpdateNotification(Guid id, NotificationUpdateDTO NotificationDTO);
         public Task<NotificationDTO> DeleteNotification(Guid NotificationId);
 

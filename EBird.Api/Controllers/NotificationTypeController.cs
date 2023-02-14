@@ -38,7 +38,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<NotificationTypeDTO>>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
@@ -69,7 +69,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<NotificationTypeDTO>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
@@ -82,15 +82,15 @@ namespace EBird.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> Post([FromBody] NotificationTypeRequestDTO notificationTypeRequestDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] NotificationTypeRequestDTO notificationTypeRequestDTO)
         {
-            Response<string> response = null;
+            Response<Guid> response = null;
             try
             {
-                await _notificationTypeService.AddNotificationType(notificationTypeRequestDTO);
+                Guid id = await _notificationTypeService.AddNotificationType(notificationTypeRequestDTO);
 
-                response = new Response<string>()
-                            .SetData("")
+                response = new Response<Guid>()
+                            .SetData(id)
                             .SetStatusCode((int)HttpStatusCode.OK)
                             .SetSuccess(true)
                             .SetMessage("Create notification type is successful");
@@ -99,14 +99,14 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<string>.Builder()
+                    response = Response<Guid>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage("Internal server error");
@@ -133,7 +133,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
@@ -164,7 +164,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }

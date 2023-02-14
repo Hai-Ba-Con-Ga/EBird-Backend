@@ -107,7 +107,7 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.Account)
                 .HasForeignKey(b => b.AccountId);
 
-            //Config for one to many relationship between BirdTypeEntity and BirdEntity
+            //Config for one to many relationship between NotificationTypeEntity with NotificationEntity
             modelBuilder.Entity<NotificationTypeEntity>()
                 .HasMany(bt => bt.Notifications)
                 .WithOne(b => b.NotificationType)

@@ -24,14 +24,14 @@ namespace EBird.Application.Services
             _mapper = mapper;
         }
 
-        public async Task AddNotificationType(NotificationTypeRequestDTO ntDTO)
+        public async Task<Guid> AddNotificationType(NotificationTypeRequestDTO ntDTO)
         {
             // check validation
             await NotificationTypeValidation.ValidationNotificationType(ntDTO, _repository);
             // convert DTO to Entity
             var entity = _mapper.Map<NotificationTypeEntity>(ntDTO);
             // update to DB
-            await _repository.NotificationType.AddNotificationTypeAsync(entity);
+            return await _repository.NotificationType.AddNotificationTypeAsync(entity);
         }
 
         public async Task UpdateNotificationType(Guid Id, NotificationTypeRequestDTO ntDTO)

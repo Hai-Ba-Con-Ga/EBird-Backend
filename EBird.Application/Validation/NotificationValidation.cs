@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class NotificationValidation : BaseValidation
+    public class NotificationValidation
     {
         public static async Task ValidationNotificationType(NotificationCreateDTO notification, IWapperRepository _repository)
         {

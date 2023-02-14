@@ -33,7 +33,7 @@ namespace EBird.Api.Controllers
 
                 response = Response<List<NotificationDTO>>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.Created)
+                    .SetStatusCode((int) HttpStatusCode.OK)
                     .SetMessage("Get Notifications is success")
                     .SetData(responseData);
 
@@ -45,7 +45,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<NotificationDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -83,7 +83,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<NotificationDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -100,17 +100,18 @@ namespace EBird.Api.Controllers
 
         // POST create
         [HttpPost]
-        public async Task<ActionResult<Response<NotificationCreateDTO>>> Post([FromBody] NotificationCreateDTO notificationCreateDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] NotificationCreateDTO notificationCreateDTO)
         {
-            Response<NotificationCreateDTO> response = null;
+            Response<Guid> response = null;
             try
             {
-                await _notificationService.AddNotification(notificationCreateDTO);
+                Guid id = await _notificationService.AddNotification(notificationCreateDTO);
 
-                response = Response<NotificationCreateDTO>.Builder()
+                response = Response<Guid>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
-                    .SetMessage("Create Notification is success");
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Create Notification is success")
+                    .SetData(id);
 
                 return StatusCode((int) response.StatusCode, response);
             }
@@ -118,15 +119,15 @@ namespace EBird.Api.Controllers
             {
                 if(ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<NotificationCreateDTO>.Builder()
+                    response = Response<Guid>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<NotificationCreateDTO>.Builder()
+                response = Response<Guid>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -158,7 +159,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<NotificationUpdateDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -196,7 +197,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<NotificationDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);

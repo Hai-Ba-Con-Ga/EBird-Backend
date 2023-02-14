@@ -11,7 +11,7 @@ namespace EBird.Application.Interfaces.IRepository
     {
         Task<List<NotificationTypeEntity>> GetAllNotificationTypesActiveAsync();
         Task<NotificationTypeEntity> GetNotificationTypeActiveAsync(Guid Id);
-        Task<NotificationTypeEntity> AddNotificationTypeAsync(NotificationTypeEntity notificationType);
+        Task<Guid> AddNotificationTypeAsync(NotificationTypeEntity notificationType);
         Task<int> UpdateNotificationTypeAsync(NotificationTypeEntity notificationType);
         Task<NotificationTypeEntity> SoftDeleteNotificationTypeAsync(Guid Id);
         public Task<bool> IsExistNotificationTypeCode(string notificationTypeCode);

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Notification;
 using EBird.Application.Services.IServices;
 using EBird.Application.Validation;
@@ -16,23 +17,27 @@ namespace EBird.Application.Services
     {
         private IWapperRepository _repository;
         private IMapper _mapper;
+        private IUnitOfValidation _unitOfValidation;
 
-        public NotificationService(IWapperRepository repository, IMapper mapper)
+        public NotificationService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation)
         {
             _repository = repository;
             _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
         }
 
-        public async Task AddNotification(NotificationCreateDTO notificationCreateDTO)
+        public async Task<Guid> AddNotification(NotificationCreateDTO notificationCreateDTO)
         {
             await NotificationValidation.ValidationNotificationType(notificationCreateDTO, _repository);
-            await BaseValidation.ValidateAccountId(notificationCreateDTO.AccountId, _repository);
+            await _unitOfValidation.Bird.ValidateAccountId(notificationCreateDTO.AccountId);
 
             NotificationEntity entity = _mapper.Map<NotificationEntity>(notificationCreateDTO);
 
             entity = await _repository.Notification.AddNotificationAsync(entity);
             if(entity == null)
                 throw new BadRequestException("Notification is not added");
+            return entity.Id;
+
         }
 
         public async Task<NotificationDTO> DeleteNotification(Guid NotificationID)

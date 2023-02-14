@@ -9,7 +9,7 @@ namespace EBird.Application.Services.IServices
 {
     public interface INotificationTypeService
     {
-        public Task AddNotificationType(NotificationTypeRequestDTO ntDTO);
+        public Task<Guid> AddNotificationType(NotificationTypeRequestDTO ntDTO);
         public Task UpdateNotificationType(Guid id, NotificationTypeRequestDTO ntDTO);
         public Task DeleteNotificationType(Guid id);
         public Task<NotificationTypeDTO> GetNotificationType(Guid id);
