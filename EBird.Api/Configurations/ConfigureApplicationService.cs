@@ -1,7 +1,10 @@
 using System.Reflection;
+using EBird.Api.RuleSettings;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Services;
 using EBird.Application.Services.IServices;
+using EBird.Application.Validation;
 using MailKit;
 
 namespace EBird.Api.Configurations
@@ -22,7 +25,14 @@ namespace EBird.Api.Configurations
             services.AddScoped<IFileServices, FileServices>();
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IRequestService, RequestService>();
+            //register Validation services
+            services.AddScoped<IUnitOfValidation, UnitOfValidation>();
+            //register AutoMapper services
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            //config rule settings
+            services.AddSingleton<IRuleSetting, RuleSetting>();
+            services.AddScoped<IScoringService, ScoringService>();
         }
     }
 }

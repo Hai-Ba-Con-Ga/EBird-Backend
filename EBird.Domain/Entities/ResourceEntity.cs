@@ -13,6 +13,7 @@ namespace EBird.Domain.Entities
         public string? Datalink { get; set; }
 
         [Column(TypeName = "varchar")]
+        [StringLength(255)]
         public string? Description { get; set; }
 
         [Column("CreateDate", TypeName ="datetime")]

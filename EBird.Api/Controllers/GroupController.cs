@@ -43,7 +43,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<GroupResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -77,11 +77,11 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException)
                 {
                     response = Response<GroupResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -98,34 +98,34 @@ namespace EBird.Api.Controllers
 
         // POST create
         [HttpPost]
-        public async Task<ActionResult<Response<string>>> Post([FromBody] GroupCreateDTO groupDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] GroupCreateDTO groupDTO)
         {
-            Response<string> response = null;
+            Response<Guid> response = null;
             try
             {
-                 await _groupService.AddGroup(groupDTO);
+               var id = await _groupService.AddGroup(groupDTO);
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int) HttpStatusCode.Created)
                     .SetMessage("Create group is success")
-                    .SetData("");
+                    .SetData(id);
 
                 return StatusCode((int) response.StatusCode, response);
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException)
                 {
-                    response = Response<string>.Builder()
+                    response = Response<Guid>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
                 }
 
-                response = Response<string>.Builder()
+                response = Response<Guid>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int) HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -153,11 +153,11 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);
@@ -191,11 +191,11 @@ namespace EBird.Api.Controllers
             }
             catch(Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException) ex).StatusCode)
+                            .SetStatusCode((int) HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int) response.StatusCode, response);

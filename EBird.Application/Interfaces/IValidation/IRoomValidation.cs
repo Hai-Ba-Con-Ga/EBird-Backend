@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EBird.Application.Validation
+namespace EBird.Application.Interfaces.IValidation
 {
-    public class PlaceValidation : BaseValidation
+    public interface IRoomValidation
     {
         
     }

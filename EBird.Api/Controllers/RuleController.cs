@@ -30,15 +30,25 @@ public class RuleController : ControllerBase
         try
         {
             var rule = await _ruleService.GetRule(ruleID);
-            response = Response<RuleEntity>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Rule is retrieved successfully").SetData(rule);
+            response = Response<RuleEntity>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Rule is retrieved successfully")
+                        .SetData(rule);
         }
         catch (NotFoundException ex)
         {
-            response = Response<RuleEntity>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            response = Response<RuleEntity>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
         }
         catch (Exception ex)
         {
-            response = Response<RuleEntity>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            response = Response<RuleEntity>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
         }
         return response;
     }
@@ -49,15 +59,25 @@ public class RuleController : ControllerBase
         try
         {
             var rules = await _ruleService.GetRules();
-            response = Response<List<RuleEntity>>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Rules are retrieved successfully").SetData(rules);
+            response = Response<List<RuleEntity>>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Rules are retrieved successfully")
+                        .SetData(rules);
         }
         catch (NotFoundException ex)
         {
-            response = Response<List<RuleEntity>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            response = Response<List<RuleEntity>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
         }
         catch (Exception ex)
         {
-            response = Response<List<RuleEntity>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            response = Response<List<RuleEntity>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
         }
         return response;
     }
@@ -69,17 +89,26 @@ public class RuleController : ControllerBase
         string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (rawId == null)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Account not found");
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage("Account not found");
         }
         try
         {
             Guid id = Guid.Parse(rawId);
             await _ruleService.CreateRule(id, request);
-            response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Rule is created successfully");
+            response = Response<string>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Rule is created successfully");
         }
         catch (Exception ex)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
         }
         return response;
 
@@ -92,15 +121,24 @@ public class RuleController : ControllerBase
         try
         {
             await _ruleService.UpdateRule(ruleID, updateRule);
-            response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Rule is updated successfully");
+            response = Response<string>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Rule is updated successfully");
         }
         catch (NotFoundException ex)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
         }
         catch (Exception ex)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
         }
         return response;
     }
@@ -111,15 +149,24 @@ public class RuleController : ControllerBase
         try
         {
             await _ruleService.DeleteRule(ruleID);
-            response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Rule is deleted successfully");
+            response = Response<string>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Rule is deleted successfully");
         }
         catch (NotFoundException ex)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
         }
         catch (Exception ex)
         {
-            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            response = Response<string>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
         }
         return response;
     }

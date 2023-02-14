@@ -36,7 +36,7 @@ namespace EBird.Api.Controllers
 
                 response = Response<List<RoomResponseDTO>>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get room list is success")
                     .SetData(responseData);
 
@@ -48,7 +48,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<List<RoomResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -86,7 +86,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<RoomResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -101,35 +101,42 @@ namespace EBird.Api.Controllers
             }
         }
 
-
-
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<string>>> CreateRoom([FromBody] RoomCreateDTO RoomCreateDTO)
+        public async Task<ActionResult<Response<Guid>>> CreateRoom([FromBody] RoomCreateDTO RoomCreateDTO)
         {
-            var response = new Response<string>();
+            var response = new Response<Guid>();
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            response ??= Response<string>.Builder().SetSuccess(false)
-                .SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Not Allow to access");
-
+            response ??= Response<Guid>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.NotFound)
+                            .SetMessage("Not Allow to access");
             try
             {
                 Guid id = Guid.Parse(rawId);
-                await _roomService.AddRoom(id, RoomCreateDTO);
-                response = Response<string>.Builder().SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created).SetMessage("Create room is success").SetData("");
+                var createdId = await _roomService.AddRoom(id, RoomCreateDTO);
+                response = Response<Guid>.Builder()
+                            .SetSuccess(true)
+                            .SetStatusCode((int)HttpStatusCode.Created)
+                            .SetMessage("Create room is success")
+                            .SetData(createdId);
+                            
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<string>.Builder().SetSuccess(false)
-                        .SetStatusCode(((BaseHttpException)ex).StatusCode).SetMessage(ex.Message);
+                    response = Response<Guid>.Builder()
+                                .SetSuccess(false)
+                                .SetStatusCode((int) HttpStatusCode.BadRequest)
+                                .SetMessage(ex.Message);
                     return StatusCode((int)response.StatusCode, response);
                 }
-                response = Response<string>.Builder().SetSuccess(false)
-                    .SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage("Internal Server Error");
+                response = Response<Guid>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
                 return StatusCode((int)response.StatusCode, response);
             }
         }
@@ -157,7 +164,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
@@ -195,7 +202,7 @@ namespace EBird.Api.Controllers
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);

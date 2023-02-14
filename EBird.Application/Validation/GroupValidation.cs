@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Group;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,16 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class GroupValidation : BaseValidation
+    public class GroupValidation : BaseValidation , IGroupValidation
     {
-        public static async Task ValidateGroup(GroupResponseDTO groupDTO, IWapperRepository _repository)
+        public GroupValidation(IWapperRepository repository) : base(repository)
+        {
+        }
+
+        public async Task ValidateGroup(GroupResponseDTO groupDTO)
         {
             //validate account id
-            await ValidateAccountId(groupDTO.CreatedById, _repository);
+            await ValidateAccountId(groupDTO.CreatedById);
             //validate maxELO > minELO
             if(groupDTO.MaxELO <= groupDTO.MinELO)
             {
@@ -22,7 +27,7 @@ namespace EBird.Application.Validation
             }
         }
 
-        public static async Task ValidateGroup(GroupRequestDTO groupDTO, IWapperRepository _repository)
+        public void ValidateGroup(GroupRequestDTO groupDTO)
         {
             //validate maxELO > minELO
             if(groupDTO.MaxELO <= groupDTO.MinELO)
