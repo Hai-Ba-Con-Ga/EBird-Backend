@@ -24,9 +24,10 @@ builder.Services.AddCors(options =>
          buider =>
          {
              buider
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+             .AllowAnyHeader()
+             .AllowAnyMethod()
+             .WithOrigins(new string[] { "http://localhost:3000", "https://www.globird.tech" })
+             .AllowCredentials();
          });
 });
 
