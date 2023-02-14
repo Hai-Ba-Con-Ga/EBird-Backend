@@ -36,5 +36,7 @@ namespace EBird.Domain.Entities
         [Column("RoomCreateById")]
         public Guid CreateById { get; set; }
         public AccountEntity CreateBy { get; set; }
+
+        public ICollection<RequestEntity> Requests { get; set; }
     }
 }

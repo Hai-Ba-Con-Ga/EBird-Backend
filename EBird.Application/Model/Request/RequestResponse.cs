@@ -22,5 +22,6 @@ namespace EBird.Application.Model.Request
         public BirdResponseDTO Bird { get; set; }
         public GroupResponseDTO? Group { get; set; }
         public PlaceResponseDTO Place { get; set; }
+        public RoomResponseDTO Room { get; set; }
     }
 }

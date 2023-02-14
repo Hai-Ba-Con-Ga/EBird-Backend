@@ -41,5 +41,9 @@ namespace EBird.Domain.Entities
         [ForeignKey("PlaceId")]
         public Guid PlaceId { get; set; }
         public PlaceEntity Place { get; set; }
+
+        [ForeignKey("RoomId")]
+        public Guid RoomId { get; set; }
+        public RoomEntity Room { get; set; }
     }
 }
