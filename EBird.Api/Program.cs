@@ -1,14 +1,14 @@
 using AutoWrapper;
 using EBird.Api.Configurations;
 using EBird.Api.Filters;
-using EBird.Application.AppConfig;
+using EBird.Application.Hubs;
 using EBird.Infrastructure.Context;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -36,14 +36,18 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultTokenProviders();
 
 builder.Services.AddSettingService(configuration);
-builder.Services.AddDbService(configuration);
-//builder.Services.AddDbLocalService();
+//builder.Services.AddDbService(configuration);
+builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
 //register Application Service
 builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
+builder.Services.AddSignalR();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidateModelStateFilter>();
@@ -104,5 +108,8 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
+app.MapHub<RequestHub>("/requestHub");
+
 
 app.Run();

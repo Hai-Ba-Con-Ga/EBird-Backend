@@ -130,6 +130,10 @@ namespace EBird.Infrastructure.Context
         public DbSet<ResourceEntity> Resources { get; set; }
         public DbSet<AccountResourceEntity> AccountResources { get; set; }
         public DbSet<BirdResourceEntity> BirdResources { get; set; }
+
+        public DbSet<ChatRoomEntity> ChatRooms { get; set; }
+        public DbSet<MessageEntity> Messages { get; set; }
+        public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
         #endregion
