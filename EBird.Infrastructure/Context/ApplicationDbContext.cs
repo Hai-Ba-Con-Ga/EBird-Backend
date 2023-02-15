@@ -120,6 +120,16 @@ namespace EBird.Infrastructure.Context
                 .HasMany(bt => bt.Notifications)
                 .WithOne(b => b.NotificationType)
                 .HasForeignKey(b => b.NotificatoinTypeId);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportCreates)
+                .WithOne(b => b.CreateBy)
+                .HasForeignKey(b => b.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);;
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportHandles)
+                .WithOne(b => b.HandleBy)
+                .HasForeignKey(b => b.HandleById)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<ResourceEntity>()
                 .HasOne(s => s.Post)
@@ -149,6 +159,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
+        public DbSet<ReportEntity> Reports { get; set; }
 
         public DbSet<PostEntity> Posts { get; set; }
 
