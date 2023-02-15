@@ -132,6 +132,9 @@ namespace EBird.Api.Controllers
             try
             {
                 string userId = this.GetUserId();
+
+                if(userId != null) throw new UnauthorizedException("Not allow to access");
+                
                 birdDTO.OwnerId = Guid.Parse(userId);
 
                 if (birdDTO.ListResource != null)
@@ -154,7 +157,7 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException)
+                if (ex is BadRequestException || ex is UnauthorizedException)
                 {
                     response = Response<Guid>.Builder()
                             .SetSuccess(false)
@@ -277,16 +280,18 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || ex is UnauthorizedException)
+                if (ex is BadRequestException || 
+                    ex is UnauthorizedException || 
+                    ex is NotFoundException)
                 {
                     response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
+                
                 response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
