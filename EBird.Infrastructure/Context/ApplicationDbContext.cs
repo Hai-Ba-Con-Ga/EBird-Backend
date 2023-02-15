@@ -121,11 +121,13 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.ReportCreates)
                 .WithOne(b => b.CreateBy)
-                .HasForeignKey(b => b.CreateById);
+                .HasForeignKey(b => b.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);;
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.ReportHandles)
                 .WithOne(b => b.HandleBy)
-                .HasForeignKey(b => b.HandleById);
+                .HasForeignKey(b => b.HandleById)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet

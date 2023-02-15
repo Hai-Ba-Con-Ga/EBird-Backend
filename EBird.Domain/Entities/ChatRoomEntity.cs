@@ -6,7 +6,7 @@ using EBird.Domain.Enums;
 namespace EBird.Domain.Entities;
 public class ChatRoomEntity : BaseEntity
 {
-    [Column("Name", TypeName = "mvarchar")]
+    [Column("Name", TypeName = "nvarchar")]
     [MaxLength(100)]
     public string Name { get; set; }
     [Column("Type", TypeName = "varchar")]
