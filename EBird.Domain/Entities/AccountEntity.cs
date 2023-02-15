@@ -52,7 +52,14 @@ namespace EBird.Domain.Entities
         public ICollection<RuleEntity> Rules { get; set; } = null!;
         public ICollection<ResourceEntity> Resources { get; set; }
         public ICollection<AccountResourceEntity> AccountResources { get; set; }
+
+        public ICollection<ParticipantEntity> Participants { get; set; } = null!;
+        public ICollection<MessageEntity> Messages { get; set; } = null!;
         public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<NotificationEntity> Notifications { get; set; } = null!;
+        public ICollection<ReportEntity> ReportCreates { get; set; } = null!;
+        public ICollection<ReportEntity> ReportHandles { get; set; } = null!;
+
         public ICollection<MatchEntity> MatchesWithHost { get; set; }
         public ICollection<MatchEntity> MatchesWithChallenger { get; set; }
 

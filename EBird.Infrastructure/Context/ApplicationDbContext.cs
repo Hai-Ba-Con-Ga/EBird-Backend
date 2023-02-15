@@ -18,6 +18,11 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<BirdTypeEntity>()
                 .HasIndex(b => b.TypeCode)
                 .IsUnique(true);
+            //Config for NotificationTypeEntity
+            modelBuilder.Entity<NotificationTypeEntity>()
+                .HasIndex(b => b.TypeCode)
+                .IsUnique(true);
+
             //Config for one to many relationship between BirdTypeEntity and BirdEntity
             modelBuilder.Entity<BirdTypeEntity>()
                 .HasMany(bt => bt.Birds)
@@ -130,8 +135,38 @@ namespace EBird.Infrastructure.Context
             //Config HasConversation MatchBirdEntity and Enum MatchBirdResult
             modelBuilder.Entity<MatchBirdEntity>()
                 .Property(m => m.Result)
-                .HasConversion<string>();  
-            
+                .HasConversion<string>();
+            //Config for one to many relationship between RequestEntity and RoomEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Room)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);        
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Rooms)
+                .WithOne(b => b.CreateBy)
+                .HasForeignKey(b => b.CreateById);
+            //Config for one to many relationship between AccountEntity and NotificationEntity
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Notifications)
+                .WithOne(b => b.Account)
+                .HasForeignKey(b => b.AccountId);
+
+            //Config for one to many relationship between NotificationTypeEntity with NotificationEntity
+            modelBuilder.Entity<NotificationTypeEntity>()
+                .HasMany(bt => bt.Notifications)
+                .WithOne(b => b.NotificationType)
+                .HasForeignKey(b => b.NotificatoinTypeId);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportCreates)
+                .WithOne(b => b.CreateBy)
+                .HasForeignKey(b => b.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);;
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportHandles)
+                .WithOne(b => b.HandleBy)
+                .HasForeignKey(b => b.HandleById)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
@@ -143,15 +178,22 @@ namespace EBird.Infrastructure.Context
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<RuleEntity> Rules { get; set; }
+        public DbSet<NotificationEntity> Notifications { get; set; }
+        public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
 
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<ResourceEntity> Resources { get; set; }
         public DbSet<AccountResourceEntity> AccountResources { get; set; }
         public DbSet<BirdResourceEntity> BirdResources { get; set; }
+
+        public DbSet<ChatRoomEntity> ChatRooms { get; set; }
+        public DbSet<MessageEntity> Messages { get; set; }
+        public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<MatchBirdEntity> MatchBirds { get; set; }
+        public DbSet<ReportEntity> Reports { get; set; }
         #endregion
     }
 }

@@ -18,7 +18,7 @@ namespace EBird.Domain.Entities
 
         [Column("CreateDate", TypeName ="datetime")]
         [Required]
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
 
         public ICollection<AccountResourceEntity> AccountResources { get; set; }
 

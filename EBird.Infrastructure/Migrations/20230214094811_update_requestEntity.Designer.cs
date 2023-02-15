@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230210092552_add_requestEntity")]
-    partial class add_requestEntity
+    [Migration("20230214094811_update_requestEntity")]
+    partial class update_requestEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -377,6 +377,9 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("RequestDatetime");
 
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -392,6 +395,8 @@ namespace EBird.Infrastructure.Migrations
                     b.HasIndex("GroupId");
 
                     b.HasIndex("PlaceId");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Requests");
                 });
@@ -413,7 +418,8 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -622,6 +628,12 @@ namespace EBird.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("EBird.Domain.Entities.RoomEntity", "Room")
+                        .WithMany("Requests")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Bird");
 
                     b.Navigation("CreatedBy");
@@ -629,6 +641,8 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Place");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
@@ -710,6 +724,11 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("AccountResources");
 
                     b.Navigation("BirdResources");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
+                {
+                    b.Navigation("Requests");
                 });
 #pragma warning restore 612, 618
         }

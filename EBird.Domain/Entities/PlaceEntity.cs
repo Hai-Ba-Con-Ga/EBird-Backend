@@ -25,7 +25,7 @@ namespace EBird.Domain.Entities
         [Required]
         public string Longitude { get; set; }
 
-        [Column("Longitude", TypeName ="nvarchar")]
+        [Column("Latitude", TypeName ="nvarchar")]
         [StringLength(100)]
         [Required]
         public string Latitude { get; set; }

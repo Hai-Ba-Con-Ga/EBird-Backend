@@ -5,6 +5,8 @@ using EBird.Application.Model.Auth;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.BirdType;
 using EBird.Application.Model.Group;
+using EBird.Application.Model.Notification;
+using EBird.Application.Model.NotificationType;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Rule;
 using EBird.Domain.Entities;

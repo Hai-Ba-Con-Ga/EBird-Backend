@@ -13,11 +13,8 @@ namespace EBird.Application.Model.Request
 {
     public class RequestCreateDTO : RequestUpdateDTO
     {
-        [Required]
-        public Guid CreatedById { get; set; }
-
+        public Guid? CreatedById { get; set; }
         public Guid? GroupId { get; set; }
-
         public Guid RoomId { get; set; }
   
     }
