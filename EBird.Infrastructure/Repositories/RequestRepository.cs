@@ -49,20 +49,25 @@ namespace EBird.Infrastructure.Repositories
                 .Include(e => e.Bird)
                 .Include(e => e.CreatedBy)
                 .Include(e => e.Place)
+                .Include(e => e.Room)
                 .Where(e => e.Id == id && e.IsDeleted == false)
                 .FirstOrDefaultAsync();
             return entity;
         }
-        
+
         public async Task<ICollection<RequestEntity>> GetRequests()
         {
-           return await this.GetAllActiveAsync();
+            return await this.GetAllActiveAsync();
         }
 
         public async Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters)
         {
-            var requests = dbSet.AsNoTracking();
-            requests = requests.OrderByDescending(r => r.CreateDatetime);
+            var requests = dbSet.AsNoTracking().OrderByDescending(r => r.CreateDatetime)
+                                .Include(e => e.Group)
+                                .Include(e => e.Bird)
+                                .Include(e => e.CreatedBy)
+                                .Include(e => e.Place)
+                                .Include(e => e.Room);
 
             PagedList<RequestEntity> pagedRequests = new PagedList<RequestEntity>();
             await pagedRequests.LoadData(requests, parameters.PageNumber, parameters.PageSize);

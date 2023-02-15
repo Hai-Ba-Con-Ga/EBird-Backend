@@ -23,7 +23,7 @@ namespace EBird.Application.Validation
             //valid bird type id
             await ValidateBirdType(birdDTO);
             //validate owner id
-            await ValidateAccountId(birdDTO.OwnerId);
+            await ValidateAccountId(birdDTO.OwnerId ?? Guid.Empty);
         }
 
         public async Task ValidateUpdateBird(BirdRequestDTO birdDTO)

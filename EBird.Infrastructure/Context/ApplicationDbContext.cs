@@ -96,6 +96,12 @@ namespace EBird.Infrastructure.Context
                 .HasOne(m => m.Place)
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.PlaceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between RequestEntity and RoomEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Room)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);        
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
