@@ -298,7 +298,8 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text")
+                        .HasColumnName("Content");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -307,7 +308,8 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("Timestamp");
 
                     b.HasKey("Id");
 
@@ -444,6 +446,44 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Places");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PostEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CreateById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ThumbnailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateById");
+
+                    b.HasIndex("ThumbnailId")
+                        .IsUnique()
+                        .HasFilter("[ThumbnailId] IS NOT NULL");
+
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -837,6 +877,23 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("ChatRoom");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.PostEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("CreateById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.ResourceEntity", "Thumbnail")
+                        .WithOne("Post")
+                        .HasForeignKey("EBird.Domain.Entities.PostEntity", "ThumbnailId");
+
+                    b.Navigation("CreateBy");
+
+                    b.Navigation("Thumbnail");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
@@ -1010,6 +1067,8 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("AccountResources");
 
                     b.Navigation("BirdResources");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
