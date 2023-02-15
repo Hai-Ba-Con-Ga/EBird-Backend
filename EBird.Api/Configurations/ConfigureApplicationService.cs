@@ -35,6 +35,8 @@ namespace EBird.Api.Configurations
             //config rule settings
             services.AddSingleton<IRuleSetting, RuleSetting>();
             services.AddScoped<IScoringService, ScoringService>();
+
+            services.AddScoped<IPostService, PostService>();
         }
     }
 }
