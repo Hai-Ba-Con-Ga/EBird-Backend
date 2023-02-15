@@ -17,7 +17,7 @@ namespace EBird.Application.Validation
 
         public async Task ValidateCreateRequest(RequestCreateDTO request)
         {
-            await ValidateAccountId(request.CreatedById);
+            await ValidateAccountId(request.CreatedById ?? Guid.Empty);
             await ValidateGroupId(request.GroupId);
             await ValidateBirdId(request.BirdId);
             await ValidatePlaceId(request.PlaceId);

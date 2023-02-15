@@ -1,7 +1,9 @@
 using System.Data;
+using Duende.IdentityServer.Models;
 using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 
 namespace EBird.Infrastructure.Context
@@ -96,6 +98,12 @@ namespace EBird.Infrastructure.Context
                 .HasOne(m => m.Place)
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.PlaceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between RequestEntity and RoomEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Room)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);        
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
@@ -112,6 +120,21 @@ namespace EBird.Infrastructure.Context
                 .HasMany(bt => bt.Notifications)
                 .WithOne(b => b.NotificationType)
                 .HasForeignKey(b => b.NotificatoinTypeId);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportCreates)
+                .WithOne(b => b.CreateBy)
+                .HasForeignKey(b => b.CreateById)
+                .OnDelete(DeleteBehavior.NoAction);;
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.ReportHandles)
+                .WithOne(b => b.HandleBy)
+                .HasForeignKey(b => b.HandleById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ResourceEntity>()
+                .HasOne(s => s.Post)
+                .WithOne(s => s.Thumbnail)
+                .HasForeignKey<PostEntity>(s => s.ThumbnailId);
         }
 
         #region DbSet
@@ -136,6 +159,10 @@ namespace EBird.Infrastructure.Context
         public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
+        public DbSet<ReportEntity> Reports { get; set; }
+
+        public DbSet<PostEntity> Posts { get; set; }
+
         #endregion
     }
 }

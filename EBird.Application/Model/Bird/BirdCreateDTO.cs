@@ -11,8 +11,7 @@ namespace EBird.Application.Model.Bird
 {
     public class BirdCreateDTO : BirdRequestDTO
     {
-        [Required(ErrorMessage = "Onwer is required")]
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
         public List<ResourceCreateDTO>? ListResource {get; set; }
     }
 }

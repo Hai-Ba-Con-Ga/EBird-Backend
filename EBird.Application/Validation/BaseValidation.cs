@@ -64,7 +64,7 @@ namespace EBird.Application.Validation
             {
                 foreach (var rsrc in rsrcList)
                 {
-                    Guid createById = rsrc.CreateById;
+                    Guid createById = rsrc.CreateById ?? Guid.Empty;
                     await ValidateAccountId(createById);
                 }
             }

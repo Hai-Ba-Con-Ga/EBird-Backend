@@ -21,5 +21,6 @@ namespace EBird.Application.Interfaces
 
         public INotificationRepository Notification { get; }
         public INotificationTypeRepository NotificationType { get; }
+        public IPostRepository Post { get; }
     }
 }
