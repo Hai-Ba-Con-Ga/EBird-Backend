@@ -53,5 +53,8 @@ namespace EBird.Domain.Entities
         public ICollection<ResourceEntity> Resources { get; set; }
         public ICollection<AccountResourceEntity> AccountResources { get; set; }
         public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<MatchEntity> MatchesWithHost { get; set; }
+        public ICollection<MatchEntity> MatchesWithChallenger { get; set; }
+
     }
 }

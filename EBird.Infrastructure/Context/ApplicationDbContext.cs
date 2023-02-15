@@ -109,6 +109,18 @@ namespace EBird.Infrastructure.Context
                 .WithOne(mt => mt.Match)
                 .HasForeignKey(mt => mt.MatchId)
                 .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between MatchEntity and AccountEntity (challenger)
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.Challenger)
+                .WithMany(mt => mt.MatchesWithHost)
+                .HasForeignKey(m => m.ChallengerId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between MatchEntity and AccountEntity (host)
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.Host)
+                .WithMany(mt => mt.MatchesWithChallenger)
+                .HasForeignKey(m => m.HostId)
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between BirdEntity and MatchBirdEntity
             modelBuilder.Entity<MatchBirdEntity>()
                 .HasOne(m => m.Bird)
@@ -119,6 +131,7 @@ namespace EBird.Infrastructure.Context
             modelBuilder.Entity<MatchBirdEntity>()
                 .Property(m => m.Result)
                 .HasConversion<string>();  
+            
         }
 
         #region DbSet
