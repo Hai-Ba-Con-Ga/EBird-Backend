@@ -2,7 +2,8 @@ namespace EBird.Domain.Enums
 {
     public enum MatchBirdResult
     {
-        Winner,
-        Loser
+        Ready,
+        Loser,
+        Winner
     }
 }

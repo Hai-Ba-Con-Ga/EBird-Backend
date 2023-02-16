@@ -12,13 +12,15 @@ namespace EBird.Application.Model.Match
 {
     public class MatchResponseDTO : IMapFrom<MatchEntity>
     {
+        public Guid Id { get; set; }
         public string MatchDatetime { get; set; }
         public string CreateDatetime { get; set; }
         public MatchStatus MatchStatus { get; set; }
         public Guid HostId { get; set; }
         public Guid ChallengerId { get; set; }
+        public Guid PlaceId { get; set; }
         public PlaceResponseDTO Place { get; set; }
-        public ICollection<BirdResponseDTO> BirdList { get; set; }
+        public ICollection<MatchBirdResponseDTO> MatchBirdList { get; set; }
         
     }
 }

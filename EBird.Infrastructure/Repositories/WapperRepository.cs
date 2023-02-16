@@ -29,7 +29,7 @@ namespace EBird.Infrastructure.Repositories
         
         private IPlaceRepository _placeRepository;
         
-        private IRequestRepository _requestRepository;
+        // private IRequestRepository _requestRepository;
         private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
         private IMatchRepository _matchRepository;
         private INotificationRepository _NotificationRepository;
@@ -126,17 +126,17 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
-        public IRequestRepository Request
-        {
-            get
-            {
-                if(_requestRepository == null)
-                {
-                    _requestRepository = new RequestRepository(_context);
-                }
-                return _requestRepository;
-            }
-        }
+        // public IRequestRepository Request
+        // {
+        //     get
+        //     {
+        //         if(_requestRepository == null)
+        //         {
+        //             _requestRepository = new RequestRepository(_context);
+        //         }
+        //         return _requestRepository;
+        //     }
+        // }
 
         public IGenericRepository<MatchBirdEntity> MatchBird
         {

@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Model.Match;
+using EBird.Application.Model.PagingModel;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 using EBird.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace EBird.Infrastructure.Repositories
 {
@@ -16,55 +20,32 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<Guid> CreateMatch(Guid requestId, Guid challengerId, Guid challangerBirdId)
+        public async Task<Guid> CreateMatch(MatchEntity match, MatchBirdEntity matchBirdEntity)
         {
             using (var transction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var request = await _context.Requests.FindAsync(requestId);
+                match.CreateDatetime = DateTime.Now;
+                    match.ExpDatetime = match.CreateDatetime.AddHours(48);
 
-                    if(request == null) throw new BadRequestException("Request not found");
-
-                    var match = new MatchEntity()
-                    {
-                        MatchDatetime = request.RequestDatetime,
-                        CreateDatetime = DateTime.Now,
-                        MatchStatus = MatchStatus.Pending,
-                        HostId = request.CreatedById,
-                        ChallengerId = challengerId,
-                        PlaceId = request.PlaceId
-                    };
+                    var place = match.Place;
+                    if (place != null) place.CreatedDate = DateTime.Now;
 
                     await _context.Matches.AddAsync(match);
+                    var rowEffect = await _context.SaveChangesAsync();
 
+                    matchBirdEntity.MatchId = match.Id;
+                    matchBirdEntity.UpdateDatetime = DateTime.Now;
+
+                    var MatchEntity = await _context.Birds.FindAsync(matchBirdEntity.BirdId);
+                    if (MatchEntity == null) throw new BadRequestException("Bird not found");
+                    matchBirdEntity.BeforeElo = MatchEntity.Elo;
+
+                    await _context.MatchBirds.AddAsync(matchBirdEntity);
                     await _context.SaveChangesAsync();
 
-                    var birds = new List<Guid>();
-                    birds.Add(request.BirdId);
-                    birds.Add(challangerBirdId);
-
-                    foreach (var birdId in birds)
-                    {
-                        var currentBird = await _context.Birds.FindAsync(birdId);
-
-                        if (currentBird == null) throw new BadRequestException("Bird not found");
-
-                        var matchBird = new MatchBirdEntity()
-                        {
-                            MatchId = match.Id,
-                            BirdId = birdId,
-                            BeforeElo = currentBird.Elo,
-                            UpdateDatetime = DateTime.Now
-                        };
-
-                        await _context.MatchBirds.AddAsync(matchBird);
-
-                        await _context.SaveChangesAsync();
-                    }
-                   
                     transction.Commit();
-
                     return match.Id;
                 }
                 catch (Exception ex)
@@ -73,6 +54,57 @@ namespace EBird.Infrastructure.Repositories
                     throw ex;
                 }
             }
+        }
+
+        public async Task<MatchEntity> GetMatch(Guid id)
+        {
+            var entity = await _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchBirds)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.Id == id && e.IsDeleted == false)
+                .FirstOrDefaultAsync();
+            return entity;
+        }
+
+        public async Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
+        {
+
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchBirds)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
+
+            if (param.MatchStatus != null)
+            {
+                collection = collection.Where(e => e.MatchStatus == param.MatchStatus);
+            }
+
+            PagedList<MatchEntity> pagedList = new PagedList<MatchEntity>();
+            await pagedList.LoadData(collection, param.PageNumber, param.PageSize);
+
+            return pagedList;
+        }
+
+        public async Task<ICollection<MatchEntity>> GetMatches(MatchParameters param)
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchBirds)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
+
+            if (param.MatchStatus != null)
+            {
+                collection = collection.Where(e => e.MatchStatus == param.MatchStatus);
+            }
+
+            return await collection.ToListAsync();
         }
     }
 }

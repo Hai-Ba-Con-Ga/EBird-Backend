@@ -11,8 +11,10 @@ namespace EBird.Application.Model.Match
 {
     public class MatchUpdateDTO : IMapTo<MatchEntity>
     {
-        public PlaceRequestDTO? Place { get; set; }
+        virtual public PlaceRequestDTO? Place { get; set; }
         public MatchStatus? MatchStatus { get; set; }
         public DateTime? MatchDatetime { get; set; }
+        public Guid? ChallengerId { get; set; }
+        public Guid? BirdChallengerId { get; set; }
     }
 }

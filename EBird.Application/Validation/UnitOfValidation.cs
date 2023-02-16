@@ -10,7 +10,8 @@ namespace EBird.Application.Validation
     public class UnitOfValidation : IUnitOfValidation
     {
         private IGroupValidation _group;
-        private IRequestValidation _request;
+        // private IRequestValidation _request;
+        private IBaseValidation _base;
         private IRoomValidation _room;
         private IBirdValidation _bird;
         private IBirdTypeValidation _birdType;
@@ -34,17 +35,17 @@ namespace EBird.Application.Validation
 
         }
 
-        public IRequestValidation Request
-        {
-            get
-            {
-                if (_request == null)
-                {
-                    _request = new RequestValidation(_repository);
-                }
-                return _request;
-            }
-        }
+        // public IRequestValidation Request
+        // {
+        //     get
+        //     {
+        //         if (_request == null)
+        //         {
+        //             _request = new RequestValidation(_repository);
+        //         }
+        //         return _request;
+        //     }
+        // }
 
         public IRoomValidation Room 
         {
@@ -79,6 +80,18 @@ namespace EBird.Application.Validation
                     _birdType = new BirdTypeValidation(_repository);
                 }
                 return _birdType;
+            }
+        }
+
+        public IBaseValidation Base
+        {
+            get
+            {
+                if (_base == null)
+                {
+                    _base = new BaseValidation(_repository);
+                }
+                return _base;
             }
         }
     }

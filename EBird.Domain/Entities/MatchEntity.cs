@@ -19,6 +19,10 @@ namespace EBird.Domain.Entities
         [Required]
         public DateTime CreateDatetime { get; set; }
 
+        [Column("ExpDateTime", TypeName = "datetime")]
+        [Required]
+        public DateTime ExpDatetime { get; set; }
+
         [Column("MatchStatus")]
         [EnumDataType(typeof(MatchStatus))]
         [Required]
@@ -30,14 +34,22 @@ namespace EBird.Domain.Entities
         public AccountEntity Host { get; set; }
 
         [Column("ChallengerId")]
-        [Required]
-        public Guid ChallengerId { get; set; }
-        public AccountEntity Challenger { get; set; }
+        public Guid? ChallengerId { get; set; }
+        public AccountEntity? Challenger { get; set; }
 
         [Column("PlaceId")]
         [Required]
         public Guid PlaceId { get; set; }
         public PlaceEntity Place { get; set; }
+
+        [Column("GroupId")]
+        public Guid? GroupId { get; set; }
+        public GroupEntity? Group { get; set; }
+
+        [Column("RoomId")]
+        [Required]
+        public Guid RoomId { get; set; }
+        public RoomEntity Room { get; set; }
 
         public ICollection<MatchBirdEntity> MatchBirds { get; set; }
     }

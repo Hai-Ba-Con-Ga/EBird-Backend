@@ -34,7 +34,7 @@ namespace EBird.Domain.Entities
         [Required]
         public DateTime CreatedDate { get; set; }
 
-        public ICollection<RequestEntity> Requests { get; set; }
+        // public ICollection<RequestEntity> Requests { get; set; }
 
         public ICollection<MatchEntity> Matches { get; set; }
     }

@@ -77,29 +77,30 @@ namespace EBird.Infrastructure.Context
                 .OnDelete(DeleteBehavior.NoAction);
         //Config for RequestEntity
             //Config for one to many relationship (create by) between AccountEntity and RequestEntity
-            modelBuilder.Entity<RequestEntity>()
-                .HasOne(m => m.CreatedBy)
-                .WithMany(mt => mt.Requests)
-                .HasForeignKey(m => m.CreatedById)
-                .OnDelete(DeleteBehavior.NoAction);
+            // modelBuilder.Entity<RequestEntity>()
+            //     .HasOne(m => m.CreatedBy)
+            //     .WithMany(mt => mt.Requests)
+            //     .HasForeignKey(m => m.CreatedById)
+            //     .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between RequestEntity and BirdEntity
-            modelBuilder.Entity<RequestEntity>()
-                .HasOne(m => m.Bird)
-                .WithMany(mt => mt.Requests)
-                .HasForeignKey(m => m.BirdId)
-                .OnDelete(DeleteBehavior.NoAction);
+            // modelBuilder.Entity<RequestEntity>()
+            //     .HasOne(m => m.Bird)
+            //     .WithMany(mt => mt.Requests)
+            //     .HasForeignKey(m => m.BirdId)
+            //     .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between RequestEntity and GroupEntity
-            modelBuilder.Entity<RequestEntity>()
-                .HasOne(m => m.Group)
-                .WithMany(mt => mt.Requests)
-                .HasForeignKey(m => m.GroupId)
-                .OnDelete(DeleteBehavior.NoAction);
+            // modelBuilder.Entity<RequestEntity>()
+            //     .HasOne(m => m.Group)
+            //     .WithMany(mt => mt.Requests)
+            //     .HasForeignKey(m => m.GroupId)
+            //     .OnDelete(DeleteBehavior.NoAction);
             //Config for one to one relationship between RequestEntity and PlaceEntity
-            modelBuilder.Entity<RequestEntity>()
-                .HasOne(m => m.Place)
-                .WithMany(mt => mt.Requests)
-                .HasForeignKey(m => m.PlaceId)
-                .OnDelete(DeleteBehavior.NoAction);   
+            // modelBuilder.Entity<RequestEntity>()
+            //     .HasOne(m => m.Place)
+            //     .WithMany(mt => mt.Requests)
+            //     .HasForeignKey(m => m.PlaceId)
+            //     .OnDelete(DeleteBehavior.NoAction);   
+            
             //Config HasConversation MatchEntity and Enum MatchStatus
             modelBuilder.Entity<MatchEntity>()
                 .Property(m => m.MatchStatus)
@@ -128,6 +129,18 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.MatchesWithChallenger)
                 .HasForeignKey(m => m.HostId)
                 .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between MatchEntity and GroupEntity
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.Group)
+                .WithMany(mt => mt.Matches)
+                .HasForeignKey(m => m.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between MatchEntity and RoomEntity
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.Room)
+                .WithMany(mt => mt.Matches)
+                .HasForeignKey(m => m.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between BirdEntity and MatchBirdEntity
             modelBuilder.Entity<MatchBirdEntity>()
                 .HasOne(m => m.Bird)
@@ -139,11 +152,11 @@ namespace EBird.Infrastructure.Context
                 .Property(m => m.Result)
                 .HasConversion<string>();
             //Config for one to many relationship between RequestEntity and RoomEntity
-            modelBuilder.Entity<RequestEntity>()
-                .HasOne(m => m.Room)
-                .WithMany(mt => mt.Requests)
-                .HasForeignKey(m => m.RoomId)
-                .OnDelete(DeleteBehavior.NoAction);        
+            // modelBuilder.Entity<RequestEntity>()
+            //     .HasOne(m => m.Room)
+            //     .WithMany(mt => mt.Requests)
+            //     .HasForeignKey(m => m.RoomId)
+            //     .OnDelete(DeleteBehavior.NoAction);        
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
                 .WithOne(b => b.CreateBy)
@@ -169,7 +182,7 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.HandleBy)
                 .HasForeignKey(b => b.HandleById)
                 .OnDelete(DeleteBehavior.NoAction);
-
+            //Config for one to one relationship between PostEntity with ResourceEntity
             modelBuilder.Entity<ResourceEntity>()
                 .HasOne(s => s.Post)
                 .WithOne(s => s.Thumbnail)
@@ -197,7 +210,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
-        public DbSet<RequestEntity> Requests { get; set; }
+        // public DbSet<RequestEntity> Requests { get; set; }
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<MatchBirdEntity> MatchBirds { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
