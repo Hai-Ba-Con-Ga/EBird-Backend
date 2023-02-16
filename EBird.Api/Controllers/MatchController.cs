@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
 using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Response;
 
@@ -21,16 +23,23 @@ namespace EBird.Api.Controllers
         {
             _matchService = matchService;
         }
-        
+
         //creat match
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<Guid>>> Post([FromBody] MatchCreateDTO matchCreateDTO)
         {
             var response = new Response<Guid>();
             try
             {
+                var userIdRaw = this.GetUserId();
+
+                if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
+
+                matchCreateDTO.HostId = Guid.Parse(userIdRaw);
+
                 var matchId = await _matchService.CreateMatch(matchCreateDTO);
-                
+
                 response = Response<Guid>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
@@ -41,7 +50,9 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException)
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
                 {
                     response = Response<Guid>.Builder()
                             .SetSuccess(false)
@@ -96,16 +107,24 @@ namespace EBird.Api.Controllers
 
                 return StatusCode((int)response.StatusCode, response);
             }
-        }   
+        }
 
         //get all match
         [HttpGet("all")]
-        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll()
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
         {
             var response = new Response<ICollection<MatchResponseDTO>>();
             try
             {
-                var matches = await _matchService.GetMatches();
+                ICollection<MatchResponseDTO> matches = null;
+                if (queryParameters?.MatchStatus == null)
+                {
+                    matches = await _matchService.GetMatches();
+                } 
+                else 
+                {
+                    matches = await _matchService.GetMatches(queryParameters);
+                }
 
                 response = Response<ICollection<MatchResponseDTO>>.Builder()
                     .SetSuccess(true)

@@ -24,7 +24,7 @@ namespace EBird.Api.Configurations
             services.AddSingleton<ICloudStorage, GoogleCloudStorageService>();
             services.AddScoped<IFileServices, FileServices>();         
             services.AddScoped<IPlaceService, PlaceService>();
-            services.AddScoped<IRequestService, RequestService>();
+            // services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchBirdService, MatchBirdService>();
             //register Validation services
@@ -38,6 +38,8 @@ namespace EBird.Api.Configurations
             services.AddSingleton<IRuleSetting, RuleSetting>();
             services.AddScoped<IScoringService, ScoringService>();
             services.AddScoped<IReportServices, ReportServices>();
+
+            services.AddScoped<IPostService, PostService>();
         }
     }
 }

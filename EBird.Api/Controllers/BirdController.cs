@@ -133,7 +133,7 @@ namespace EBird.Api.Controllers
             {
                 string userId = this.GetUserId();
 
-                if(userId != null) throw new UnauthorizedException("Not allow to access");
+                if(userId == null) throw new UnauthorizedException("Not allow to access");
                 
                 birdDTO.OwnerId = Guid.Parse(userId);
 

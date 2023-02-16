@@ -1,8 +1,10 @@
 using System.Data;
+using Duende.IdentityServer.Models;
 using EBird.Application.Interfaces;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EBird.Infrastructure.Context
@@ -167,6 +169,11 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.HandleBy)
                 .HasForeignKey(b => b.HandleById)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ResourceEntity>()
+                .HasOne(s => s.Post)
+                .WithOne(s => s.Thumbnail)
+                .HasForeignKey<PostEntity>(s => s.ThumbnailId);
         }
 
         #region DbSet
@@ -194,6 +201,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<MatchBirdEntity> MatchBirds { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
+
+        public DbSet<PostEntity> Posts { get; set; }
+
         #endregion
     }
 }

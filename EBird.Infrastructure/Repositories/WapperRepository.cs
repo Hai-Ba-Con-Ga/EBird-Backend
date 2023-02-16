@@ -35,6 +35,8 @@ namespace EBird.Infrastructure.Repositories
         private INotificationRepository _NotificationRepository;
         private INotificationTypeRepository _NotificationTypeRepository;
 
+        private IPostRepository _postRepository;
+
         public WapperRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -179,6 +181,18 @@ namespace EBird.Infrastructure.Repositories
                     _NotificationTypeRepository = new NotificationTypeRepository(_context);
                 }
                 return _NotificationTypeRepository;
+            }
+        }
+
+        public IPostRepository Post
+        {
+            get
+            {
+                if (_postRepository == null)
+                {
+                    _postRepository = new PostRepository(_context);
+                }
+                return _postRepository;
             }
         }
     }

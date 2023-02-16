@@ -46,7 +46,7 @@ builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
 builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+                x.JsonSerializerOptions.ReferenceHandler = null);
 
 builder.Services.AddControllers(options =>
 {
@@ -109,7 +109,7 @@ app.UseAuthentication();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chatHub");
-app.MapHub<RequestHub>("/requestHub");
+// app.MapHub<RequestHub>("/requestHub");
 
 
 app.Run();
