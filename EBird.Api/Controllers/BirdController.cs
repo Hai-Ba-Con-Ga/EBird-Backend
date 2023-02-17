@@ -55,7 +55,7 @@ namespace EBird.Api.Controllers
 
                     Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
                 }
-
+                
                 response = Response<IList<BirdResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
@@ -75,7 +75,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
+                
                 response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
