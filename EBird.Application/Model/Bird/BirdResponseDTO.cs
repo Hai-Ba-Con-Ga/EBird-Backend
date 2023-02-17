@@ -21,6 +21,7 @@ namespace EBird.Application.Model.Bird
         public string Status { get; set; }
         public string Description { get; set; }
         public string Color { get; set; }
+        public BirdRatioDTO Ratio { get; set; }
         public Guid BirdTypeId { get; set; }
         public Guid OwnerId { get; set; }
         public DateTime CreatedDatetime { get; set; }
