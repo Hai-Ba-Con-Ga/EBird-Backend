@@ -10,6 +10,7 @@ using EBird.Application.Model.Bird;
 using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 
 namespace EBird.Application.Services
 {
@@ -80,8 +81,8 @@ namespace EBird.Application.Services
                 list = await _repository.Match.GetMatches(matchParameters);
             }
 
-            ICollection<MatchResponseDTO> lisDto =  _mapper.Map<ICollection<MatchResponseDTO>>(list);
-            
+            ICollection<MatchResponseDTO> lisDto = _mapper.Map<ICollection<MatchResponseDTO>>(list);
+
             foreach (var item in lisDto)
             {
                 item.MatchBirdList = _mapper.Map<ICollection<MatchBirdResponseDTO>>(list
@@ -104,12 +105,36 @@ namespace EBird.Application.Services
             await _repository.Match.UpdateAsync(match);
         }
 
-         public async Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO)
-         {
+        public async Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO)
+        {
             await _validation.Base.ValidateMatchId(matchId);
             await _validation.Base.ValidateAccountId(matchJoinDTO.ChallengerId);
 
-            await _repository.Match.JoinMatch(matchId, matchJoinDTO);            
-         }
+            await _repository.Match.JoinMatch(matchId, matchJoinDTO);
+        }
+
+        public async Task ConfirmMatch(Guid matchId, Guid userConfirmId)
+        {
+            await _validation.Base.ValidateMatchId(matchId);
+            await _validation.Base.ValidateAccountId(userConfirmId);
+
+            var match = await _repository.Match.GetByIdActiveAsync(matchId);
+
+            if(match.HostId != userConfirmId) 
+                throw new BadRequestException("You are not the host of this match");
+            
+            if(match.MatchStatus != MatchStatus.Pending)
+                throw new BadRequestException("Match is not pending");
+            
+            var matchBirds = match.MatchBirds;
+
+            foreach (var matchBird in matchBirds)
+            {
+                if (matchBird.Result != MatchBirdResult.Ready)
+                    throw new BadRequestException("All player must be ready");
+            }
+
+            await _repository.Match.ConfirmMatch(matchId);
+        }
     }
 }

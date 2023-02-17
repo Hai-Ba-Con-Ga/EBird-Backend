@@ -151,9 +151,19 @@ namespace EBird.Infrastructure.Repositories
                     throw ex;
                 }
             }
+        }
 
+        public async Task ConfirmMatch(Guid matchId)
+        {
+            var match = await _context.Matches.FindAsync(matchId);
 
+            if (match == null) throw new BadRequestException("Match not found");
 
+            match.MatchStatus = MatchStatus.During;
+            match.ExpDatetime = DateTime.Now.AddHours(48);
+
+            _context.Matches.Update(match);
+            await _context.SaveChangesAsync();
         }
     }
 }
