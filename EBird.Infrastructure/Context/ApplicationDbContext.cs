@@ -217,6 +217,8 @@ namespace EBird.Infrastructure.Context
 
         public DbSet<PostEntity> Posts { get; set; }
 
+        public DbSet<MatchResourceEntity> MatchResources { get; set; }
+
         #endregion
     }
 }

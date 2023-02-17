@@ -35,5 +35,7 @@ namespace EBird.Domain.Entities
         [Column("UpdateDatetime", TypeName = "datetime")]
         [Required]
         public DateTime UpdateDatetime { get; set; }
+
+        public ICollection<MatchResourceEntity> MatchResources { get; set; } 
     }
 }

@@ -11,5 +11,7 @@ namespace EBird.Application.Services.IServices
     public interface IMatchBirdService
     {
         public Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO);
+
+        public Task UpdateMatchResult (UpdateMatchResultDTO matchBirdUpdateDTO);
     }
 }
