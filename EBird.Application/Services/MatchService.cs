@@ -103,5 +103,13 @@ namespace EBird.Application.Services
 
             await _repository.Match.UpdateAsync(match);
         }
+
+         public async Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO)
+         {
+            await _validation.Base.ValidateMatchId(matchId);
+            await _validation.Base.ValidateAccountId(matchJoinDTO.ChallengerId);
+
+            await _repository.Match.JoinMatch(matchId, matchJoinDTO);            
+         }
     }
 }

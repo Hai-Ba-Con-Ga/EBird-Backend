@@ -42,7 +42,7 @@ namespace EBird.Application.Services
             var resourceDTOList = birdDTO.ListResource;
 
 
-            if (resourceDTOList == null)
+            if(resourceDTOList == null)
             {
                 await _repository.Bird.AddBirdAsync(birdEntity);
             }
@@ -66,7 +66,7 @@ namespace EBird.Application.Services
         {
             var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
 
-            if (birdEntity == null)
+            if(birdEntity == null)
             {
                 throw new NotFoundException("Can not found bird");
             }
@@ -84,14 +84,14 @@ namespace EBird.Application.Services
         {
             var listBirdEntity = await _repository.Bird.GetBirdsActiveAsync();
 
-            if (listBirdEntity.Count == 0)
+            if(listBirdEntity.Count == 0)
             {
                 throw new NotFoundException("Can not found bird");
             }
 
             var listBirdDTO = _mapper.Map<List<BirdResponseDTO>>(listBirdEntity);
 
-            foreach (var birdDto in listBirdDTO)
+            foreach(var birdDto in listBirdDTO)
             {
                 birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
                 birdDto.Ratio = await GetBirdRatio(birdDto.Id);
@@ -109,7 +109,7 @@ namespace EBird.Application.Services
             var birdListDTO = _mapper.Map<PagedList<BirdResponseDTO>>(birdList);
             birdListDTO.MapMetaData(birdList);
 
-            foreach (var birdDto in birdListDTO)
+            foreach(var birdDto in birdListDTO)
             {
                 birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
             }
@@ -123,7 +123,7 @@ namespace EBird.Application.Services
 
             var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
 
-            if (birdEntity == null)
+            if(birdEntity == null)
             {
                 throw new NotFoundException("Can not found bird for update");
             }
@@ -137,14 +137,14 @@ namespace EBird.Application.Services
         {
             var listBirdEntity = await _repository.Bird.GetAllBirdActiveByAccountId(accountId);
 
-            if (listBirdEntity.Count == 0)
+            if(listBirdEntity.Count == 0)
             {
                 throw new NotFoundException("Can not found bird");
             }
 
             var birdListDto = _mapper.Map<List<BirdResponseDTO>>(listBirdEntity);
 
-            foreach (var birdDto in birdListDto)
+            foreach(var birdDto in birdListDto)
             {
                 birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
             }
@@ -156,7 +156,7 @@ namespace EBird.Application.Services
         {
             var matchBirdList = await _matchBirdRepository.WhereAsync(x => x.BirdId == birdId && x.IsDeleted == false);
             BirdRatioDTO birdRatio = new BirdRatioDTO();
-            if (matchBirdList.Count == 0)
+            if(matchBirdList.Count == 0)
             {
                 birdRatio.Win = 0;
                 birdRatio.Lose = 0;
@@ -165,8 +165,15 @@ namespace EBird.Application.Services
             }
 
             birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Winner).Count();
-            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Ready).Count();
-            birdRatio.Ratio = birdRatio.Win / (birdRatio.Win + birdRatio.Lose);
+            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Loser).Count();
+            if((birdRatio.Win + birdRatio.Lose) == 0)
+            {
+                birdRatio.Ratio = 0;
+            }
+            else
+            {
+                birdRatio.Ratio = birdRatio.Win / (birdRatio.Win + birdRatio.Lose);
+            }
             return birdRatio;
         }
 
