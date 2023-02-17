@@ -164,8 +164,8 @@ namespace EBird.Application.Services
                 return birdRatio;
             }
 
-            birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Winner).Count();
-            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Loser).Count();
+            birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Win).Count();
+            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Lose).Count();
             if((birdRatio.Win + birdRatio.Lose) == 0)
             {
                 birdRatio.Ratio = 0;
