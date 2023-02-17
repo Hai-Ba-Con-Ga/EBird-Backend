@@ -24,6 +24,8 @@ namespace EBird.Domain.Entities
 
         public ICollection<BirdResourceEntity> BirdResources { get; set; }
 
+        public ICollection<MatchResourceEntity> MatchResources { get; set; }
+
         public PostEntity? Post { get; set; }
     }
 }

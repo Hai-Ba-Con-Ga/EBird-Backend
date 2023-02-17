@@ -5,17 +5,31 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
+using EBird.Domain.Entities;
 
 namespace EBird.Application.Services
 {
     public class MatchBirdService : IMatchBirdService
     {
         private IWapperRepository _repository;
-        public MatchBirdService(IWapperRepository repository)
+        private IMapper _mapper;
+        private IUnitOfValidation _unitOfValidation;
+        private IGenericRepository<ResourceEntity> _resourceRepository;
+        private IGenericRepository<MatchResourceEntity> _matchResourceRepository;
+        private IGenericRepository<MatchBirdEntity> _matchBirdEntityRepository;
+
+        public MatchBirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<ResourceEntity> resourceRepository, IGenericRepository<MatchResourceEntity> matchResourceRepository, IGenericRepository<MatchBirdEntity> matchBirdEntityRepository)
         {
             _repository = repository;
+            _mapper = mapper;
+            _unitOfValidation = unitOfValidation;
+            _resourceRepository = resourceRepository;
+            _matchResourceRepository = matchResourceRepository;
+            _matchBirdEntityRepository = matchBirdEntityRepository;
         }
 
         public async Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO)
@@ -34,6 +48,39 @@ namespace EBird.Application.Services
             matchBird.BirdId = matchBirdUpdateDTO.NewBirdId;
 
             await _repository.MatchBird.UpdateAsync(matchBird);
+        }
+        public async Task UpdateMatchResult(UpdateMatchResultDTO matchResultDTO)
+        {
+            var matchBird = await _matchBirdEntityRepository.GetByIdActiveAsync(matchResultDTO.MatchBirdId);
+            if (matchBird == null)
+            {
+                throw new BadRequestException("Match Bird not found");
+            }
+            int effectRow;
+            matchBird.Result = matchResultDTO.Result;
+            await _matchBirdEntityRepository.UpdateAsync(matchBird);
+            if (matchResultDTO.ListResource != null)
+            {
+                foreach (var resource in matchResultDTO.ListResource)
+                {
+                    var resourceEntity = _mapper.Map<ResourceEntity>(resource);
+                    effectRow = await _resourceRepository.CreateAsync(resourceEntity);
+                    if (effectRow == 0)
+                    {
+                        throw new BadRequestException("Create resource failed");
+                    }
+                    var matchResource = new MatchResourceEntity
+                    {
+                        MatchBirdId = matchBird.Id,
+                        ResourceId = resourceEntity.Id
+                    };
+                    effectRow = await _matchResourceRepository.CreateAsync(matchResource);
+                    if (effectRow == 0)
+                    {
+                        throw new BadRequestException("Create match resource failed");
+                    }
+                }
+            }
         }
     }
 }
