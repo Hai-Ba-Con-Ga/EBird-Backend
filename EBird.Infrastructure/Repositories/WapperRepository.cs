@@ -30,7 +30,7 @@ namespace EBird.Infrastructure.Repositories
         private IPlaceRepository _placeRepository;
         
         // private IRequestRepository _requestRepository;
-        private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
+        private IMatchBirdRepository _matchBirdRepository;
         private IMatchRepository _matchRepository;
         private INotificationRepository _NotificationRepository;
         private INotificationTypeRepository _NotificationTypeRepository;
@@ -138,13 +138,13 @@ namespace EBird.Infrastructure.Repositories
         //     }
         // }
 
-        public IGenericRepository<MatchBirdEntity> MatchBird
+        public IMatchBirdRepository MatchBird
         {
             get
             {
                 if(_matchBirdRepository == null)
                 {
-                    _matchBirdRepository = new GenericRepository<MatchBirdEntity>(_context);
+                    _matchBirdRepository = new MatchBirdRepository(_context);
                 }
                 return _matchBirdRepository;
             }

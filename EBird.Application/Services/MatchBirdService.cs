@@ -10,6 +10,7 @@ using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 
 namespace EBird.Application.Services
 {
@@ -49,6 +50,26 @@ namespace EBird.Application.Services
 
             await _repository.MatchBird.UpdateAsync(matchBird);
         }
+
+        public async Task UpdateChallengerReady(UpdateChallengerToReadyDTO updateData)
+        {
+            var match = await _repository.Match.GetByIdActiveAsync(updateData.MatchId);
+
+            await _unitOfValidation.Base.ValidateMatchId(updateData.MatchId);
+            
+            if (match == null) throw new BadRequestException("Match not found");
+
+            if (match.ChallengerId != updateData.ChallengerId) 
+                throw new BadRequestException("This match not belong to this challenger");
+
+            var bird = await _repository.Bird.GetByIdActiveAsync(updateData.BirdId);
+
+            if(bird.OwnerId != updateData.ChallengerId) 
+                throw new BadRequestException("This bird not belong to this challenger");
+
+           await _repository.MatchBird.UpdateMatchBird(updateData);
+        }
+
         public async Task UpdateMatchResult(UpdateMatchResultDTO matchResultDTO)
         {
             var matchBird = await _matchBirdEntityRepository.GetByIdActiveAsync(matchResultDTO.MatchBirdId);
