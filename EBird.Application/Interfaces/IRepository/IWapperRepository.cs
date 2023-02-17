@@ -17,10 +17,11 @@ namespace EBird.Application.Interfaces
         public IRoomRepository Room { get; }
         public IResourceRepository Resource { get; }
         public IPlaceRepository Place { get; }
-        public IRequestRepository Request { get; }
-
+        // public IRequestRepository Request { get; }
         public INotificationRepository Notification { get; }
         public INotificationTypeRepository NotificationType { get; }
         public IPostRepository Post { get; }
+        public IGenericRepository<MatchBirdEntity> MatchBird { get; }
+        public IMatchRepository Match { get; }
     }
 }

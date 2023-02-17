@@ -9,7 +9,6 @@ namespace EBird.Application.Model.Group
 {
     public class GroupCreateDTO : GroupRequestDTO
     {
-        [Required]
-        public Guid CreatedById { get; set; }
+        public Guid? CreatedById { get; set; }
     }
 }

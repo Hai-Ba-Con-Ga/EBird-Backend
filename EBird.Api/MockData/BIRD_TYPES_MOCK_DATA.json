@@ -2,5 +2,13 @@
     {
         "TypeCode": "1",
         "TypeName": "Chim lai ga"
+    },
+    {
+        "TypeCode": "CM01",
+        "TypeName": "Chao mao"
+    },
+    {
+        "TypeCode": "VK01",
+        "TypeName": "Vanh khuyen"
     }
 ]

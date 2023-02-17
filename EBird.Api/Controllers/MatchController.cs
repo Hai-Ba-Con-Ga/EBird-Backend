@@ -1,130 +1,58 @@
-﻿using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
-using EBird.Application.Model.Group;
+using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Response;
-using System.Net;
-
 
 namespace EBird.Api.Controllers
 {
-    [Route("/group")]
     [ApiController]
-    public class GroupController : ControllerBase
+    [Route("match")]
+    public class MatchController : ControllerBase
     {
-        private IGroupService _groupService;
+        private readonly IMatchService _matchService;
 
-        public GroupController(IGroupService groupService)
+        public MatchController(IMatchService matchService)
         {
-            this._groupService = groupService;
+            _matchService = matchService;
         }
 
-        // GET all
-        [HttpGet("all")]
-        public async Task<ActionResult<Response<List<GroupResponseDTO>>>> Get()
-        {
-            Response<List<GroupResponseDTO>> response = null;
-            try
-            {
-                var responseData = await _groupService.GetGroups();
-
-                response = Response<List<GroupResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get groups is success")
-                    .SetData(responseData);
-
-                return StatusCode((int)response.StatusCode, response);
-            }
-            catch (Exception ex)
-            {
-                if (ex is BadRequestException || ex is NotFoundException)
-                {
-                    response = Response<List<GroupResponseDTO>>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.BadRequest)
-                            .SetMessage(ex.Message);
-
-                    return StatusCode((int)response.StatusCode, response);
-                }
-
-                response = Response<List<GroupResponseDTO>>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-
-                return StatusCode((int)response.StatusCode, response);
-            }
-        }
-
-        // GET by id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Response<GroupResponseDTO>>> Get(Guid id)
-        {
-            Response<GroupResponseDTO> response = null;
-            try
-            {
-                var responseData = await _groupService.GetGroup(id);
-
-                response = Response<GroupResponseDTO>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get group is success")
-                    .SetData(responseData);
-
-                return StatusCode((int)response.StatusCode, response);
-            }
-            catch (Exception ex)
-            {
-                if (ex is BadRequestException)
-                {
-                    response = Response<GroupResponseDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.BadRequest)
-                            .SetMessage(ex.Message);
-
-                    return StatusCode((int)response.StatusCode, response);
-                }
-
-                response = Response<GroupResponseDTO>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
-
-                return StatusCode((int)response.StatusCode, response);
-            }
-        }
-
-        // POST create
+        //creat match
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<Guid>>> Post([FromBody] GroupCreateDTO groupDTO)
+        public async Task<ActionResult<Response<Guid>>> Post([FromBody] MatchCreateDTO matchCreateDTO)
         {
-            Response<Guid> response = null;
+            var response = new Response<Guid>();
             try
             {
-                var userId = this.GetUserId();
+                var userIdRaw = this.GetUserId();
 
-                if(userId == null) throw new BadRequestException("Not allowed to create");
+                if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
 
-                groupDTO.CreatedById = Guid.Parse(userId);
+                matchCreateDTO.HostId = Guid.Parse(userIdRaw);
 
-                var id = await _groupService.AddGroup(groupDTO);
+                var matchId = await _matchService.CreateMatch(matchCreateDTO);
 
                 response = Response<Guid>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.Created)
-                    .SetMessage("Create group is success")
-                    .SetData(id);
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Create match is success")
+                    .SetData(matchId);
 
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || ex is UnauthorizedException)
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
                 {
                     response = Response<Guid>.Builder()
                             .SetSuccess(false)
@@ -143,26 +71,110 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // PUT update 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] GroupRequestDTO groupUpdateDTO)
+        //get match by id
+        [HttpGet("{matchId}")]
+        public async Task<ActionResult<Response<MatchResponseDTO>>> Get(Guid matchId)
         {
-            Response<string> response = null;
+            var response = new Response<MatchResponseDTO>();
             try
             {
-                await _groupService.UpdateGroup(id, groupUpdateDTO);
+                var match = await _matchService.GetMatch(matchId);
+
+                response = Response<MatchResponseDTO>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get match is success")
+                    .SetData(match);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<MatchResponseDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<MatchResponseDTO>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //get all match
+        [HttpGet("all")]
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
+        {
+            var response = new Response<ICollection<MatchResponseDTO>>();
+            try
+            {
+                ICollection<MatchResponseDTO> matches = null;
+                if (queryParameters?.MatchStatus == null)
+                {
+                    matches = await _matchService.GetMatches();
+                } 
+                else 
+                {
+                    matches = await _matchService.GetMatches(queryParameters);
+                }
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all match is success")
+                    .SetData(matches);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //delete match
+        [HttpDelete("{matchId}")]
+        public async Task<ActionResult<Response<string>>> Delete(Guid matchId)
+        {
+            var response = new Response<string>();
+            try
+            {
+                await _matchService.DeleteMatch(matchId);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Update group is success")
+                    .SetMessage("Delete match is success")
                     .SetData("");
 
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException)
+                if (ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
@@ -181,26 +193,26 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // DELETE 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<string>>> Delete(Guid id)
+        //update match
+        [HttpPut("{matchId}")]
+        public async Task<ActionResult<Response<string>>> Put(Guid matchId, [FromBody] MatchUpdateDTO matchUpdateDTO)
         {
-            Response<string> response = null;
+            var response = new Response<string>();
             try
             {
-                await _groupService.DeleteGroup(id);
+                await _matchService.UpdateMatch(matchId, matchUpdateDTO);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Delete group is success")
+                    .SetMessage("Update match is success")
                     .SetData("");
 
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException)
+                if (ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)

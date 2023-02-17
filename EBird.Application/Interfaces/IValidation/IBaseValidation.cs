@@ -14,7 +14,7 @@ namespace EBird.Application.Interfaces.IValidation
         public Task ValidateBirdId(Guid birdId);
         public Task ValidatePlaceId(Guid placeId);
         public Task ValidateCreateResourceList(List<ResourceCreateDTO> rsrcList);
-        public Task ValidateRequestId(Guid id);
+        // public Task ValidateRequestId(Guid id);
         public void ValidateParameter(QueryStringParameters parameters);
 
     }

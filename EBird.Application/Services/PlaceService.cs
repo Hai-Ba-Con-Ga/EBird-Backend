@@ -62,7 +62,7 @@ namespace EBird.Application.Services
 
             _mapper.Map(request, entity);
 
-           await _repository.Place.UpdatePlace(entity);
+            await _repository.Place.UpdatePlace(entity);
         }
     }
 }
