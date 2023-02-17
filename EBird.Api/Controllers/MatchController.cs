@@ -7,6 +7,7 @@ using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
 using EBird.Application.Model.Match;
 using EBird.Application.Services.IServices;
+using EBird.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Response;
@@ -109,6 +110,8 @@ namespace EBird.Api.Controllers
             }
         }
 
+
+
         //get all match
         [HttpGet("all")]
         public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
@@ -137,6 +140,53 @@ namespace EBird.Api.Controllers
             catch (Exception ex)
             {
                 if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //get all match
+        [HttpGet("owner/{rolePlayer}/{matchStatus}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetOwnerWithStatus(string rolePlayer, string matchStatus)
+        {
+            var response = new Response<ICollection<MatchResponseDTO>>();
+            try
+            {
+                var userIdRaw = this.GetUserId();
+                if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
+                Guid userId = Guid.Parse(userIdRaw);
+
+                ICollection<MatchResponseDTO> matches = null;
+
+                matches = await _matchService.GetWithOwnerAndStatus(userId, rolePlayer, matchStatus);
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all match is success")
+                    .SetData(matches);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
                 {
                     response = Response<ICollection<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
