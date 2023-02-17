@@ -13,5 +13,6 @@ namespace EBird.Application.Services.IServices
         public Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO);
         Task UpdateChallengerReady(UpdateChallengerToReadyDTO updateData);
         public Task UpdateMatchResult (UpdateMatchResultDTO matchBirdUpdateDTO);
+        Task UpdateResultMatch(Guid matchId, MatchBirdUpdateResultDTO updateResultDto, Guid userId);
     }
 }

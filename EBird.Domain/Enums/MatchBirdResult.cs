@@ -4,7 +4,8 @@ namespace EBird.Domain.Enums
     {
         NotReady,
         Ready,
-        Loser,
-        Winner
+        Draw,
+        Lose,
+        Win
     }
 }

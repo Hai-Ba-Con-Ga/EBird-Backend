@@ -10,5 +10,6 @@ namespace EBird.Application.Interfaces.IRepository
     public interface IMatchBirdRepository : IGenericRepository<MatchBirdEntity>
     {
         public Task UpdateMatchBird(UpdateChallengerToReadyDTO updateData);
+        public Task UpdateResultMatch(Guid matchId, Guid birdId, string result);
     }
 }

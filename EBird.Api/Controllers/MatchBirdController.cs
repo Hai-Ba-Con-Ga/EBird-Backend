@@ -108,7 +108,7 @@ namespace EBird.Api.Controllers
             {
                 var userRawId = this.GetUserId();
 
-                if (userRawId == null) throw new BadRequestException("User id is null");
+                if (userRawId == null) throw new UnauthorizedException("Not allow to access");
 
                 updateData.ChallengerId = Guid.Parse(userRawId);
 
@@ -124,7 +124,9 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException)
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
@@ -133,7 +135,52 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                Console.WriteLine($"Error: {ex.Message} - {ex.StackTrace}");
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        [HttpPut("result/{matchId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> UpdateResult(Guid matchId, [FromBody] MatchBirdUpdateResultDTO updateResultDto)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null) throw new UnauthorizedException("Not allow to access");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                await _matchBirdService.UpdateResultMatch(matchId, updateResultDto, userId);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Update result is success")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || 
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
                 
                 response = Response<string>.Builder()
                             .SetSuccess(false)
@@ -142,7 +189,6 @@ namespace EBird.Api.Controllers
 
                 return StatusCode((int)response.StatusCode, response);
             }
-
         }
     }
 }
