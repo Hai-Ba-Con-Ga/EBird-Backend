@@ -181,7 +181,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                Console.WriteLine($"Error: {ex.Message}");
                 
                 response = Response<string>.Builder()
                             .SetSuccess(false)
