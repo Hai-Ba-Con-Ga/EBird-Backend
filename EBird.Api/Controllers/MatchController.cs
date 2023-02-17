@@ -120,8 +120,8 @@ namespace EBird.Api.Controllers
                 if (queryParameters?.MatchStatus == null)
                 {
                     matches = await _matchService.GetMatches();
-                } 
-                else 
+                }
+                else
                 {
                     matches = await _matchService.GetMatches(queryParameters);
                 }
@@ -230,7 +230,7 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
-    
+
         //join match with bird id
         [HttpPut("join/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -240,7 +240,7 @@ namespace EBird.Api.Controllers
             try
             {
                 var userIdRaw = this.GetUserId();
-                if(userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
+                if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
 
                 matchJoinDTO.ChallengerId = Guid.Parse(userIdRaw);
 
@@ -256,7 +256,53 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || 
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //confirm match with match id
+        [HttpPut("confirm/{matchId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> ConfirmMatch(Guid matchId)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var userIdRaw = this.GetUserId();
+                if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
+
+                Guid userId = Guid.Parse(userIdRaw);
+
+                await _matchService.ConfirmMatch(matchId, userId);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Join match is success")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
                     ex is NotFoundException ||
                     ex is UnauthorizedException)
                 {
