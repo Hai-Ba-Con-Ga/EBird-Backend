@@ -120,12 +120,12 @@ namespace EBird.Application.Services
 
             var match = await _repository.Match.GetByIdActiveAsync(matchId);
 
-            if(match.HostId != userConfirmId) 
+            if (match.HostId != userConfirmId)
                 throw new BadRequestException("You are not the host of this match");
-            
-            if(match.MatchStatus != MatchStatus.Pending)
+
+            if (match.MatchStatus != MatchStatus.Pending)
                 throw new BadRequestException("Match is not pending");
-            
+
             var matchBirds = match.MatchBirds;
 
             foreach (var matchBird in matchBirds)
@@ -135,6 +135,50 @@ namespace EBird.Application.Services
             }
 
             await _repository.Match.ConfirmMatch(matchId);
+        }
+
+        public async Task<ICollection<MatchResponseDTO>> GetWithOwnerAndStatus(Guid userId, string rolePlayer, string matchStatus)
+        {
+            RolePlayer rolePlayerEnum;
+            switch (rolePlayer.ToLower())
+            {
+                case "host":
+                    rolePlayerEnum = RolePlayer.Host;
+                    break;
+                case "challenger":
+                    rolePlayerEnum = RolePlayer.Challenger;
+                    break;
+                default:
+                    throw new BadRequestException("Role player not found");
+            }
+            
+            MatchStatus matchStatusEnum;
+            switch (matchStatus.ToLower())
+            {
+                case "waiting":
+                    matchStatusEnum = MatchStatus.Waiting;
+                    break;
+                case "pending":
+                    matchStatusEnum = MatchStatus.Pending;
+                    break;
+                case "during":
+                    matchStatusEnum = MatchStatus.During;
+                    break;
+                case "completed":
+                    matchStatusEnum = MatchStatus.Completed;
+                    break;
+                case "cancelled":
+                    matchStatusEnum = MatchStatus.Cancelled;
+                    break;
+                default:
+                    throw new BadRequestException("Match status not found");
+            }
+
+            ICollection<MatchEntity> matchList = await _repository.Match.GetWithOwnerAndStatus(userId, rolePlayerEnum, matchStatusEnum);
+
+            var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+
+            return matchDTOList;
         }
     }
 }

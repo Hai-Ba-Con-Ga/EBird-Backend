@@ -165,5 +165,34 @@ namespace EBird.Infrastructure.Repositories
             _context.Matches.Update(match);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<ICollection<MatchEntity>> GetWithOwnerAndStatus(Guid userId, RolePlayer rolePlayer, MatchStatus matchStatus)
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchBirds)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
+
+            if (rolePlayer == RolePlayer.Challenger)
+            {
+                collection = collection.Where(e => e.ChallengerId == userId);
+            }
+            else if (rolePlayer == RolePlayer.Host)
+            {
+                collection = collection.Where(e => e.HostId == userId);
+            }
+
+            if (matchStatus != null)
+            {
+                collection = collection.Where(e => e.MatchStatus == matchStatus);
+            }
+
+            return await collection.ToListAsync();
+        }
+
+       
     }
 }
