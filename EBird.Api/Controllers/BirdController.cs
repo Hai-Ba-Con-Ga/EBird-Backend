@@ -75,7 +75,6 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                Console.WriteLine($"Error: {ex.Message} - {ex.Source} - {ex.StackTrace}");
                 
                 response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)

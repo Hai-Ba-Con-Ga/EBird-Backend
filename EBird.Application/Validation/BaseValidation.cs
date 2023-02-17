@@ -99,5 +99,14 @@ namespace EBird.Application.Validation
                 throw new BadRequestException("Page size is invalid");
             }
         }
+
+        public async Task ValidateMatchId(Guid matchId)
+        {
+            var match = await _repository.Match.GetMatch(matchId);
+            if (match == null)
+            {
+                throw new BadRequestException("Match does not exist");
+            }
+        }
     }
 }

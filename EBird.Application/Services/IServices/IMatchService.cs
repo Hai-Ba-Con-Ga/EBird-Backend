@@ -15,5 +15,6 @@ namespace EBird.Application.Services.IServices
         public Task<ICollection<MatchResponseDTO>> GetMatches(MatchParameters matchParameters);
         public Task DeleteMatch(Guid matchId);
         public Task UpdateMatch(Guid matchId, MatchUpdateDTO matchUpdateDTO);
+        public Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO);
     }
 }

@@ -230,5 +230,51 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
+    
+        //join match with bird id
+        [HttpPut("join/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> JoinMatch(Guid id, [FromBody] MatchJoinDTO matchJoinDTO)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var userIdRaw = this.GetUserId();
+                if(userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
+
+                matchJoinDTO.ChallengerId = Guid.Parse(userIdRaw);
+
+                await _matchService.JoinMatch(id, matchJoinDTO);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Join match is success")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || 
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
     }
 }

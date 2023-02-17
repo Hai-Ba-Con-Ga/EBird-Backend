@@ -26,7 +26,8 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
-                match.CreateDatetime = DateTime.Now;
+                    match.MatchStatus = MatchStatus.Waiting;
+                    match.CreateDatetime = DateTime.Now;
                     match.ExpDatetime = match.CreateDatetime.AddHours(48);
 
                     var place = match.Place;
@@ -38,9 +39,9 @@ namespace EBird.Infrastructure.Repositories
                     matchBirdEntity.MatchId = match.Id;
                     matchBirdEntity.UpdateDatetime = DateTime.Now;
 
-                    var MatchEntity = await _context.Birds.FindAsync(matchBirdEntity.BirdId);
-                    if (MatchEntity == null) throw new BadRequestException("Bird not found");
-                    matchBirdEntity.BeforeElo = MatchEntity.Elo;
+                    var birdEntity = await _context.Birds.FindAsync(matchBirdEntity.BirdId);
+                    if (birdEntity == null) throw new BadRequestException("Bird not found");
+                    matchBirdEntity.BeforeElo = birdEntity.Elo;
 
                     await _context.MatchBirds.AddAsync(matchBirdEntity);
                     await _context.SaveChangesAsync();
@@ -105,6 +106,52 @@ namespace EBird.Infrastructure.Repositories
             }
 
             return await collection.ToListAsync();
+        }
+
+        public async Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO)
+        {
+            var match = await _context.Matches.FindAsync(matchId);
+
+            if (match == null) throw new BadRequestException("Match not found");
+
+            var matchStatus = match.MatchStatus;
+
+            if (matchStatus != MatchStatus.Waiting) throw new BadRequestException("Match is wrong state");
+
+            match.MatchStatus = MatchStatus.Pending;
+            match.ChallengerId = matchJoinDTO.ChallengerId;
+
+            using (var transction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Matches.Update(match);
+                    await _context.SaveChangesAsync();
+
+                    var matchBird = new MatchBirdEntity();
+                    matchBird.MatchId = matchId;
+                    matchBird.BirdId = matchJoinDTO.BirdChallengerId;
+                    matchBird.UpdateDatetime = DateTime.Now;
+
+                    var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                    if (birdEntity == null) throw new BadRequestException("Bird not found");
+
+                    matchBird.BeforeElo = birdEntity.Elo;
+
+                    await _context.MatchBirds.AddAsync(matchBird);
+                    await _context.SaveChangesAsync();
+
+                    transction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transction.Rollback();
+                    throw ex;
+                }
+            }
+
+
+
         }
     }
 }
