@@ -14,7 +14,7 @@ namespace EBird.Application.Model.Match
         public BirdResponseDTO Bird { get; set; }
         public int AfterElo { get; set; }
         public int BeforeElo { get; set; }
-        public MatchBirdResult Result { get; set; }
+        public MatchDetailResult Result { get; set; }
         public DateTime UpdateDatetime { get; set; }
     }
 }

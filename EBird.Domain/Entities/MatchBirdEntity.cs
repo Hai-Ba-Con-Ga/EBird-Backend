@@ -22,8 +22,8 @@ namespace EBird.Domain.Entities
         public MatchEntity Match { get; set; }
 
         [Column("Result")]
-        [EnumDataType(typeof(MatchBirdResult))]
-        public MatchBirdResult? Result { get; set; }
+        [EnumDataType(typeof(MatchDetailResult))]
+        public MatchDetailResult? Result { get; set; }
 
         [Column("AfterElo")]
         public int? AfterElo { get; set; }

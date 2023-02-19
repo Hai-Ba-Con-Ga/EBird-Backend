@@ -26,7 +26,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
-                    match.MatchStatus = MatchStatus.Waiting;
+                    match.MatchStatus = MatchStatus.Pending;
                     match.CreateDatetime = DateTime.Now;
                     match.ExpDatetime = match.CreateDatetime.AddHours(48);
 
@@ -38,7 +38,7 @@ namespace EBird.Infrastructure.Repositories
 
                     matchBirdEntity.MatchId = match.Id;
                     matchBirdEntity.UpdateDatetime = DateTime.Now;
-                    matchBirdEntity.Result = MatchBirdResult.Ready;
+                    matchBirdEntity.Result = MatchDetailResult.Ready;
 
                     var birdEntity = await _context.Birds.FindAsync(matchBirdEntity.BirdId);
                     if (birdEntity == null) throw new BadRequestException("Bird not found");
@@ -117,8 +117,6 @@ namespace EBird.Infrastructure.Repositories
 
             var matchStatus = match.MatchStatus;
 
-            if (matchStatus != MatchStatus.Waiting) throw new BadRequestException("Match is wrong state");
-
             match.MatchStatus = MatchStatus.Pending;
             match.ChallengerId = matchJoinDTO.ChallengerId;
 
@@ -132,7 +130,7 @@ namespace EBird.Infrastructure.Repositories
                     var matchBird = new MatchBirdEntity();
                     matchBird.MatchId = matchId;
                     matchBird.BirdId = matchJoinDTO.BirdChallengerId;
-                    matchBird.Result = MatchBirdResult.NotReady;
+                    matchBird.Result = MatchDetailResult.NotReady;
                     matchBird.UpdateDatetime = DateTime.Now;
 
                     var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);

@@ -37,7 +37,7 @@ namespace EBird.Domain.Entities
         public Guid CreateById { get; set; }
         public AccountEntity CreateBy { get; set; }
 
-        // public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<RequestEntity> Requests { get; set; }
         public ICollection<MatchEntity> Matches { get; set; }
     }
 }

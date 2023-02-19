@@ -26,7 +26,7 @@ namespace EBird.Infrastructure.Repositories
 
             if (matchBird == null) throw new Exception("Match Bird not found");
 
-            matchBird.Result = MatchBirdResult.Ready;
+            matchBird.Result = MatchDetailResult.Ready;
 
             _context.MatchBirds.Update(matchBird);
            await  _context.SaveChangesAsync();
@@ -42,7 +42,7 @@ namespace EBird.Infrastructure.Repositories
             var matchBird = await _context.MatchBirds.Where(m => m.MatchId == matchId
                                                         && m.BirdId == birdId
                                                         && m.IsDeleted == false
-                                                        && m.Result == MatchBirdResult.Ready)
+                                                        && m.Result == MatchDetailResult.Ready)
                                                         .FirstOrDefaultAsync();
 
             if (matchBird == null)
@@ -53,13 +53,13 @@ namespace EBird.Infrastructure.Repositories
             switch (result.ToLower())
             {
                 case "win":
-                    matchBird.Result = MatchBirdResult.Win;
+                    matchBird.Result = MatchDetailResult.Win;
                     break;
                 case "lose":
-                    matchBird.Result = MatchBirdResult.Lose;
+                    matchBird.Result = MatchDetailResult.Lose;
                     break;
                 case "draw":
-                    matchBird.Result = MatchBirdResult.Draw;
+                    matchBird.Result = MatchDetailResult.Draw;
                     break;
                 default:
                     throw new BadRequestException("Result not valid");
