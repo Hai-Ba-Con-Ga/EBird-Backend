@@ -13,6 +13,7 @@ using Moq;
 
 namespace EBird.Test.System.Services
 {
+    //In memory database
     // public class AccountServicesTest : IDisposable
     // {
     //     protected readonly ApplicationDbContext _context;
@@ -72,6 +73,7 @@ namespace EBird.Test.System.Services
     //     }
 
     // }
+    [TestFixture]
     public class AccountServicesTest
     {
         private readonly Mock<IGenericRepository<AccountEntity>> _mockAccountRepository;
@@ -79,6 +81,7 @@ namespace EBird.Test.System.Services
         private readonly IMapper _mapper;
 
         private readonly IAccountServices _accountServices;
+        
         public AccountServicesTest()
         {
                // Initialize the IMapper object
@@ -122,8 +125,8 @@ namespace EBird.Test.System.Services
         public async Task GetAccountById_ReturnData_WhenDataValid()
         {
            // Expected values are in ACCOUNTS_EXPECTED.json
-           var account = AccountMockData.GetAccountList()[0];
-           _mockAccountRepository.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+           var account = AccountMockData.GetAccountList().ElementAt(0);
+           _mockAccountRepository.Setup(x => x.GetByIdActiveAsync(account.Id)).ReturnsAsync(account);
 
            // Actual values
            var result = await _accountServices.GetAccountById(account.Id);
@@ -136,13 +139,18 @@ namespace EBird.Test.System.Services
         {
             // Expected values are in ACCOUNTS_EXPECTED.json
             var accountId = Guid.NewGuid();
-            _mockAccountRepository.Setup(x => x.GetByIdAsync(accountId)).ReturnsAsync(AccountMockData.GetAccountList()[0]);
+            //_mockAccountRepository.Setup(x => x.GetByIdAsync(accountId)).ReturnsAsync(AccountMockData.GetAccountList()[0]);
 
             // Actual values
             Assert.ThrowsAsync<NotFoundException>(async () => await _accountServices.GetAccountById(accountId));
 
         }
-
+        [TearDown]
+        public void TearDown()
+        {
+            _mockAccountRepository.Reset();
+            _mockAccountServices.Reset();
+        }
 
     }
 }
