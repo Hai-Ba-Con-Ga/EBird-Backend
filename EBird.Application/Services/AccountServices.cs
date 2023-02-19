@@ -29,6 +29,12 @@ namespace EBird.Application.Services
             _emailServices = emailServices;
         }
 
+        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IMapper mapper)
+        {
+            _accountRepository = accountRepository;
+            _mapper = mapper;
+        }
+
         public async Task<AccountResponse> GetAccountById(Guid id)
         {
             var account = await _accountRepository.GetByIdActiveAsync(id);

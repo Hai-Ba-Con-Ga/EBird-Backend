@@ -62,6 +62,7 @@ namespace EBird.Infrastructure.Repositories
         public async Task<List<T>> GetAllAsync()
         {
             return await dbSet.AsNoTracking().ToListAsync();
+            
         }
 
         public async Task<T> GetByIdAsync(Guid id)

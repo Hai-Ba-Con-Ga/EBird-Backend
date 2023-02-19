@@ -1,0 +1,24 @@
+[
+  {
+    "Password": "WZRHGrsBESr8wYFZ9sx0tPURuZgG2lmzyvWpwXPKz8U=",
+    "Email": "tklinh2601@gmail.com",
+    "CreateDateTime": "2023-02-14T03:59:04.950Z",
+    "FirstName": "Khanh",
+    "LastName": "Linh",
+    "Role": "Admin",
+    "Username": "linhtk",
+    "Description": "Hello World",
+    "IsDeleted": 0
+  },
+  {
+    "Password": "WZRHGrsBESr8wYFZ9sx0tPURuZgG2lmzyvWpwXPKz8U=",
+    "Email": "linhtruong2601@gmail.com",
+    "CreateDateTime": "2023-02-14T03:59:05.017Z",
+    "FirstName": "Con",
+    "LastName": "Ga",
+    "Role": "User",
+    "Username": "haibaconga",
+    "Description": "Ga chien nuoc mam",
+    "IsDeleted": 0
+  }
+]

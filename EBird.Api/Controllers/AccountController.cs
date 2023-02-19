@@ -32,6 +32,12 @@ namespace EBird.Api.Controllers
             _accountRepository = accountRepository;
         }
 
+        public AccountController(IAccountServices accountServices, IMapper mapper)
+        {
+            _accountServices = accountServices;
+            _mapper = mapper;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<AccountResponse>>> GetAccountById(Guid id)
         {
