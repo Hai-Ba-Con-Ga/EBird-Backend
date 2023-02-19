@@ -33,10 +33,10 @@ namespace EBird.Domain.Entities
         public string RoleString
         {
             get { return Role.ToString(); }
-            private set { Role = Enum.Parse<Role>(value); }
+            private set { Role = Enum.Parse<RoleAccount>(value); }
         }
         [NotMapped]
-        public Role Role { get; set; } = Role.User;
+        public RoleAccount Role { get; set; } = RoleAccount.User;
 
         [Column(TypeName = "varchar")]
         [MaxLength(50)]

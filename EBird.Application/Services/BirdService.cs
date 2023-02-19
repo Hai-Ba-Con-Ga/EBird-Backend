@@ -23,9 +23,9 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
         private IUnitOfValidation _unitOfValidation;
-        private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
+        private IGenericRepository<MatchDetailEntity> _matchBirdRepository;
 
-        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchBirdEntity> matchBirdRepository)
+        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchDetailEntity> matchBirdRepository)
         {
             _repository = repository;
             _mapper = mapper;

@@ -57,7 +57,15 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<ICollection<RequestEntity>> GetRequests()
         {
-            return await this.GetAllActiveAsync();
+            return await dbSet.AsNoTracking()
+                                .OrderByDescending(r => r.CreateDatetime)
+                                .Include(e => e.Group)
+                                .Include(e => e.HostBird)
+                                .Include(e => e.Host)
+                                .Include(e => e.Place)
+                                .Include(e => e.Room)
+                                .Where(e => e.IsDeleted == false)
+                                .ToListAsync();
         }
 
         public async Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters)
@@ -67,7 +75,8 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.HostBird)
                                 .Include(e => e.Host)
                                 .Include(e => e.Place)
-                                .Include(e => e.Room);
+                                .Include(e => e.Room)
+                                .Where(e => e.IsDeleted == false);
 
             PagedList<RequestEntity> pagedRequests = new PagedList<RequestEntity>();
             await pagedRequests.LoadData(requests, parameters.PageNumber, parameters.PageSize);

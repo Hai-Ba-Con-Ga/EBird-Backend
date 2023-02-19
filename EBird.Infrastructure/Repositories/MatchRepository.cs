@@ -20,7 +20,7 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<Guid> CreateMatch(MatchEntity match, MatchBirdEntity matchBirdEntity)
+        public async Task<Guid> CreateMatch(MatchEntity match, MatchDetailEntity matchBirdEntity)
         {
             using (var transction = _context.Database.BeginTransaction())
             {
@@ -127,7 +127,7 @@ namespace EBird.Infrastructure.Repositories
                     _context.Matches.Update(match);
                     await _context.SaveChangesAsync();
 
-                    var matchBird = new MatchBirdEntity();
+                    var matchBird = new MatchDetailEntity();
                     matchBird.MatchId = matchId;
                     matchBird.BirdId = matchJoinDTO.BirdChallengerId;
                     matchBird.Result = MatchDetailResult.NotReady;

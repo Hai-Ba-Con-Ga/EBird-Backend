@@ -9,7 +9,7 @@ using EBird.Domain.Enums;
 
 namespace EBird.Application.Model.Match
 {
-    public class MatchBirdResponseDTO : IMapFrom<MatchBirdEntity>
+    public class MatchBirdResponseDTO : IMapFrom<MatchDetailEntity>
     {
         public BirdResponseDTO Bird { get; set; }
         public int AfterElo { get; set; }

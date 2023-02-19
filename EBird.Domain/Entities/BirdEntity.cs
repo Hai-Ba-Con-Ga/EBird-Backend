@@ -61,6 +61,6 @@ namespace EBird.Domain.Entities
         public ICollection<RequestEntity> HostRequests { get; set; }
         public ICollection<RequestEntity> ChallengerRequests { get; set; }
 
-        public ICollection<MatchBirdEntity> MatchBirds { get; set; }
+        public ICollection<MatchDetailEntity> MatchBirds { get; set; }
     }
 }

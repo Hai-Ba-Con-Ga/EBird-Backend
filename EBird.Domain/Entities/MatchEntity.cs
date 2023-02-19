@@ -51,6 +51,6 @@ namespace EBird.Domain.Entities
         public Guid RoomId { get; set; }
         public RoomEntity Room { get; set; }
 
-        public ICollection<MatchBirdEntity> MatchBirds { get; set; }
+        public ICollection<MatchDetailEntity> MatchBirds { get; set; }
     }
 }

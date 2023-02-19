@@ -38,29 +38,34 @@ namespace EBird.Api.Controllers
                 if (parameters.PageSize == 0)
                 {
                     listBirdDTO = await _birdService.GetBirds();
+
+                    response = Response<IList<BirdResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all birds successful")
+                    .SetData(listBirdDTO);
                 }
                 else
                 {
                     listBirdDTO = await _birdService.GetBirdsByPagingParameters(parameters);
 
-                    var metaData = new
+                    PagingData metaData = new PagingData()
                     {
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).CurrentPage,
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).TotalPages,
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).PageSize,
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).HasNext,
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).HasPrevious,
-                        ((PagedList<BirdResponseDTO>)listBirdDTO).TotalCount,
+                        CurrentPage = ((PagedList<BirdResponseDTO>)listBirdDTO).CurrentPage,
+                        PageSize = ((PagedList<BirdResponseDTO>)listBirdDTO).PageSize,
+                        TotalCount = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalCount,
+                        TotalPages = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalPages,
+                        HasNext = ((PagedList<BirdResponseDTO>)listBirdDTO).HasNext,
+                        HasPrevious = ((PagedList<BirdResponseDTO>)listBirdDTO).HasPrevious
                     };
 
-                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
-                }
-                
-                response = Response<IList<BirdResponseDTO>>.Builder()
+                    response = ResponseWithPaging<IList<BirdResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all birds successful")
-                    .SetData(listBirdDTO);
+                    .SetData(listBirdDTO)
+                    .SetPagingData(metaData);
+                }
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -75,7 +80,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                
+
                 response = Response<IList<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -133,8 +138,8 @@ namespace EBird.Api.Controllers
             {
                 string userId = this.GetUserId();
 
-                if(userId == null) throw new UnauthorizedException("Not allow to access");
-                
+                if (userId == null) throw new UnauthorizedException("Not allow to access");
+
                 birdDTO.OwnerId = Guid.Parse(userId);
 
                 if (birdDTO.ListResource != null)
@@ -280,8 +285,8 @@ namespace EBird.Api.Controllers
             }
             catch (Exception ex)
             {
-                if (ex is BadRequestException || 
-                    ex is UnauthorizedException || 
+                if (ex is BadRequestException ||
+                    ex is UnauthorizedException ||
                     ex is NotFoundException)
                 {
                     response = Response<List<BirdResponseDTO>>.Builder()
@@ -291,7 +296,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                
+
                 response = Response<List<BirdResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)

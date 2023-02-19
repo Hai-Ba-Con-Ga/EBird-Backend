@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EBird.Infrastructure.Repositories
 {
-    public class MatchBirdRepository : GenericRepository<MatchBirdEntity>, IMatchBirdRepository
+    public class MatchBirdRepository : GenericRepository<MatchDetailEntity>, IMatchBirdRepository
     {
         public MatchBirdRepository(ApplicationDbContext context) : base(context)
         {

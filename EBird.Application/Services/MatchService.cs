@@ -31,7 +31,7 @@ namespace EBird.Application.Services
         {
             MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
 
-            MatchBirdEntity matchBird = new MatchBirdEntity()
+            MatchDetailEntity matchBird = new MatchDetailEntity()
             {
                 BirdId = matchCreateDTO.BirdHostId,
                 Result = Domain.Enums.MatchDetailResult.Ready

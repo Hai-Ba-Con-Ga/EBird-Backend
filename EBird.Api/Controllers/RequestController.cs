@@ -29,38 +29,44 @@ namespace EBird.Api.Controllers
 
         // GET: all
         [HttpGet("all")]
-        public async Task<ActionResult<ICollection<RequestResponse>>> Get([FromQuery] RequestParameters parameters)
+        public async Task<ActionResult<Response<ICollection<RequestResponse>>>> Get([FromQuery] RequestParameters parameters)
         {
-            Response<ICollection<RequestResponse>> response = null;
+            // ResponseWithPaging<ICollection<RequestResponse>> response = null;
+            Response<ICollection<RequestResponse>> response;
             try
             {
                 ICollection<RequestResponse> listDTO = null;
                 if (parameters.PageSize == 0)
                 {
                     listDTO = await _requestService.GetRequests();
+
+                    response = Response<ICollection<RequestResponse>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all request successful")
+                    .SetData(listDTO);
                 }
                 else
                 {
                     listDTO = await _requestService.GetRequests(parameters);
 
-                    var metaData = new
+                    PagingData metaData = new PagingData()
                     {
-                        ((PagedList<RequestResponse>)listDTO).CurrentPage,
-                        ((PagedList<RequestResponse>)listDTO).TotalPages,
-                        ((PagedList<RequestResponse>)listDTO).PageSize,
-                        ((PagedList<RequestResponse>)listDTO).HasNext,
-                        ((PagedList<RequestResponse>)listDTO).HasPrevious,
-                        ((PagedList<RequestResponse>)listDTO).TotalCount,
+                        CurrentPage = ((PagedList<RequestResponse>)listDTO).CurrentPage,
+                        PageSize = ((PagedList<RequestResponse>)listDTO).PageSize,
+                        TotalCount = ((PagedList<RequestResponse>)listDTO).TotalCount,
+                        TotalPages = ((PagedList<RequestResponse>)listDTO).TotalPages,
+                        HasNext = ((PagedList<RequestResponse>)listDTO).HasNext,
+                        HasPrevious = ((PagedList<RequestResponse>)listDTO).HasPrevious
                     };
 
-                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
-                }
-
-                response = Response<ICollection<RequestResponse>>.Builder()
+                    response = ResponseWithPaging<ICollection<RequestResponse>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all request successful")
-                    .SetData(listDTO);
+                    .SetData(listDTO)
+                    .SetPagingData(metaData);
+                }
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -133,7 +139,7 @@ namespace EBird.Api.Controllers
             {
                 var userId = this.GetUserId();
 
-                if(userId == null)
+                if (userId == null)
                     throw new UnauthorizedException("Not allow to access this resource");
 
                 entity.HostId = Guid.Parse(userId);
