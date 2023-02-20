@@ -31,6 +31,7 @@ namespace EBird.Domain.Entities
         public DateTime ExpDatetime { get; set; } = DateTime.Now.AddDays(1);
 
         [Column("Status")]
+        [MaxLength(50)]
         [Required]
         public RequestStatus Status { get; set; } = RequestStatus.Waiting;
 

@@ -24,6 +24,7 @@ namespace EBird.Domain.Entities
 
         [Column("Result")]
         [EnumDataType(typeof(MatchDetailResult))]
+        [MaxLength(50)]
         public MatchDetailResult? Result { get; set; }
 
         [Column("AfterElo")]
