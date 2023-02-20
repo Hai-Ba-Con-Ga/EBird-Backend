@@ -5,34 +5,27 @@ import './App.css'
 import { Box,Chip } from '@mui/material';
 import { ConnectionEndpointWrapper, EventForm, Message, MessageContainer, MessageServer, SendEventWrapper } from './style';
 import {HubConnection, HubConnectionBuilder,HttpTransportType} from '@microsoft/signalr'
-
+import React from "react";
+import useHub from './useHub';
 function App() {
-  const [connection,setConnection] = useState<HubConnection>(); 
-  const [connectErr,setCnErr] = useState<{success:boolean , msg : string} | null>(null);
   const [endpoint,setEndpoint] = useState("https://localhost:7137/hub/test");
+  const {sendMessageFromClient,connection} = useHub({endpoint});
+  const [connectErr,setCnErr] = useState<{success:boolean , msg : string} | null>(null);
+  /* Send form */
   const [eventName,setEventName] = useState<string>();
   const [eventSendConent,setSendContent] = useState<any>();
+  /* Receive form */
   const [listeningEvents,setListeningEvents] = useState<string[]>([]);
   const [messages,setMessages] = useState<{eventName:string, msg:string}[]>([]);
   
   const [draftEventName,setDraftEventName] = useState<string>();
 
   const handleConnectClick = useCallback(async()=>{
-  
+    
   },[connection,endpoint,listeningEvents])
   const sendEventHandler = useCallback(async()=>{
-
-    if(!connection || connection.state == "Disconnected" ) {
-      // setCnErr({success :false , msg : "Not connected"});
-      connection?.start().then(()=>connection?.send("SendMessage","LE THANH PHONG").then(()=> {
-        console.log("SENDed MESSAGE");}))
-    }
-    connection?.send("SendMessage","LE THANH PHONG").then(()=> {
-      console.log("SENDed MESSAGE");})
-    // console.log(connection);
-    // console.log(eventName);
-    // console.log(eventSendConent);
-  },[connection,eventName,eventSendConent])
+    sendMessageFromClient(eventName as string,eventSendConent);
+  },[eventName,eventSendConent])
 
 
   const addEventHandler = useCallback(async()=>{
@@ -45,14 +38,8 @@ function App() {
   /** useEffect 
    * 
    */
+  /* Connection start on change*/
   useEffect(()=>{
-    const hubClient = new HubConnectionBuilder().withUrl('https://localhost:7137/hub/test',{
-      transport: HttpTransportType.ServerSentEvents
-    }).build();
-    setConnection(hubClient);
-  },[]);
-  useEffect(()=>{
-    console.log(connection);
     if(connection) {
       connection.start().then(()=> {
         console.log("HUB CONNECTED");
@@ -62,9 +49,8 @@ function App() {
     }
     connection?.on("RECEIVE_MSG",(msg)=> {console.log("TEST HUB OKE " + msg)})
   },[connection]);
+
   useEffect(()=>{
-    console.log(connection?.state);
-    
     if(connection?.state == 'Connected') setCnErr({success :true , msg : "Connected successfully"})
     connection?.on("RECEIVE_MSG", (msg)=>{
       console.log("FROM SERVER" , msg)
@@ -75,7 +61,7 @@ function App() {
     connection?.on("MSG2", (msg)=>{
       console.log("FROM SERVER" , msg)
     })
-  },[connection?.state])
+  },[connection])
 
   useEffect(()=>{
     console.log(endpoint);
