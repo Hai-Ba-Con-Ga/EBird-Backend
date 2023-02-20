@@ -9,7 +9,6 @@ namespace EBird.Application.Interfaces.IMapper
 {
     public interface IMapTo<T>
     {
-        void MappingTo(Profile profile) => profile.CreateMap(GetType(), typeof(T));
-
+       virtual void MappingTo(Profile profile) => profile.CreateMap(GetType(), typeof(T));
     }
 }

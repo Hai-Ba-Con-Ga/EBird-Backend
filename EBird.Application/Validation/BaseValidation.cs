@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Resource;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Validation
 {
-    public class BaseValidation
+    public class BaseValidation : IBaseValidation
     {
         protected IWapperRepository _repository;
 
@@ -64,7 +65,7 @@ namespace EBird.Application.Validation
             {
                 foreach (var rsrc in rsrcList)
                 {
-                    Guid createById = rsrc.CreateById;
+                    Guid createById = rsrc.CreateById ?? Guid.Empty;
                     await ValidateAccountId(createById);
                 }
             }
@@ -96,6 +97,15 @@ namespace EBird.Application.Validation
             if (parameters.PageSize < 0)
             {
                 throw new BadRequestException("Page size is invalid");
+            }
+        }
+
+        public async Task ValidateMatchId(Guid matchId)
+        {
+            var match = await _repository.Match.GetMatch(matchId);
+            if (match == null)
+            {
+                throw new BadRequestException("Match does not exist");
             }
         }
     }

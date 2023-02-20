@@ -18,10 +18,14 @@ namespace EBird.Domain.Entities
 
         [Column("CreateDate", TypeName ="datetime")]
         [Required]
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
 
         public ICollection<AccountResourceEntity> AccountResources { get; set; }
 
         public ICollection<BirdResourceEntity> BirdResources { get; set; }
+
+        public ICollection<MatchResourceEntity> MatchResources { get; set; }
+
+        public PostEntity? Post { get; set; }
     }
 }

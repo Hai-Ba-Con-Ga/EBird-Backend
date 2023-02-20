@@ -8,15 +8,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EBird.Application.Model.Place;
 
 namespace EBird.Application.Model.Request
 {
     public class RequestCreateDTO : RequestUpdateDTO
     {
-        [Required]
-        public Guid CreatedById { get; set; }
-
+        public Guid? HostId { get; set; }
         public Guid? GroupId { get; set; }
+        public Guid RoomId { get; set; }
+        public PlaceRequestDTO Place { get; set; }
   
     }
 }

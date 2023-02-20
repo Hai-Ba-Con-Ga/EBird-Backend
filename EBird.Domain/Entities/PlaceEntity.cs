@@ -25,15 +25,17 @@ namespace EBird.Domain.Entities
         [Required]
         public string Longitude { get; set; }
 
-        [Column("Longitude", TypeName ="nvarchar")]
+        [Column("Latitude", TypeName ="nvarchar")]
         [StringLength(100)]
         [Required]
         public string Latitude { get; set; }
 
         [Column("CreatedDate", TypeName ="datetime")]
         [Required]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         public ICollection<RequestEntity> Requests { get; set; }
+
+        public ICollection<MatchEntity> Matches { get; set; }
     }
 }

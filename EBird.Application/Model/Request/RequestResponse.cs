@@ -1,9 +1,11 @@
-﻿using EBird.Application.Interfaces.IMapper;
+﻿using AutoMapper;
+using EBird.Application.Interfaces.IMapper;
 using EBird.Application.Model.Auth;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.Group;
 using EBird.Application.Model.Place;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,12 +17,22 @@ namespace EBird.Application.Model.Request
 {
     public class RequestResponse : IMapFrom<RequestEntity>
     {
+        public int Number { get; set; }
         public Guid Id { get; set; }
         public DateTime RequestDatetime { get; set; }
-        public string Status { get; set; }
-        public AccountResponse CreatedBy { get; set; }
-        public BirdResponseDTO Bird { get; set; }
+        public DateTime ExpDatetime { get; set; }
+        public RequestStatus Status { get; set; }
+        public AccountResponse Host { get; set; }
+        public BirdResponseDTO HostBird { get; set; }
         public GroupResponseDTO? Group { get; set; }
         public PlaceResponseDTO Place { get; set; }
+        public RoomResponseDTO Room { get; set; }
+
+        // public void MappingFrom(Profile profile)
+        // {
+        //     profile.CreateMap<RequestEntity, RequestResponse>()
+        //         .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.GetDescription()));
+        // }
+
     }
 }

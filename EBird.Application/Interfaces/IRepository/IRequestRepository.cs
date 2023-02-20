@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Interfaces.IRepository
 {
-    public interface IRequestRepository
+    public interface IRequestRepository : IGenericRepository<RequestEntity>
     {
         Task<RequestEntity> GetRequest(Guid id);
         Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters);
         Task<ICollection<RequestEntity>> GetRequests();
-        Task<Guid> CreateRequest(RequestEntity request);
-        Task UpdateRequest(RequestEntity entity);
-        Task DeleteRequest(Guid id);
+        Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
     }
 }

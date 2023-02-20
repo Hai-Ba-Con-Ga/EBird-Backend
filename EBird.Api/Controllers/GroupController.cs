@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
 using EBird.Application.Model.Group;
 using EBird.Application.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Response;
 using System.Net;
@@ -31,30 +33,30 @@ namespace EBird.Api.Controllers
 
                 response = Response<List<GroupResponseDTO>>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.OK)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get groups is success")
                     .SetData(responseData);
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex is BadRequestException || ex is NotFoundException)
+                if (ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<List<GroupResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.BadRequest)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int) response.StatusCode, response);
+                    return StatusCode((int)response.StatusCode, response);
                 }
 
                 response = Response<List<GroupResponseDTO>>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
         }
 
@@ -69,68 +71,75 @@ namespace EBird.Api.Controllers
 
                 response = Response<GroupResponseDTO>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.OK)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get group is success")
                     .SetData(responseData);
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex is BadRequestException)
+                if (ex is BadRequestException)
                 {
                     response = Response<GroupResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.BadRequest)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int) response.StatusCode, response);
+                    return StatusCode((int)response.StatusCode, response);
                 }
 
                 response = Response<GroupResponseDTO>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
         }
 
         // POST create
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<Guid>>> Post([FromBody] GroupCreateDTO groupDTO)
         {
             Response<Guid> response = null;
             try
             {
-               var id = await _groupService.AddGroup(groupDTO);
+                var userId = this.GetUserId();
+
+                if(userId == null) throw new BadRequestException("Not allowed to create");
+
+                groupDTO.CreatedById = Guid.Parse(userId);
+
+                var id = await _groupService.AddGroup(groupDTO);
 
                 response = Response<Guid>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.Created)
+                    .SetStatusCode((int)HttpStatusCode.Created)
                     .SetMessage("Create group is success")
                     .SetData(id);
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex is BadRequestException)
+                if (ex is BadRequestException || ex is UnauthorizedException)
                 {
                     response = Response<Guid>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.BadRequest)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int) response.StatusCode, response);
+                    return StatusCode((int)response.StatusCode, response);
                 }
 
                 response = Response<Guid>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
         }
 
@@ -145,30 +154,30 @@ namespace EBird.Api.Controllers
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.OK)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Update group is success")
                     .SetData("");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex is BadRequestException)
+                if (ex is BadRequestException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.BadRequest)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int) response.StatusCode, response);
+                    return StatusCode((int)response.StatusCode, response);
                 }
 
                 response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
         }
 
@@ -179,34 +188,34 @@ namespace EBird.Api.Controllers
             Response<string> response = null;
             try
             {
-                 await _groupService.DeleteGroup(id);
+                await _groupService.DeleteGroup(id);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
-                    .SetStatusCode((int) HttpStatusCode.OK)
+                    .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Delete group is success")
                     .SetData("");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex is BadRequestException)
+                if (ex is BadRequestException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.BadRequest)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
-                    return StatusCode((int) response.StatusCode, response);
+                    return StatusCode((int)response.StatusCode, response);
                 }
 
                 response = Response<string>.Builder()
                             .SetSuccess(false)
-                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
 
-                return StatusCode((int) response.StatusCode, response);
+                return StatusCode((int)response.StatusCode, response);
             }
         }
     }

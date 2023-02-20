@@ -8,8 +8,6 @@ namespace EBird.Application.Model.Resource
 {
     public class ResourceCreateDTO : ResourceRequestDTO
     {
-         
-        [Required]
-        public Guid CreateById { get; set; }
+        public Guid? CreateById { get; set; }
     }
 }

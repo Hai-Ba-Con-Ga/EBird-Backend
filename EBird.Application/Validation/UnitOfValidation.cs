@@ -11,6 +11,7 @@ namespace EBird.Application.Validation
     {
         private IGroupValidation _group;
         private IRequestValidation _request;
+        private IBaseValidation _base;
         private IRoomValidation _room;
         private IBirdValidation _bird;
         private IBirdTypeValidation _birdType;
@@ -79,6 +80,18 @@ namespace EBird.Application.Validation
                     _birdType = new BirdTypeValidation(_repository);
                 }
                 return _birdType;
+            }
+        }
+
+        public IBaseValidation Base
+        {
+            get
+            {
+                if (_base == null)
+                {
+                    _base = new BaseValidation(_repository);
+                }
+                return _base;
             }
         }
     }

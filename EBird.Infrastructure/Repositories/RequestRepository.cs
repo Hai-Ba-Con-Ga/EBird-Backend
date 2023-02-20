@@ -19,50 +19,64 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
-        public async Task<Guid> CreateRequest(RequestEntity request)
-        {
-            request.CreateDatetime = DateTime.Now;
+        // public async Task<Guid> CreateRequest(RequestEntity request)
+        // {
+        //     request.CreateDatetime = DateTime.Now;
 
-            var result = await this.CreateAsync(request);
+        //     var result = await this.CreateAsync(request);
 
-            if (result == null)
-            {
-                throw new BadRequestException("Request not created");
-            }
-            return request.Id;
-        }
+        //     if (result == null)
+        //     {
+        //         throw new BadRequestException("Request not created");
+        //     }
+        //     return request.Id;
+        // }
 
-        public async Task DeleteRequest(Guid id)
-        {
-            var result = await this.DeleteAsync(id);
+        // public async Task DeleteRequest(Guid id)
+        // {
+        //     var result = await this.DeleteAsync(id);
 
-            if (result == null)
-            {
-                throw new BadRequestException("Request not found");
-            }
-        }
+        //     if (result == null)
+        //     {
+        //         throw new BadRequestException("Request not found");
+        //     }
+        // }
 
         public async Task<RequestEntity> GetRequest(Guid id)
         {
             var entity = await dbSet
                 .Include(e => e.Group)
-                .Include(e => e.Bird)
-                .Include(e => e.CreatedBy)
+                .Include(e => e.HostBird)
+                .Include(e => e.Host)
                 .Include(e => e.Place)
+                .Include(e => e.Room)
                 .Where(e => e.Id == id && e.IsDeleted == false)
                 .FirstOrDefaultAsync();
             return entity;
         }
-        
+
         public async Task<ICollection<RequestEntity>> GetRequests()
         {
-           return await this.GetAllActiveAsync();
+            return await dbSet.AsNoTracking()
+                                .OrderByDescending(r => r.CreateDatetime)
+                                .Include(e => e.Group)
+                                .Include(e => e.HostBird)
+                                .Include(e => e.Host)
+                                .Include(e => e.Place)
+                                .Include(e => e.Room)
+                                .Where(e => e.IsDeleted == false)
+                                .ToListAsync();
         }
 
         public async Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters)
         {
-            var requests = dbSet.AsNoTracking();
-            requests = requests.OrderByDescending(r => r.CreateDatetime);
+            var requests = dbSet.AsNoTracking().OrderByDescending(r => r.CreateDatetime)
+                                .Include(e => e.Group)
+                                .Include(e => e.HostBird)
+                                .Include(e => e.Host)
+                                .Include(e => e.Place)
+                                .Include(e => e.Room)
+                                .Where(e => e.IsDeleted == false);
 
             PagedList<RequestEntity> pagedRequests = new PagedList<RequestEntity>();
             await pagedRequests.LoadData(requests, parameters.PageNumber, parameters.PageSize);
@@ -70,14 +84,32 @@ namespace EBird.Infrastructure.Repositories
             return pagedRequests;
         }
 
-        public async Task UpdateRequest(RequestEntity entity)
+        public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
         {
-            var result = await this.UpdateAsync(entity);
+            var request = await dbSet
+                             .Where(r => r.Id == requestId && r.IsDeleted == false)
+                             .FirstOrDefaultAsync();
 
-            if (result == 0)
-            {
-                throw new BadRequestException("Request isnt updated");
-            }
+            request.ChallengerId = userId;
+            request.ChallengerBirdId = joinRequestDto.ChallengerBirdId;
+            request.Status = Domain.Enums.RequestStatus.Matched;
+            request.ExpDatetime = DateTime.Now.AddDays(1);
+
+            Console.WriteLine($"number of reuqest: {request.Number}");
+
+
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
         }
+
+        // public async Task UpdateRequest(RequestEntity entity)
+        // {
+        //     var result = await this.UpdateAsync(entity);
+
+        //     if (result == 0)
+        //     {
+        //         throw new BadRequestException("Request isnt updated");
+        //     }
+        // }
     }
 }

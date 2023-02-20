@@ -30,6 +30,12 @@ namespace EBird.Infrastructure.Repositories
         private IPlaceRepository _placeRepository;
         
         private IRequestRepository _requestRepository;
+        private IMatchBirdRepository _matchBirdRepository;
+        private IMatchRepository _matchRepository;
+        private INotificationRepository _NotificationRepository;
+        private INotificationTypeRepository _NotificationTypeRepository;
+
+        private IPostRepository _postRepository;
 
         public WapperRepository(ApplicationDbContext context)
         {
@@ -129,6 +135,64 @@ namespace EBird.Infrastructure.Repositories
                     _requestRepository = new RequestRepository(_context);
                 }
                 return _requestRepository;
+            }
+        }
+
+        public IMatchBirdRepository MatchBird
+        {
+            get
+            {
+                if(_matchBirdRepository == null)
+                {
+                    _matchBirdRepository = new MatchBirdRepository(_context);
+                }
+                return _matchBirdRepository;
+            }
+        }
+
+        public IMatchRepository Match
+        {
+            get
+            {
+                if(_matchRepository == null)
+                {
+                    _matchRepository = new MatchRepository(_context);
+                }
+                return _matchRepository;
+            }
+        }
+        public INotificationRepository Notification
+        {
+            get
+            {
+                if (_NotificationRepository == null)
+                {
+                    _NotificationRepository = new NotificationRepository(_context);
+                }
+                return _NotificationRepository;
+            }
+        }
+        public INotificationTypeRepository NotificationType
+        {
+            get
+            {
+                if (_NotificationTypeRepository == null)
+                {
+                    _NotificationTypeRepository = new NotificationTypeRepository(_context);
+                }
+                return _NotificationTypeRepository;
+            }
+        }
+
+        public IPostRepository Post
+        {
+            get
+            {
+                if (_postRepository == null)
+                {
+                    _postRepository = new PostRepository(_context);
+                }
+                return _postRepository;
             }
         }
     }

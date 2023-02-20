@@ -8,9 +8,11 @@ using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Request;
+using EBird.Application.Model.Resource;
 using EBird.Application.Services.IServices;
 using EBird.Application.Validation;
 using EBird.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EBird.Application.Services
 {
@@ -30,34 +32,36 @@ namespace EBird.Application.Services
 
         public async Task<Guid> CreateRequest(RequestCreateDTO requestDto)
         {
-            if (requestDto == null)
-            {
-                throw new BadRequestException("Request cannot be null");
-            }
-
             await _unitOfValidation.Request.ValidateCreateRequest(requestDto);
 
-            var requestEntity = _mapper.Map<RequestEntity>(requestDto);
+            var entity = _mapper.Map<RequestEntity>(requestDto);
 
-            return await _repository.Request.CreateRequest(requestEntity);
+            var rowEffect = await _repository.Request.CreateAsync(entity);
+
+            if (rowEffect == 0)
+                throw new BadRequestException("Request cannot be created");
+
+            return entity.Id;
         }
 
         public async Task DeleteRequest(Guid id)
         {
-            await _repository.Request.DeleteRequest(id);
+            await _unitOfValidation.Request.ValidateRequestId(id);
+            await _repository.Request.DeleteSoftAsync(id);
         }
 
         public async Task<RequestResponse> GetRequest(Guid id)
         {
             var result = await _repository.Request.GetRequest(id);
-            return _mapper.Map<RequestResponse>(result);
+            var requestDto = _mapper.Map<RequestResponse>(result);
+            return requestDto;
         }
 
         public async Task<PagedList<RequestResponse>> GetRequests(RequestParameters parameters)
         {
             _unitOfValidation.Request.ValidateParameter(parameters);
 
-            var resultEntityList  = await _repository.Request.GetRequests(parameters);
+            var resultEntityList = await _repository.Request.GetRequests(parameters);
 
             var requestDTOList = _mapper.Map<PagedList<RequestResponse>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
@@ -71,13 +75,30 @@ namespace EBird.Application.Services
             return _mapper.Map<ICollection<RequestResponse>>(result);
         }
 
+        public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
+        {
+            await _unitOfValidation.Request.ValidateJoinRequest(requestId, userId, joinRequestDto);
+
+            await _repository.Request.JoinRequest(requestId, userId, joinRequestDto);
+
+        }
+
         public async Task UpdateRequest(Guid id, RequestUpdateDTO request)
         {
             await _unitOfValidation.Request.ValidateRequestId(id);
 
             var requestEntity = await _repository.Request.GetRequest(id);
-            
-            await _repository.Request.UpdateRequest(requestEntity);
+
+            _mapper.Map(request, requestEntity);
+
+            try
+            {
+                await _repository.Request.UpdateAsync(requestEntity);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new BadRequestException("Request cannot be updated");
+            }
         }
     }
 }

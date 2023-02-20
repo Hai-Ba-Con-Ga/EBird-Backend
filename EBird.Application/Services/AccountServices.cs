@@ -161,7 +161,7 @@ namespace EBird.Application.Services
             {
                 throw new NotFoundException("The account is not exist");
             }
-            account.Role = Domain.Enums.Role.Admin;
+            account.Role = Domain.Enums.RoleAccount.Admin;
             await _accountRepository.UpdateAsync(account);
            
         }

@@ -16,25 +16,25 @@
 
         public static Response<T> Builder() => new Response<T>();
 
-        public Response<T> SetData(T data)
+        public dynamic SetData(T data)
         {
             Data = data;
             return this;
         }
 
-        public Response<T> SetSuccess(bool success)
+        public dynamic SetSuccess(bool success)
         {
             Success = success;
             return this;
         }
 
-        public Response<T> SetMessage(string message)
+        public dynamic SetMessage(string message)
         {
             Message = message;
             return this;
         }
 
-        public Response<T> SetStatusCode(int statusCode)
+        public dynamic SetStatusCode(int statusCode)
         {
             StatusCode = statusCode;
             return this;

@@ -39,5 +39,6 @@ namespace EBird.Domain.Entities
         public AccountEntity CreatedBy;
 
         public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<MatchEntity> Matches { get; set; }
     }
 }
