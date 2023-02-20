@@ -84,6 +84,24 @@ namespace EBird.Infrastructure.Repositories
             return pagedRequests;
         }
 
+        public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
+        {
+            var request = await dbSet
+                             .Where(r => r.Id == requestId && r.IsDeleted == false)
+                             .FirstOrDefaultAsync();
+
+            request.ChallengerId = userId;
+            request.ChallengerBirdId = joinRequestDto.ChallengerBirdId;
+            request.Status = Domain.Enums.RequestStatus.Matched;
+            request.ExpDatetime = DateTime.Now.AddDays(1);
+
+            Console.WriteLine($"number of reuqest: {request.Number}");
+
+
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
+        }
+
         // public async Task UpdateRequest(RequestEntity entity)
         // {
         //     var result = await this.UpdateAsync(entity);

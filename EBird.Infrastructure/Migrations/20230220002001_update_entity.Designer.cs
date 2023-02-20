@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230219100724_Update-MatchEntity")]
-    partial class UpdateMatchEntity
+    [Migration("20230220002001_update_entity")]
+    partial class update_entity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -139,6 +139,13 @@ namespace EBird.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier")
@@ -372,6 +379,13 @@ namespace EBird.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("MatchStatus");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 
                     b.Property<Guid>("PlaceId")
                         .HasColumnType("uniqueidentifier")
@@ -744,7 +758,7 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<int>("Number")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("No");
+                        .HasColumnName("Number");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 

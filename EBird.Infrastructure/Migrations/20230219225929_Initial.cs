@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class Intial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -490,8 +490,7 @@ namespace EBird.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    No = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    No = table.Column<int>(type: "int", nullable: false),
                     RequestDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreateDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
                     ExpDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -546,7 +545,7 @@ namespace EBird.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MatchBirds",
+                name: "MatchDetail",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -556,18 +555,19 @@ namespace EBird.Infrastructure.Migrations
                     AfterElo = table.Column<int>(type: "int", nullable: true),
                     BeforeElo = table.Column<int>(type: "int", nullable: false),
                     UpdateDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MatchBirds", x => x.Id);
+                    table.PrimaryKey("PK_MatchDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MatchBirds_Bird_BirdId",
+                        name: "FK_MatchDetail_Bird_BirdId",
                         column: x => x.BirdId,
                         principalTable: "Bird",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_MatchBirds_Matches_MatchId",
+                        name: "FK_MatchDetail_Matches_MatchId",
                         column: x => x.MatchId,
                         principalTable: "Matches",
                         principalColumn: "Id");
@@ -586,9 +586,9 @@ namespace EBird.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_MatchResources", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MatchResources_MatchBirds_MatchBirdId",
+                        name: "FK_MatchResources_MatchDetail_MatchBirdId",
                         column: x => x.MatchBirdId,
-                        principalTable: "MatchBirds",
+                        principalTable: "MatchDetail",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -641,13 +641,13 @@ namespace EBird.Infrastructure.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MatchBirds_BirdId",
-                table: "MatchBirds",
+                name: "IX_MatchDetail_BirdId",
+                table: "MatchDetail",
                 column: "BirdId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MatchBirds_MatchId",
-                table: "MatchBirds",
+                name: "IX_MatchDetail_MatchId",
+                table: "MatchDetail",
                 column: "MatchId");
 
             migrationBuilder.CreateIndex(
@@ -838,7 +838,7 @@ namespace EBird.Infrastructure.Migrations
                 name: "VerifcationStore");
 
             migrationBuilder.DropTable(
-                name: "MatchBirds");
+                name: "MatchDetail");
 
             migrationBuilder.DropTable(
                 name: "NotificationType");

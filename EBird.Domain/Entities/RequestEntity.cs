@@ -14,7 +14,7 @@ namespace EBird.Domain.Entities
     public class RequestEntity : BaseEntity
     {
 
-        [Column("No", TypeName = "int")]
+        [Column("Number", TypeName = "int")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Number { get; set; }
 
@@ -33,7 +33,7 @@ namespace EBird.Domain.Entities
         [Column("Status")]
         [Required]
         public RequestStatus Status { get; set; } = RequestStatus.Waiting;
-        
+
         //forgein key
 
         [ForeignKey("HostId")]
@@ -55,10 +55,10 @@ namespace EBird.Domain.Entities
         [ForeignKey("GroupId")]
         public Guid? GroupId { get; set; }
         public GroupEntity? Group { get; set; }
-        
+
         [ForeignKey("PlaceId")]
         public Guid PlaceId { get; set; }
-        public PlaceEntity Place { get; set; } 
+        public PlaceEntity Place { get; set; }
 
         [ForeignKey("RoomId")]
         [Required]

@@ -12,6 +12,9 @@ namespace EBird.Domain.Entities
     [Table("Bird")]
     public class BirdEntity : BaseEntity
     {
+        [Column("Number", TypeName = "int")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Number { get; set; }
 
         [Column("BirdName", TypeName = "nvarchar")]
         [MaxLength(50)]

@@ -28,6 +28,33 @@ namespace EBird.Application.Validation
             ValidateRequestDatetime(request.RequestDatetime);
         }
 
+        public async Task ValidateJoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
+        {
+            var request = await _repository.Request.GetByIdActiveAsync(requestId);
+            if (request == null)
+            {
+                throw new BadRequestException("Request does not exist");
+            }
+
+            if (request.Status != Domain.Enums.RequestStatus.Waiting)
+            {
+                throw new BadRequestException("Request is not waiting for join");
+            }
+
+            await ValidateAccountId(userId);
+            if (request.HostId == userId)
+            {
+                throw new BadRequestException("User cannot join his own request");
+            }
+
+            await ValidateBirdId(joinRequestDto.ChallengerBirdId);
+            if (request.HostBirdId == joinRequestDto.ChallengerBirdId)
+            {
+                throw new BadRequestException("Bird have existed in this request");
+            }
+          
+        }
+
         public void ValidateRequestDatetime(DateTime requestDate)
         {
             if (requestDate < DateTime.Now)

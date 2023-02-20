@@ -140,7 +140,7 @@ namespace EBird.Api.Controllers
                 var userId = this.GetUserId();
 
                 if (userId == null)
-                    throw new UnauthorizedException("Not allow to access this resource");
+                    throw new UnauthorizedException("Not allow to acces this resource");
 
                 entity.HostId = Guid.Parse(userId);
 
@@ -233,6 +233,51 @@ namespace EBird.Api.Controllers
             catch (Exception ex)
             {
                 if (ex is BadRequestException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        [HttpPut("join/{requestId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestDto)
+        {
+            Response<string> response = null;
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null)
+                    throw new UnauthorizedException("Not allow to access this resource");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                await _requestService.JoinRequest(requestId, userId, joinRequestDto);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Join request successful")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
                 {
                     response = Response<string>.Builder()
                             .SetSuccess(false)

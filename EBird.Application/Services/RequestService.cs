@@ -34,7 +34,7 @@ namespace EBird.Application.Services
         {
             await _unitOfValidation.Request.ValidateCreateRequest(requestDto);
 
-            var entity = _mapper.Map<RequestEntity>(requestDto);          
+            var entity = _mapper.Map<RequestEntity>(requestDto);
 
             var rowEffect = await _repository.Request.CreateAsync(entity);
 
@@ -73,6 +73,14 @@ namespace EBird.Application.Services
         {
             var result = await _repository.Request.GetRequests();
             return _mapper.Map<ICollection<RequestResponse>>(result);
+        }
+
+        public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
+        {
+            await _unitOfValidation.Request.ValidateJoinRequest(requestId, userId, joinRequestDto);
+
+            await _repository.Request.JoinRequest(requestId, userId, joinRequestDto);
+
         }
 
         public async Task UpdateRequest(Guid id, RequestUpdateDTO request)

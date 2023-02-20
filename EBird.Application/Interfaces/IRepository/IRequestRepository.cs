@@ -14,5 +14,6 @@ namespace EBird.Application.Interfaces.IRepository
         Task<RequestEntity> GetRequest(Guid id);
         Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters);
         Task<ICollection<RequestEntity>> GetRequests();
+        Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
     }
 }
