@@ -24,11 +24,13 @@ builder.Services.AddCors(options =>
        buider =>
        {
          buider
-            .AllowAnyOrigin()
+            // .AllowAnyOrigin()
            .AllowAnyHeader()
            .AllowAnyMethod()
-           .WithOrigins(new string[] { "http://localhost:3000", "https://www.globird.tech" });
-         //  .AllowCredentials();
+           .WithOrigins(new string[] { "http://localhost:3000", "https://www.globird.tech","http://localhost:5173"
+            ,"http://localhost:3001","http://localhost:3002","http://localhost:3003"
+            })
+          .AllowCredentials();
        });
 });
 
@@ -113,7 +115,8 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("/hub/chat");
+app.MapHub<TestHub>("/hub/test");
 // app.MapHub<RequestHub>("/requestHub");
 
 
