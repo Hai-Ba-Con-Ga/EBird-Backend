@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230220002001_update_entity")]
-    partial class update_entity
+    [Migration("20230220130000_RequestMatch")]
+    partial class RequestMatch
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -322,7 +322,8 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnName("MatchId");
 
                     b.Property<string>("Result")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("Result");
 
                     b.Property<int>("Role")
@@ -377,7 +378,8 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Property<string>("MatchStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("MatchStatus");
 
                     b.Property<int>("Number")
@@ -774,7 +776,8 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("Status");
 
                     b.HasKey("Id");
