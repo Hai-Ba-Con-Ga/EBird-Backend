@@ -112,6 +112,13 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.PlaceId)
                 .OnDelete(DeleteBehavior.NoAction);
+            //Config for decimal type for longitude and latitude
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Longitude)
+                .HasColumnType("decimal(18,6)");
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Latitude)
+                .HasColumnType("decimal(18,6)");
             //Config for one to one relationship between RequestEntity and RoomEntity
             modelBuilder.Entity<RequestEntity>()
                 .HasOne(m => m.Room)
