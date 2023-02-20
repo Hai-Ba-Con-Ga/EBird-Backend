@@ -1,0 +1,38 @@
+name: DEPLOY TO DEDICATED SERVER
+on:
+  push:
+    branches:
+    - master
+    - dev
+    
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: rsync deployments
+      uses: burnett01/rsync-deployments@5.2.1
+      with:
+        switches: -avzr --delete --exclude="" --include="" --filter=""
+        path: .
+        remote_path: ~/ebird/server
+        remote_host: wyvernpserver.tech
+        remote_port: 22
+        remote_user: admin
+        remote_key: ${{ secrets.DEPLOY_KEY }}
+    - name : Install package
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: wyvernpserver.tech
+        username: admin
+        password: haibaconga
+        port: 22
+        script: >
+          cd ./ebird &&
+          pwd && 
+          ./killport.sh &&
+          pwd &&
+          tmux kill-session -t mysession 2> /dev/null &&
+          tmux new-session -d -s mysession ./DEPLOY_SERVER.sh
+          

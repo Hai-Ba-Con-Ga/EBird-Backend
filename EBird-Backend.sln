@@ -9,15 +9,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{75A62EAB-7B8C-4D1F-90E2-203D88D2C269}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBird.Domain", "EBird.Domain\EBird.Domain.csproj", "{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Domain", "EBird.Domain\EBird.Domain.csproj", "{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBird.Application", "EBird.Application\EBird.Application.csproj", "{CAF0BEDA-9679-4384-ACB5-96522F284EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Application", "EBird.Application\EBird.Application.csproj", "{CAF0BEDA-9679-4384-ACB5-96522F284EF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBird.Infrastructure", "EBird.Infrastructure\EBird.Infrastructure.csproj", "{C708FA8E-504D-4F20-A588-64DA87882D78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Infrastructure", "EBird.Infrastructure\EBird.Infrastructure.csproj", "{C708FA8E-504D-4F20-A588-64DA87882D78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBird.Api", "EBird.Api\EBird.Api.csproj", "{40FAEDBE-AD4B-4185-B2D7-B1017F655E44}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbContext", "DbContext", "{447416AE-7D42-4B81-96B3-D2896BB46AAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBird.Api", "EBird.Api\EBird.Api.csproj", "{40FAEDBE-AD4B-4185-B2D7-B1017F655E44}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301} = {F31D34F9-B7D7-43B8-A1BB-C53F1C8A6301}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,7 +57,6 @@ Global
 		{CAF0BEDA-9679-4384-ACB5-96522F284EF1} = {75A62EAB-7B8C-4D1F-90E2-203D88D2C269}
 		{C708FA8E-504D-4F20-A588-64DA87882D78} = {4E5EB255-50F0-492A-99D8-F5B508D4182D}
 		{40FAEDBE-AD4B-4185-B2D7-B1017F655E44} = {2991CB91-6452-439A-98EA-AA49D9F41D67}
-		{447416AE-7D42-4B81-96B3-D2896BB46AAF} = {4E5EB255-50F0-492A-99D8-F5B508D4182D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AF7CD3D-B1CE-4178-9C2E-52D01C52049C}
