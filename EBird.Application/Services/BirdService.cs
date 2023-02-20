@@ -23,9 +23,9 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
         private IUnitOfValidation _unitOfValidation;
-        private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
+        private IGenericRepository<MatchDetailEntity> _matchBirdRepository;
 
-        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchBirdEntity> matchBirdRepository)
+        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchDetailEntity> matchBirdRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -164,8 +164,8 @@ namespace EBird.Application.Services
                 return birdRatio;
             }
 
-            birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Win).Count();
-            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Lose).Count();
+            birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchDetailResult.Win).Count();
+            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchDetailResult.Lose).Count();
             if((birdRatio.Win + birdRatio.Lose) == 0)
             {
                 birdRatio.Ratio = 0;

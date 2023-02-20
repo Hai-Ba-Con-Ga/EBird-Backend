@@ -9,12 +9,12 @@ using EBird.Domain.Enums;
 
 namespace EBird.Application.Model.Match
 {
-    public class MatchBirdResponseDTO : IMapFrom<MatchBirdEntity>
+    public class MatchBirdResponseDTO : IMapFrom<MatchDetailEntity>
     {
         public BirdResponseDTO Bird { get; set; }
         public int AfterElo { get; set; }
         public int BeforeElo { get; set; }
-        public MatchBirdResult Result { get; set; }
+        public MatchDetailResult Result { get; set; }
         public DateTime UpdateDatetime { get; set; }
     }
 }

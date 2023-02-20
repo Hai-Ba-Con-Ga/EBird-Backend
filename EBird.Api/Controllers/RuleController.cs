@@ -81,7 +81,7 @@ public class RuleController : ControllerBase
         }
         return response;
     }
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(RoleAccount.Admin))]
     [HttpPost]
     public async Task<Response<string>> CreateRule(CreateRuleRequest request)
     {
@@ -113,7 +113,7 @@ public class RuleController : ControllerBase
         return response;
 
     }
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(RoleAccount.Admin))]
     [HttpPut("{ruleID}")]
     public async Task<ActionResult<Response<string>>> UpdateRule(Guid ruleID, UpdateRuleRequest updateRule)
     {

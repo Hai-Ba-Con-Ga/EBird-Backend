@@ -12,6 +12,9 @@ namespace EBird.Domain.Entities
     [Table("Bird")]
     public class BirdEntity : BaseEntity
     {
+        [Column("Number", TypeName = "int")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Number { get; set; }
 
         [Column("BirdName", TypeName = "nvarchar")]
         [MaxLength(50)]
@@ -58,8 +61,9 @@ namespace EBird.Domain.Entities
 
         public ICollection<BirdResourceEntity> BirdResources { get; set; }
         
-        // public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<RequestEntity> HostRequests { get; set; }
+        public ICollection<RequestEntity> ChallengerRequests { get; set; }
 
-        public ICollection<MatchBirdEntity> MatchBirds { get; set; }
+        public ICollection<MatchDetailEntity> MatchBirds { get; set; }
     }
 }

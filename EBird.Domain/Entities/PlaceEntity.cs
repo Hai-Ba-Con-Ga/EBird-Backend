@@ -32,9 +32,9 @@ namespace EBird.Domain.Entities
 
         [Column("CreatedDate", TypeName ="datetime")]
         [Required]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        // public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<RequestEntity> Requests { get; set; }
 
         public ICollection<MatchEntity> Matches { get; set; }
     }

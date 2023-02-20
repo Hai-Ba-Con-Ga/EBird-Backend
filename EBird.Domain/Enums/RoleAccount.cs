@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Domain.Enums
 {
-    public enum Role
+    public enum RoleAccount
     {
         Admin,
         User

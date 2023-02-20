@@ -9,7 +9,8 @@ using EBird.Domain.Enums;
 
 namespace EBird.Domain.Entities
 {
-    public class MatchBirdEntity : BaseEntity
+    [Table("MatchDetail")]
+    public class MatchDetailEntity : BaseEntity
     {
         [Column("BirdId")]
         [Required]
@@ -22,8 +23,8 @@ namespace EBird.Domain.Entities
         public MatchEntity Match { get; set; }
 
         [Column("Result")]
-        [EnumDataType(typeof(MatchBirdResult))]
-        public MatchBirdResult? Result { get; set; }
+        [EnumDataType(typeof(MatchDetailResult))]
+        public MatchDetailResult? Result { get; set; }
 
         [Column("AfterElo")]
         public int? AfterElo { get; set; }
@@ -35,6 +36,10 @@ namespace EBird.Domain.Entities
         [Column("UpdateDatetime", TypeName = "datetime")]
         [Required]
         public DateTime UpdateDatetime { get; set; }
+
+        [Column("Role")]
+        [Required]
+        public RolePlayer Role { get; set; }
 
         public ICollection<MatchResourceEntity> MatchResources { get; set; } 
     }

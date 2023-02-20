@@ -31,10 +31,10 @@ namespace EBird.Application.Services
         {
             MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
 
-            MatchBirdEntity matchBird = new MatchBirdEntity()
+            MatchDetailEntity matchBird = new MatchDetailEntity()
             {
                 BirdId = matchCreateDTO.BirdHostId,
-                Result = Domain.Enums.MatchBirdResult.Ready
+                Result = Domain.Enums.MatchDetailResult.Ready
             };
 
             var matchId = await _repository.Match.CreateMatch(match, matchBird);
@@ -130,7 +130,7 @@ namespace EBird.Application.Services
 
             foreach (var matchBird in matchBirds)
             {
-                if (matchBird.Result != MatchBirdResult.Ready)
+                if (matchBird.Result != MatchDetailResult.Ready)
                     throw new BadRequestException("All player must be ready");
             }
 
@@ -155,9 +155,6 @@ namespace EBird.Application.Services
             MatchStatus matchStatusEnum;
             switch (matchStatus.ToLower())
             {
-                case "waiting":
-                    matchStatusEnum = MatchStatus.Waiting;
-                    break;
                 case "pending":
                     matchStatusEnum = MatchStatus.Pending;
                     break;

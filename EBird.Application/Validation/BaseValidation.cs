@@ -75,14 +75,14 @@ namespace EBird.Application.Validation
             }
         }
 
-        // public async Task ValidateRequestId(Guid id)
-        // {
-        //     var request = await _repository.Request.GetRequest(id);
-        //     if (request == null)
-        //     {
-        //         throw new BadRequestException("Request does not exist");
-        //     }
-        // }
+        public async Task ValidateRequestId(Guid id)
+        {
+            var request = await _repository.Request.GetRequest(id);
+            if (request == null)
+            {
+                throw new BadRequestException("Request does not exist");
+            }
+        }
 
         public void ValidateParameter(QueryStringParameters parameters)
         {
