@@ -6,6 +6,7 @@ using EBird.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EBird.Infrastructure.Context
 {
@@ -211,6 +212,20 @@ namespace EBird.Infrastructure.Context
                 .HasOne(s => s.Post)
                 .WithOne(s => s.Thumbnail)
                 .HasForeignKey<PostEntity>(s => s.ThumbnailId);
+            //Config for not update number column
+                //BirdnEntity
+            modelBuilder.Entity<BirdEntity>().Property(b => b.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //requestEntity
+            modelBuilder.Entity<RequestEntity>().Property(r => r.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //MatchEntity
+            modelBuilder.Entity<MatchEntity>().Property(m => m.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+
         }
 
         #region DbSet
