@@ -15,19 +15,14 @@ namespace EBird.Application.Model.Place
         [Required]
         public string Address { get; set; }
 
-
         [StringLength(100)]
         [Required]
         public string Name { get; set; }
 
-
-        [StringLength(100)]
         [Required]
-        public string Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
-
-        [StringLength(100)]
         [Required]
-        public string Latitude { get; set; }
+        public decimal Latitude { get; set; }
     }
 }

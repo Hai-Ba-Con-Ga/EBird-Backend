@@ -4,6 +4,7 @@ using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230220225328_update_place")]
+    partial class update_place
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +71,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Account", (string)null);
+                    b.ToTable("Account");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
@@ -93,7 +95,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("AccountResources", (string)null);
+                    b.ToTable("AccountResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -165,7 +167,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Bird", (string)null);
+                    b.ToTable("Bird");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdResourceEntity", b =>
@@ -189,7 +191,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("BirdResources", (string)null);
+                    b.ToTable("BirdResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdTypeEntity", b =>
@@ -222,7 +224,7 @@ namespace EBird.Infrastructure.Migrations
                     b.HasIndex("TypeCode")
                         .IsUnique();
 
-                    b.ToTable("BirdType", (string)null);
+                    b.ToTable("BirdType");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ChatRoomEntity", b =>
@@ -248,7 +250,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatRooms", (string)null);
+                    b.ToTable("ChatRooms");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
@@ -291,7 +293,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("Group", (string)null);
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchDetailEntity", b =>
@@ -338,7 +340,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("MatchId");
 
-                    b.ToTable("MatchDetail", (string)null);
+                    b.ToTable("MatchDetail");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchEntity", b =>
@@ -407,7 +409,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Matches", (string)null);
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchResourceEntity", b =>
@@ -431,7 +433,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("MatchResources", (string)null);
+                    b.ToTable("MatchResources");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.MessageEntity", b =>
@@ -464,7 +466,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.NotificationEntity", b =>
@@ -497,7 +499,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("NotificatoinTypeId");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.NotificationTypeEntity", b =>
@@ -526,7 +528,7 @@ namespace EBird.Infrastructure.Migrations
                     b.HasIndex("TypeCode")
                         .IsUnique();
 
-                    b.ToTable("NotificationType", (string)null);
+                    b.ToTable("NotificationType");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ParticipantEntity", b =>
@@ -550,7 +552,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("ChatRoomId");
 
-                    b.ToTable("Participants", (string)null);
+                    b.ToTable("Participants");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>
@@ -588,7 +590,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Places", (string)null);
+                    b.ToTable("Places");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PostEntity", b =>
@@ -626,7 +628,7 @@ namespace EBird.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[ThumbnailId] IS NOT NULL");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RefreshTokenEntity", b =>
@@ -667,7 +669,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("RefreshToken", (string)null);
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ReportEntity", b =>
@@ -716,7 +718,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("HandleById");
 
-                    b.ToTable("Report", (string)null);
+                    b.ToTable("Report");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RequestEntity", b =>
@@ -790,7 +792,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Requests", (string)null);
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
@@ -820,7 +822,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("CreateById");
 
-                    b.ToTable("Resource", (string)null);
+                    b.ToTable("Resource");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
@@ -862,7 +864,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("CreateById");
 
-                    b.ToTable("Room", (string)null);
+                    b.ToTable("Room");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.RuleEntity", b =>
@@ -891,7 +893,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("CreateById");
 
-                    b.ToTable("Rule", (string)null);
+                    b.ToTable("Rule");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.VerifcationStoreEntity", b =>
@@ -913,7 +915,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VerifcationStore", (string)null);
+                    b.ToTable("VerifcationStore");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
