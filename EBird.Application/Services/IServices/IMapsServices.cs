@@ -1,4 +1,4 @@
-namespace EBird.Application.Services
+namespace EBird.Application.Services.IServices
 {
     public interface IMapsServices
     {

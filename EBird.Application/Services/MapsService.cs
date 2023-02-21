@@ -1,44 +1,68 @@
-﻿using EBird.Application.Services;
-using GoogleApi;
-using GoogleApi.Entities.Maps.Geocoding;
-using GoogleApi.Entities.Maps.Geocoding.Address.Request;
+﻿
+using EBird.Application.Services.IServices;
+using Newtonsoft.Json;
 
 public class MapsService : IMapsServices
 {
-    public MapsService()
+    private readonly HttpClient _httpClient;
+    private const string ApiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
+    private const string ApiKey = "AIzaSyAY3ufqDLAZJz8dS54hHPWxUCl9pMnsKQE";
+
+    public MapsService(HttpClient httpClient)
     {
+        _httpClient = httpClient;
     }
+
     public async Task GetAddress()
     {
-        string apiKey = "";
-        string address = "1600 Amphitheatre Parkway, Mountain View, CA";
-        // Make the geocoding request
-        var response = await GoogleApi.GoogleMaps.Geocode.AddressGeocode.QueryAsync(new AddressGeocodeRequest
-        {
-            Key = apiKey,
-            Address = address
-        });
-        // Check if the geocoding request was successful
-        if (response.Status == GoogleApi.Entities.Common.Enums.Status.Ok)
+        string address = "VQJJ+XGJ, khu B ký túc xá đại học quốc gia, Đông Hoà, Dĩ An, Bình Dương, Việt Nam";
+
+        // Build the Geocoding API request URI with the address and API key
+        var uri = new Uri($"{ApiUrl}?address={Uri.EscapeDataString(address)}&key={ApiKey}");
+
+        // Send the Geocoding API request
+        var response = await _httpClient.GetAsync(uri);
+
+        // Parse the response JSON
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GeocodingApiResponse>(json);
+
+        // Check if the Geocoding API request was successful
+        if (result.Status == "OK")
         {
             // Get the latitude and longitude of the geocoded address
-            var location = response.Results.FirstOrDefault()?.Geometry?.Location;
+            var location = result.Results[0].Geometry.Location;
 
-            if (location != null)
-            {
-                double latitude = location.Latitude;
-                double longitude = location.Longitude;
+            double latitude = location.Lat;
+            double longitude = location.Lng;
 
-                Console.WriteLine($"Latitude: {latitude}, Longitude: {longitude}");
-            }
-            else
-            {
-                Console.WriteLine("Could not retrieve location information for the address.");
-            }
+            Console.WriteLine($"Latitude: {latitude}, Longitude: {longitude}");
         }
         else
         {
-            Console.WriteLine($"Geocoding request failed with status: {response.Status}");
+            Console.WriteLine($"Geocoding request failed with status: {result.Status}");
         }
+    }
+
+    private class GeocodingApiResponse
+    {
+        public string Status { get; set; }
+        public GeocodingApiResult[] Results { get; set; }
+    }
+
+    private class GeocodingApiResult
+    {
+        public GeocodingApiGeometry Geometry { get; set; }
+    }
+
+    private class GeocodingApiGeometry
+    {
+        public GeocodingApiLocation Location { get; set; }
+    }
+
+    private class GeocodingApiLocation
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
     }
 }
