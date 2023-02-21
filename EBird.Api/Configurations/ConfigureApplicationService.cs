@@ -40,6 +40,8 @@ namespace EBird.Api.Configurations
             services.AddScoped<IReportServices, ReportServices>();
 
             services.AddScoped<IPostService, PostService>();
+
+            services.AddScoped<IMapsServices, MapsService>();
         }
     }
 }
