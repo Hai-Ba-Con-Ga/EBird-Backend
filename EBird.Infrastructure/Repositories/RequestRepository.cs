@@ -70,7 +70,8 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters)
         {
-            var requests = dbSet.AsNoTracking().OrderByDescending(r => r.CreateDatetime)
+            var requests = dbSet.AsNoTracking()
+                                .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.Group)
                                 .Include(e => e.HostBird)
                                 .Include(e => e.Host)
@@ -94,9 +95,6 @@ namespace EBird.Infrastructure.Repositories
             request.ChallengerBirdId = joinRequestDto.ChallengerBirdId;
             request.Status = Domain.Enums.RequestStatus.Matched;
             request.ExpDatetime = DateTime.Now.AddDays(1);
-
-            Console.WriteLine($"number of reuqest: {request.Number}");
-
 
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();

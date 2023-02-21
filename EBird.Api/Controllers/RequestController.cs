@@ -90,7 +90,6 @@ namespace EBird.Api.Controllers
             }
         }
 
-
         // GET
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<RequestResponse>>> Get(Guid id)
@@ -254,6 +253,7 @@ namespace EBird.Api.Controllers
         [HttpPut("join/{requestId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestDto)
+        
         {
             Response<string> response = null;
             try
