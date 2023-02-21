@@ -13,6 +13,11 @@ namespace EBird.Application.AppConfig
             get;
             set;
         }
+        public string ApiKeyMap
+        {
+            get;
+            set;
+        }
 
     }
 }
