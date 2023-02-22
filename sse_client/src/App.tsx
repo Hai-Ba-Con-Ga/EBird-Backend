@@ -214,7 +214,7 @@ function App() {
           </EventForm>
         </SendEventWrapper>
       </Box>
-      <SendEventWrapper>
+      <SendEventWrapper >
         <h2>Message from server section</h2>
 
         <JsonBeautify

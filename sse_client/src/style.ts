@@ -14,6 +14,7 @@ export const SendEventWrapper = styled.div`
   display: flex;
   gap: 1rem;
   flex-direction: column;
+  max-width: 50%;
 `;
 export const EventForm = styled.form`
   display: flex;
