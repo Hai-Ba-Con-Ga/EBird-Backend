@@ -143,7 +143,7 @@ namespace EBird.Infrastructure.Context
                 .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between MatchEntity and MatchBirdEntity
             modelBuilder.Entity<MatchEntity>()
-                .HasMany(m => m.MatchBirds)
+                .HasMany(m => m.MatchDetails)
                 .WithOne(mt => mt.Match)
                 .HasForeignKey(mt => mt.MatchId)
                 .OnDelete(DeleteBehavior.NoAction);
