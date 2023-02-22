@@ -1,6 +1,6 @@
 namespace EBird.Domain.Enums
 {
-    public enum MatchBirdResult
+    public enum MatchDetailResult
     {
         NotReady,
         Ready,

@@ -21,11 +21,11 @@ namespace EBird.Application.Services
         private IUnitOfValidation _unitOfValidation;
         private IGenericRepository<ResourceEntity> _resourceRepository;
         private IGenericRepository<MatchResourceEntity> _matchResourceRepository;
-        private IGenericRepository<MatchBirdEntity> _matchBirdEntityRepository;
+        private IGenericRepository<MatchDetailEntity> _matchBirdEntityRepository;
         public MatchBirdService(IWapperRepository repository, IMapper mapper,
         IUnitOfValidation unitOfValidation, IGenericRepository<ResourceEntity> resourceRepository,
         IGenericRepository<MatchResourceEntity> matchResourceRepository,
-        IGenericRepository<MatchBirdEntity> matchBirdEntityRepository)
+        IGenericRepository<MatchDetailEntity> matchBirdEntityRepository)
         {
             _repository = repository;
             _mapper = mapper;

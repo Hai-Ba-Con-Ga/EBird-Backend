@@ -11,7 +11,7 @@ namespace EBird.Application.Interfaces.IRepository
     public interface IMatchRepository : IGenericRepository<MatchEntity>
     {
         public Task ConfirmMatch(Guid matchId);
-        public Task<Guid> CreateMatch(MatchEntity match, MatchBirdEntity matchBirdEntity);
+        public Task<Guid> CreateMatch(MatchEntity match, MatchDetailEntity matchBirdEntity);
         public Task<MatchEntity> GetMatch(Guid id);
         public Task<ICollection<MatchEntity>> GetMatches(MatchParameters param);
         public Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param);

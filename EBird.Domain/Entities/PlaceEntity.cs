@@ -20,21 +20,19 @@ namespace EBird.Domain.Entities
         [Required]
         public string Name { get; set; }
 
-        [Column("Longitude", TypeName ="nvarchar")]
-        [StringLength(100)]
+        [Column("Longitude", TypeName ="decimal")]
         [Required]
-        public string Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
-        [Column("Latitude", TypeName ="nvarchar")]
-        [StringLength(100)]
+        [Column("Latitude", TypeName ="decimal")]
         [Required]
-        public string Latitude { get; set; }
+        public decimal Latitude { get; set; }
 
         [Column("CreatedDate", TypeName ="datetime")]
         [Required]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        // public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<RequestEntity> Requests { get; set; }
 
         public ICollection<MatchEntity> Matches { get; set; }
     }

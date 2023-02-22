@@ -11,7 +11,7 @@ namespace EBird.Application.Model.Auth
         public DateTime CreateDateTime { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public Role Role { get; set; }
+        public RoleAccount Role { get; set; }
         public string Username { get; set; } = null!;
         public string Description { get; set; } = null!;
     }

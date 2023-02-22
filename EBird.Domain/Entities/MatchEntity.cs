@@ -11,6 +11,10 @@ namespace EBird.Domain.Entities
 {
     public class MatchEntity : BaseEntity
     {
+        [Column("Number", TypeName = "int")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Number { get; set; }
+
         [Column("MatchDateTime", TypeName = "datetime")]
         [Required]
         public DateTime MatchDatetime { get; set; }
@@ -25,6 +29,7 @@ namespace EBird.Domain.Entities
 
         [Column("MatchStatus")]
         [EnumDataType(typeof(MatchStatus))]
+        [MaxLength(50)]
         [Required]
         public MatchStatus MatchStatus { get; set; }
 
@@ -51,6 +56,6 @@ namespace EBird.Domain.Entities
         public Guid RoomId { get; set; }
         public RoomEntity Room { get; set; }
 
-        public ICollection<MatchBirdEntity> MatchBirds { get; set; }
+        public ICollection<MatchDetailEntity> MatchBirds { get; set; }
     }
 }

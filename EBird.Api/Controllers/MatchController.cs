@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
 using EBird.Application.Model.Match;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -123,17 +124,34 @@ namespace EBird.Api.Controllers
                 if (queryParameters?.MatchStatus == null)
                 {
                     matches = await _matchService.GetMatches();
-                }
-                else
-                {
-                    matches = await _matchService.GetMatches(queryParameters);
-                }
 
-                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    response = Response<ICollection<MatchResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all match is success")
                     .SetData(matches);
+                }
+                else
+                {
+                    matches = await _matchService.GetMatches(queryParameters);
+
+                    PagingData metaData = new PagingData()
+                    {
+                        CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
+                        PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
+                        TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
+                        TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
+                        HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
+                        HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
+                    };
+
+                    response = ResponseWithPaging<ICollection<MatchResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all match is successful")
+                    .SetData(matches)
+                    .SetPagingData(metaData);
+                }
 
                 return StatusCode((int)response.StatusCode, response);
             }

@@ -16,5 +16,14 @@
     "LastName": "Ga",
     "Description": "Ga chien nuoc mam   ",
     "Role": "User"
+  },
+  {
+    "Password": "12345",
+    "Username": "khoabd",
+    "Email": "khoa05@gmail.com",
+    "FirstName": "Khoa",
+    "LastName": "Bui",
+    "Description": "Alo alo",
+    "Role": "Admin"
   }
 ]

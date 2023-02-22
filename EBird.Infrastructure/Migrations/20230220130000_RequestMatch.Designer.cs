@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230217113119_MatchResource")]
-    partial class MatchResource
+    [Migration("20230220130000_RequestMatch")]
+    partial class RequestMatch
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -139,6 +139,13 @@ namespace EBird.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BirdName");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier")
@@ -289,7 +296,7 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("Group");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.MatchBirdEntity", b =>
+            modelBuilder.Entity("EBird.Domain.Entities.MatchDetailEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -315,8 +322,13 @@ namespace EBird.Infrastructure.Migrations
                         .HasColumnName("MatchId");
 
                     b.Property<string>("Result")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("Result");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int")
+                        .HasColumnName("Role");
 
                     b.Property<DateTime>("UpdateDatetime")
                         .HasColumnType("datetime")
@@ -328,7 +340,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasIndex("MatchId");
 
-                    b.ToTable("MatchBirds");
+                    b.ToTable("MatchDetail");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchEntity", b =>
@@ -366,8 +378,16 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Property<string>("MatchStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("MatchStatus");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 
                     b.Property<Guid>("PlaceId")
                         .HasColumnType("uniqueidentifier")
@@ -705,6 +725,80 @@ namespace EBird.Infrastructure.Migrations
                     b.ToTable("Report");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.RequestEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ChallengerBirdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ChallengerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDatetime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreateDatetime");
+
+                    b.Property<DateTime>("ExpDatetime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("ExpDatetime");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HostBirdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
+
+                    b.Property<Guid>("PlaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("RequestDatetime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("RequestDatetime");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengerBirdId");
+
+                    b.HasIndex("ChallengerId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("HostBirdId");
+
+                    b.HasIndex("HostId");
+
+                    b.HasIndex("PlaceId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Requests");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -896,7 +990,7 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.MatchBirdEntity", b =>
+            modelBuilder.Entity("EBird.Domain.Entities.MatchDetailEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.BirdEntity", "Bird")
                         .WithMany("MatchBirds")
@@ -958,7 +1052,7 @@ namespace EBird.Infrastructure.Migrations
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchResourceEntity", b =>
                 {
-                    b.HasOne("EBird.Domain.Entities.MatchBirdEntity", "MatchBird")
+                    b.HasOne("EBird.Domain.Entities.MatchDetailEntity", "MatchBird")
                         .WithMany("MatchResources")
                         .HasForeignKey("MatchBirdId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1079,6 +1173,62 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("HandleBy");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.RequestEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.BirdEntity", "ChallengerBird")
+                        .WithMany("ChallengerRequests")
+                        .HasForeignKey("ChallengerBirdId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Challenger")
+                        .WithMany("ChallengerRequests")
+                        .HasForeignKey("ChallengerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EBird.Domain.Entities.GroupEntity", "Group")
+                        .WithMany("Requests")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EBird.Domain.Entities.BirdEntity", "HostBird")
+                        .WithMany("HostRequests")
+                        .HasForeignKey("HostBirdId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Host")
+                        .WithMany("HostRequests")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.PlaceEntity", "Place")
+                        .WithMany("Requests")
+                        .HasForeignKey("PlaceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.RoomEntity", "Room")
+                        .WithMany("Requests")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Challenger");
+
+                    b.Navigation("ChallengerBird");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Host");
+
+                    b.Navigation("HostBird");
+
+                    b.Navigation("Place");
+
+                    b.Navigation("Room");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
                 {
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
@@ -1118,7 +1268,11 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Navigation("Birds");
 
+                    b.Navigation("ChallengerRequests");
+
                     b.Navigation("Groups");
+
+                    b.Navigation("HostRequests");
 
                     b.Navigation("MatchesWithChallenger");
 
@@ -1147,6 +1301,10 @@ namespace EBird.Infrastructure.Migrations
                 {
                     b.Navigation("BirdResources");
 
+                    b.Navigation("ChallengerRequests");
+
+                    b.Navigation("HostRequests");
+
                     b.Navigation("MatchBirds");
                 });
 
@@ -1165,9 +1323,11 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.GroupEntity", b =>
                 {
                     b.Navigation("Matches");
+
+                    b.Navigation("Requests");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.MatchBirdEntity", b =>
+            modelBuilder.Entity("EBird.Domain.Entities.MatchDetailEntity", b =>
                 {
                     b.Navigation("MatchResources");
                 });
@@ -1185,6 +1345,8 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>
                 {
                     b.Navigation("Matches");
+
+                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.ResourceEntity", b =>
@@ -1201,6 +1363,8 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.RoomEntity", b =>
                 {
                     b.Navigation("Matches");
+
+                    b.Navigation("Requests");
                 });
 #pragma warning restore 612, 618
         }

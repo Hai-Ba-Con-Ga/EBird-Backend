@@ -8,6 +8,7 @@ using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Application.Validation;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,9 @@ namespace EBird.Application.Services
         private IWapperRepository _repository;
         private IMapper _mapper;
         private IUnitOfValidation _unitOfValidation;
-        private IGenericRepository<MatchBirdEntity> _matchBirdRepository;
+        private IGenericRepository<MatchDetailEntity> _matchBirdRepository;
 
-        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchBirdEntity> matchBirdRepository)
+        public BirdService(IWapperRepository repository, IMapper mapper, IUnitOfValidation unitOfValidation, IGenericRepository<MatchDetailEntity> matchBirdRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -112,6 +113,7 @@ namespace EBird.Application.Services
             foreach(var birdDto in birdListDTO)
             {
                 birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
+                birdDto.Ratio = await GetBirdRatio(birdDto.Id);
             }
 
             return birdListDTO;
@@ -147,6 +149,7 @@ namespace EBird.Application.Services
             foreach(var birdDto in birdListDto)
             {
                 birdDto.ResourceList = await _repository.Resource.GetResourcesByBird(birdDto.Id);
+                birdDto.Ratio = await GetBirdRatio(birdDto.Id);
             }
 
             return birdListDto;
@@ -164,8 +167,13 @@ namespace EBird.Application.Services
                 return birdRatio;
             }
 
-            birdRatio.Win = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Win).Count();
-            birdRatio.Lose = matchBirdList.Where(x => x.Result == Domain.Enums.MatchBirdResult.Lose).Count();
+            birdRatio.Win = matchBirdList
+                            .Where(x => x.Result == MatchDetailResult.Win)
+                            .Count();
+            birdRatio.Lose = matchBirdList
+                            .Where(x => x.Result == MatchDetailResult.Lose)
+                            .Count();
+                            
             if((birdRatio.Win + birdRatio.Lose) == 0)
             {
                 birdRatio.Ratio = 0;

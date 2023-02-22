@@ -5,10 +5,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EBird.Infrastructure.Migrations
 {
-    public partial class ResourceMessReportNotiMatch : Migration
+    public partial class RequestMatch : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "Number",
+                table: "Bird",
+                type: "int",
+                nullable: false,
+                defaultValue: 0)
+                .Annotation("SqlServer:Identity", "1, 1");
+
             migrationBuilder.CreateTable(
                 name: "ChatRooms",
                 columns: table => new
@@ -191,6 +199,8 @@ namespace EBird.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     MatchDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     ExpDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -227,6 +237,66 @@ namespace EBird.Infrastructure.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Matches_Room_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Room",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Requests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreateDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    ExpDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    HostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HostBirdId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChallengerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ChallengerBirdId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PlaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Requests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Requests_Account_ChallengerId",
+                        column: x => x.ChallengerId,
+                        principalTable: "Account",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Account_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Account",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Bird_ChallengerBirdId",
+                        column: x => x.ChallengerBirdId,
+                        principalTable: "Bird",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Bird_HostBirdId",
+                        column: x => x.HostBirdId,
+                        principalTable: "Bird",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Group_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Group",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Places_PlaceId",
+                        column: x => x.PlaceId,
+                        principalTable: "Places",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Requests_Room_RoomId",
                         column: x => x.RoomId,
                         principalTable: "Room",
                         principalColumn: "Id");
@@ -309,7 +379,7 @@ namespace EBird.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MatchBirds",
+                name: "MatchDetail",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -319,21 +389,48 @@ namespace EBird.Infrastructure.Migrations
                     AfterElo = table.Column<int>(type: "int", nullable: true),
                     BeforeElo = table.Column<int>(type: "int", nullable: false),
                     UpdateDatetime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MatchBirds", x => x.Id);
+                    table.PrimaryKey("PK_MatchDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MatchBirds_Bird_BirdId",
+                        name: "FK_MatchDetail_Bird_BirdId",
                         column: x => x.BirdId,
                         principalTable: "Bird",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_MatchBirds_Matches_MatchId",
+                        name: "FK_MatchDetail_Matches_MatchId",
                         column: x => x.MatchId,
                         principalTable: "Matches",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MatchResources",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MatchBirdId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ResourceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MatchResources", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MatchResources_MatchDetail_MatchBirdId",
+                        column: x => x.MatchBirdId,
+                        principalTable: "MatchDetail",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MatchResources_Resource_ResourceId",
+                        column: x => x.ResourceId,
+                        principalTable: "Resource",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -357,13 +454,13 @@ namespace EBird.Infrastructure.Migrations
                 column: "ResourceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MatchBirds_BirdId",
-                table: "MatchBirds",
+                name: "IX_MatchDetail_BirdId",
+                table: "MatchDetail",
                 column: "BirdId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MatchBirds_MatchId",
-                table: "MatchBirds",
+                name: "IX_MatchDetail_MatchId",
+                table: "MatchDetail",
                 column: "MatchId");
 
             migrationBuilder.CreateIndex(
@@ -390,6 +487,16 @@ namespace EBird.Infrastructure.Migrations
                 name: "IX_Matches_RoomId",
                 table: "Matches",
                 column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MatchResources_MatchBirdId",
+                table: "MatchResources",
+                column: "MatchBirdId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MatchResources_ResourceId",
+                table: "MatchResources",
+                column: "ResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatRoomId",
@@ -450,6 +557,41 @@ namespace EBird.Infrastructure.Migrations
                 column: "HandleById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Requests_ChallengerBirdId",
+                table: "Requests",
+                column: "ChallengerBirdId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_ChallengerId",
+                table: "Requests",
+                column: "ChallengerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_GroupId",
+                table: "Requests",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_HostBirdId",
+                table: "Requests",
+                column: "HostBirdId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_HostId",
+                table: "Requests",
+                column: "HostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_PlaceId",
+                table: "Requests",
+                column: "PlaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_RoomId",
+                table: "Requests",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Resource_CreateById",
                 table: "Resource",
                 column: "CreateById");
@@ -464,7 +606,7 @@ namespace EBird.Infrastructure.Migrations
                 name: "BirdResources");
 
             migrationBuilder.DropTable(
-                name: "MatchBirds");
+                name: "MatchResources");
 
             migrationBuilder.DropTable(
                 name: "Messages");
@@ -482,7 +624,10 @@ namespace EBird.Infrastructure.Migrations
                 name: "Report");
 
             migrationBuilder.DropTable(
-                name: "Matches");
+                name: "Requests");
+
+            migrationBuilder.DropTable(
+                name: "MatchDetail");
 
             migrationBuilder.DropTable(
                 name: "NotificationType");
@@ -494,7 +639,14 @@ namespace EBird.Infrastructure.Migrations
                 name: "Resource");
 
             migrationBuilder.DropTable(
+                name: "Matches");
+
+            migrationBuilder.DropTable(
                 name: "Places");
+
+            migrationBuilder.DropColumn(
+                name: "Number",
+                table: "Bird");
         }
     }
 }

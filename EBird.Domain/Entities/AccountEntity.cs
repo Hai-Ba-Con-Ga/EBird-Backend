@@ -33,10 +33,10 @@ namespace EBird.Domain.Entities
         public string RoleString
         {
             get { return Role.ToString(); }
-            private set { Role = Enum.Parse<Role>(value); }
+            private set { Role = Enum.Parse<RoleAccount>(value); }
         }
         [NotMapped]
-        public Role Role { get; set; } = Role.User;
+        public RoleAccount Role { get; set; } = RoleAccount.User;
 
         [Column(TypeName = "varchar")]
         [MaxLength(50)]
@@ -55,7 +55,8 @@ namespace EBird.Domain.Entities
 
         public ICollection<ParticipantEntity> Participants { get; set; } = null!;
         public ICollection<MessageEntity> Messages { get; set; } = null!;
-        // public ICollection<RequestEntity> Requests { get; set; }
+        public ICollection<RequestEntity> HostRequests { get; set; }
+        public ICollection<RequestEntity> ChallengerRequests { get; set; }
         public ICollection<NotificationEntity> Notifications { get; set; } = null!;
         public ICollection<ReportEntity> ReportCreates { get; set; } = null!;
         public ICollection<ReportEntity> ReportHandles { get; set; } = null!;

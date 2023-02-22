@@ -54,7 +54,7 @@ namespace EBird.Api.Controllers
 
 
         }
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(RoleAccount.Admin))]
         [HttpGet]
         public async Task<ActionResult<Response<List<AccountResponse>>>> GetAllAccount()
         {
@@ -214,7 +214,7 @@ namespace EBird.Api.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(Role.Admin))]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(RoleAccount.Admin))]
         [HttpPut("change-role-admin/{id}")]
         public async Task<ActionResult<Response<string>>> ChangeRoleAdmin(Guid id)
         {

@@ -1,89 +1,139 @@
-import { useCallback, useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import {Button, FormControl, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Select, TextField} from '@mui/material'
-import './App.css'
-import { Box,Chip } from '@mui/material';
-import { ConnectionEndpointWrapper, EventForm, Message, MessageContainer, MessageServer, SendEventWrapper } from './style';
-import {HubConnection, HubConnectionBuilder,HttpTransportType} from '@microsoft/signalr'
-import React from "react";
-import useHub from './useHub';
+import { useCallback, useEffect, useRef, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { Visibility } from "@mui/icons-material";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  Button,
+  Divider,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import "./App.css";
+import { Box, Chip } from "@mui/material";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  ConnectionEndpointWrapper,
+  EventForm,
+  Message,
+  MessageContainer,
+  MessageServer,
+  SendEventWrapper,
+} from "./style";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HttpTransportType,
+} from "@microsoft/signalr";
+import useHubConnection from "./useHubConnection";
+import EventListeningList from "./EventListeningList";
+import { toast, ToastContainer } from "react-toastify";
+import JsonBeautify from "./JsonBeautify";
+import styled from "styled-components";
+
 function App() {
-  const [endpoint,setEndpoint] = useState("https://localhost:7137/hub/test");
-  const {sendMessageFromClient,connection} = useHub({endpoint});
-  const [connectErr,setCnErr] = useState<{success:boolean , msg : string} | null>(null);
-  /* Send form */
-  const [eventName,setEventName] = useState<string>();
-  const [eventSendConent,setSendContent] = useState<any>();
-  /* Receive form */
-  const [listeningEvents,setListeningEvents] = useState<string[]>([]);
-  const [messages,setMessages] = useState<{eventName:string, msg:string}[]>([]);
-  
-  const [draftEventName,setDraftEventName] = useState<string>();
-
-  const handleConnectClick = useCallback(async()=>{
-    
-  },[connection,endpoint,listeningEvents])
-  const sendEventHandler = useCallback(async()=>{
-    sendMessageFromClient(eventName as string,eventSendConent);
-  },[eventName,eventSendConent])
-
-
-  const addEventHandler = useCallback(async()=>{
-    if(listeningEvents.findIndex((ev)=>ev == draftEventName ) == -1 ){
-      setListeningEvents([...listeningEvents,draftEventName as string]);
-    } else {
-      window.alert("event exist")
-    }
-  },[listeningEvents,draftEventName])
-  /** useEffect 
-   * 
-   */
-  /* Connection start on change*/
-  useEffect(()=>{
-    if(connection) {
-      connection.start().then(()=> {
-        console.log("HUB CONNECTED");
-        connection.send("SendMessage", "LE THANH PHONG ");
-        
+  const [connection, setConnection] = useState<HubConnection>();
+  const [endpoint, setEndpoint] = useState("https://localhost:7137/hub/chat");
+  const [token, setToken] = useState<string>("");
+  const tokenRef = useRef<any>();
+  const { handleConnectClick } = useHubConnection(endpoint, (hub) => {
+    listeningEvents?.forEach((event) => {
+      connection?.on(event, (msg) => {
+        setMessages([...messages, { eventName: event, msg }]);
       });
+    });
+    setConnection(hub);
+  },token);
+  const [eventName, setEventName] = useState<string>();
+  const [eventSendConent, setSendContent] = useState<any>({
+    one: "",
+    two: "",
+    three: "",
+  });
+  const [listeningEvents, setListeningEvents] = useState<string[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  const [draftEventName, setDraftEventName] = useState<string>();
+
+  const [resultsBeautified, setResultsBeautified] = useState<any>();
+
+  const sendEventHandler = useCallback(async () => {
+    if (!connection) {
+      toast.error("Not connected ! Please connect and try again");
+      return;
     }
-    connection?.on("RECEIVE_MSG",(msg)=> {console.log("TEST HUB OKE " + msg)})
-  },[connection]);
+    const params = [...Object.values(eventSendConent)] as string[];
+    const finalParams: any[] = [];
+    params.forEach((param: string) => {
+      if (isJsonParsable(param)) param = JSON.parse(param);
+      if (param) finalParams.push(param);
+    });
+    console.log(finalParams);
+    connection?.send(eventName as string, ...finalParams);
+  }, [connection, eventName, eventSendConent]);
 
-  useEffect(()=>{
-    if(connection?.state == 'Connected') setCnErr({success :true , msg : "Connected successfully"})
-    connection?.on("RECEIVE_MSG", (msg)=>{
-      console.log("FROM SERVER" , msg)
-    })
-    connection?.on("MSG", (msg)=>{
-      console.log("FROM SERVER" , msg)
-    })
-    connection?.on("MSG2", (msg)=>{
-      console.log("FROM SERVER" , msg)
-    })
-  },[connection])
+  const addEventHandler = useCallback(async () => {
+    if (!connection) {
+      toast.error("Not connected ! Please connect and try again");
+      return;
+    }
+    if (listeningEvents.findIndex((ev) => ev == draftEventName) == -1) {
+      setListeningEvents([...listeningEvents, draftEventName as string]);
+    } else {
+      window.alert("event exist");
+    }
+  }, [listeningEvents, draftEventName]);
 
-  useEffect(()=>{
-    console.log(endpoint);
-    
-  },[endpoint])
+  const deleteListeningEvents = useCallback(
+    (name: string) => {
+      setListeningEvents(listeningEvents.filter((event) => event !== name));
+    },
+    [listeningEvents, draftEventName]
+  );
+  /** useEffect
+   *
+   */
+  useEffect(() => {
+    const hubClient = new HubConnectionBuilder()
+      .withUrl("https://localhost:7137/hub/test", {
+        transport: HttpTransportType.ServerSentEvents,
+      })
+      .build();
+    setConnection(hubClient);
+  }, []);
+  useEffect(() => {}, [connection]);
 
-  useEffect(()=>{
-    connection?.on("RECEIVE_MSG", (msg)=>{
-      console.log("FROM SERVER" , msg)
-    })
-    console.log(listeningEvents)
-  },[listeningEvents])
+  useEffect(() => {
+    //TODO : listening event
+    listeningEvents?.forEach((event) => {
+      connection?.on(event, (...msg) => {
+        console.log("TEST HUB OKE " + msg);
+        console.log(JSON.stringify(msg));
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { eventName: event, msg: JSON.stringify(msg), raw: msg } as any,
+        ]);
+      });
+    });
+  }, [listeningEvents]);
+  useEffect(() => {
+    console.log(token);
+  }, [token]);
+  useEffect(() => {
+    console.log(connection);
+  }, [connection]);
+
   return (
     <>
-      <Box component={"div"} className="App">
+      <Box component={"div"} className="App" maxWidth={"50%"}>
         <h1>Server Sent Event Tools</h1>
-        {connectErr && (
-          <Message
-            label={connectErr.msg}
-            color={connectErr.success ? "success" : "error"}
-          />
-        )}
         <ConnectionEndpointWrapper>
           <TextField
             type="text"
@@ -96,25 +146,25 @@ function App() {
             Connect
           </Button>
         </ConnectionEndpointWrapper>
-        <SendEventWrapper>
-          <h2>Sending event</h2>
-          <EventForm>
-            <TextField
-              label="Event"
-              onChange={(e) => setEventName(e.target.value)}
-            ></TextField>
-            <TextField
-              label="Content"
-              onChange={(e) => setSendContent(e.target.value)}
-            ></TextField>
-            <Button onClick={sendEventHandler} variant="contained">
-              Send
-            </Button>
-          </EventForm>
-        </SendEventWrapper>
-      </Box>
-      <SendEventWrapper>
-        <h2>Message from server section</h2>
+        <ConnectionEndpointWrapper>
+          <TextField
+            type="text"
+            label="Bearer Token"
+            variant="outlined"
+            inputRef={tokenRef}
+      
+          ></TextField>
+          <Button onClick={()=>{
+            setToken(tokenRef.current.value);
+
+          }} variant="contained">
+            Set token 
+          </Button>
+        </ConnectionEndpointWrapper>
+        <Divider variant="fullWidth" light />
+        <Typography fontSize={"1.5rem"} fontWeight={600}>
+          {"Register events for listening"}
+        </Typography>
         <EventForm>
           <TextField
             label="Listen on event"
@@ -124,32 +174,88 @@ function App() {
             Add
           </Button>
         </EventForm>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Registered event</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            
-            label="Registered event"
-            onChange={() => console.log("change")}
-          >
-            {listeningEvents?.map(event=><MenuItem key={event} value={listeningEvents.join(', ')} >{event}</MenuItem>)}
-          </Select>
-        </FormControl>
+        <div>
+          <InputLabel id="demo-simple-select-label">
+            Registered event(s)
+          </InputLabel>
+          <EventListeningList
+            events={listeningEvents}
+            deleteHandler={deleteListeningEvents}
+          />
+        </div>
+        <SendEventWrapper>
+          <h2>Sending event</h2>
+          <EventForm>
+            <TextField
+              label="Event"
+              onChange={(e) => setEventName(e.target.value)}
+            ></TextField>
+            <TextField
+              label="Param 1"
+              onChange={(e) =>
+                setSendContent({ ...eventSendConent, one: e.target.value })
+              }
+            ></TextField>
+            <TextField
+              label="Param 2"
+              onChange={(e) =>
+                setSendContent({ ...eventSendConent, two: e.target.value })
+              }
+            ></TextField>
+            <TextField
+              label="Param 3"
+              onChange={(e) =>
+                setSendContent({ ...eventSendConent, three: e.target.value })
+              }
+            ></TextField>
+            <Button onClick={sendEventHandler} variant="contained">
+              Send
+            </Button>
+          </EventForm>
+        </SendEventWrapper>
+      </Box>
+      <SendEventWrapper>
+        <h2>Message from server section</h2>
+
+        <JsonBeautify
+          results={
+            typeof resultsBeautified == "string"
+              ? [resultsBeautified]
+              : resultsBeautified
+          }
+        />
         <MessageContainer>
-            {messages?.map((message,i)=> <MessageServer key={i}>
-            <Chip
-              label={message.eventName}
-              color="secondary"
-              style={{ fontWeight: 600 }}
-            ></Chip>
-            <span>{message.msg}</span>
-          </MessageServer>)}
-          
+          {messages?.map((message, i) => (
+            <MessageServer key={i}>
+              <Chip
+                label={message.eventName}
+                color="secondary"
+                style={{ fontWeight: 600 }}
+              ></Chip>
+              <span>{message.msg}</span>
+              <ViewButton onClick={() => setResultsBeautified(message.raw)} />
+            </MessageServer>
+          ))}
         </MessageContainer>
+        {/* <SyntaxHighlighter language="json" wrapLines={true}>
+      {JSON.stringify(JSON.parse('{ "name": "John", "age": 30, "city": "New York" }' ), null, 2)}
+    </SyntaxHighlighter> */}
       </SendEventWrapper>
+      <ToastContainer />
     </>
   );
 }
 
-export default App
+export default App;
+
+const ViewButton = styled(Visibility)`
+  cursor: pointer;
+`;
+export function isJsonParsable(str: string) {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

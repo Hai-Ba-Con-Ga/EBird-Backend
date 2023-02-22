@@ -6,6 +6,7 @@ using EBird.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EBird.Infrastructure.Context
 {
@@ -75,42 +76,71 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Resources)
                 .HasForeignKey(m => m.CreateById)
                 .OnDelete(DeleteBehavior.NoAction);
-        //Config for RequestEntity
-            //Config for one to many relationship (create by) between AccountEntity and RequestEntity
-            // modelBuilder.Entity<RequestEntity>()
-            //     .HasOne(m => m.CreatedBy)
-            //     .WithMany(mt => mt.Requests)
-            //     .HasForeignKey(m => m.CreatedById)
-            //     .OnDelete(DeleteBehavior.NoAction);
-            //Config for one to many relationship between RequestEntity and BirdEntity
-            // modelBuilder.Entity<RequestEntity>()
-            //     .HasOne(m => m.Bird)
-            //     .WithMany(mt => mt.Requests)
-            //     .HasForeignKey(m => m.BirdId)
-            //     .OnDelete(DeleteBehavior.NoAction);
+            //Config for RequestEntity
+            // Config for one to many relationship (host by) between AccountEntity and RequestEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Host)
+                .WithMany(mt => mt.HostRequests)
+                .HasForeignKey(m => m.HostId)
+                .OnDelete(DeleteBehavior.NoAction);
+            // Config for one to many relationship (challenger by) between AccountEntity and RequestEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Challenger)
+                .WithMany(mt => mt.ChallengerRequests)
+                .HasForeignKey(m => m.ChallengerId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship (host bird) between RequestEntity and BirdEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.HostBird)
+                .WithMany(mt => mt.HostRequests)
+                .HasForeignKey(m => m.HostBirdId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship (challenger bird) between RequestEntity and BirdEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.ChallengerBird)
+                .WithMany(mt => mt.ChallengerRequests)
+                .HasForeignKey(m => m.ChallengerBirdId)
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between RequestEntity and GroupEntity
-            // modelBuilder.Entity<RequestEntity>()
-            //     .HasOne(m => m.Group)
-            //     .WithMany(mt => mt.Requests)
-            //     .HasForeignKey(m => m.GroupId)
-            //     .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Group)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to one relationship between RequestEntity and PlaceEntity
-            // modelBuilder.Entity<RequestEntity>()
-            //     .HasOne(m => m.Place)
-            //     .WithMany(mt => mt.Requests)
-            //     .HasForeignKey(m => m.PlaceId)
-            //     .OnDelete(DeleteBehavior.NoAction);   
-            
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Place)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.PlaceId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for decimal type for longitude and latitude
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Longitude)
+                .HasColumnType("decimal(18,6)");
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Latitude)
+                .HasColumnType("decimal(18,6)");
+            //Config for one to one relationship between RequestEntity and RoomEntity
+            modelBuilder.Entity<RequestEntity>()
+                .HasOne(m => m.Room)
+                .WithMany(mt => mt.Requests)
+                .HasForeignKey(m => m.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //config  HasConversation RequestEntity and Enum RequestStatus
+            modelBuilder.Entity<RequestEntity>()
+                .Property(m => m.Status)
+                .HasConversion<string>();
+
             //Config HasConversation MatchEntity and Enum MatchStatus
             modelBuilder.Entity<MatchEntity>()
                 .Property(m => m.MatchStatus)
-                .HasConversion<string>();   
+                .HasConversion<string>();
             //Config for one to many relationship between MatchEntity and PlaceEntity
             modelBuilder.Entity<MatchEntity>()
                 .HasOne(m => m.Place)
                 .WithMany(mt => mt.Matches)
                 .HasForeignKey(m => m.PlaceId)
-                .OnDelete(DeleteBehavior.NoAction);  
+                .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between MatchEntity and MatchBirdEntity
             modelBuilder.Entity<MatchEntity>()
                 .HasMany(m => m.MatchBirds)
@@ -142,21 +172,16 @@ namespace EBird.Infrastructure.Context
                 .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between BirdEntity and MatchBirdEntity
-            modelBuilder.Entity<MatchBirdEntity>()
+            modelBuilder.Entity<MatchDetailEntity>()
                 .HasOne(m => m.Bird)
                 .WithMany(mt => mt.MatchBirds)
                 .HasForeignKey(m => m.BirdId)
                 .OnDelete(DeleteBehavior.NoAction);
             //Config HasConversation MatchBirdEntity and Enum MatchBirdResult
-            modelBuilder.Entity<MatchBirdEntity>()
+            modelBuilder.Entity<MatchDetailEntity>()
                 .Property(m => m.Result)
                 .HasConversion<string>();
-            //Config for one to many relationship between RequestEntity and RoomEntity
-            // modelBuilder.Entity<RequestEntity>()
-            //     .HasOne(m => m.Room)
-            //     .WithMany(mt => mt.Requests)
-            //     .HasForeignKey(m => m.RoomId)
-            //     .OnDelete(DeleteBehavior.NoAction);        
+            //Config for one to many relationship between AccountEntity and RoomEntity       
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.Rooms)
                 .WithOne(b => b.CreateBy)
@@ -176,7 +201,7 @@ namespace EBird.Infrastructure.Context
                 .HasMany(acc => acc.ReportCreates)
                 .WithOne(b => b.CreateBy)
                 .HasForeignKey(b => b.CreateById)
-                .OnDelete(DeleteBehavior.NoAction);;
+                .OnDelete(DeleteBehavior.NoAction); ;
             modelBuilder.Entity<AccountEntity>()
                 .HasMany(acc => acc.ReportHandles)
                 .WithOne(b => b.HandleBy)
@@ -187,6 +212,20 @@ namespace EBird.Infrastructure.Context
                 .HasOne(s => s.Post)
                 .WithOne(s => s.Thumbnail)
                 .HasForeignKey<PostEntity>(s => s.ThumbnailId);
+            //Config for not update number column
+                //BirdnEntity
+            modelBuilder.Entity<BirdEntity>().Property(b => b.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //requestEntity
+            modelBuilder.Entity<RequestEntity>().Property(r => r.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //MatchEntity
+            modelBuilder.Entity<MatchEntity>().Property(m => m.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+
         }
 
         #region DbSet
@@ -210,9 +249,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<ParticipantEntity> Participants { get; set; }
         public DbSet<PlaceEntity> Places { get; set; }
-        // public DbSet<RequestEntity> Requests { get; set; }
+        public DbSet<RequestEntity> Requests { get; set; }
         public DbSet<MatchEntity> Matches { get; set; }
-        public DbSet<MatchBirdEntity> MatchBirds { get; set; }
+        public DbSet<MatchDetailEntity> MatchBirds { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
 
         public DbSet<PostEntity> Posts { get; set; }

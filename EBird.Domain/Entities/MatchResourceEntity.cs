@@ -7,7 +7,7 @@ public class MatchResourceEntity : BaseEntity
     [Required]
     public Guid MatchBirdId { get; set; }
     //1 - M relationship Bird
-    public MatchBirdEntity MatchBird { get; set; } = null!;
+    public MatchDetailEntity MatchBird { get; set; } = null!;
     [Required]
     public Guid ResourceId { get; set; }
     //1- M relationship Resource

@@ -49,7 +49,11 @@ builder.Services.AddAppServices();
 builder.Services.AddJwtService(configuration);
 builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = null);
+{
+    x.JsonSerializerOptions.ReferenceHandler = null;
+    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+             
 
 builder.Services.AddControllers(options =>
 {
