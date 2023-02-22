@@ -14,7 +14,7 @@ using EBird.Domain.Enums;
 
 namespace EBird.Application.Services
 {
-    public class MatchBirdService : IMatchBirdService
+    public class MatchDeatailService : IMatchDetailService
     {
         private IWapperRepository _repository;
         private IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EBird.Application.Services
         private IGenericRepository<ResourceEntity> _resourceRepository;
         private IGenericRepository<MatchResourceEntity> _matchResourceRepository;
         private IGenericRepository<MatchDetailEntity> _matchBirdEntityRepository;
-        public MatchBirdService(IWapperRepository repository, IMapper mapper,
+        public MatchDeatailService(IWapperRepository repository, IMapper mapper,
         IUnitOfValidation unitOfValidation, IGenericRepository<ResourceEntity> resourceRepository,
         IGenericRepository<MatchResourceEntity> matchResourceRepository,
         IGenericRepository<MatchDetailEntity> matchBirdEntityRepository)
@@ -35,7 +35,7 @@ namespace EBird.Application.Services
             _matchBirdEntityRepository = matchBirdEntityRepository;
         }
 
-        public async Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO)
+        public async Task UpdateBirdInMatch(MatchDetailUpdateDTO matchBirdUpdateDTO)
         {
             var matchBird = await _repository.MatchBird.GetByIdActiveAsync(matchBirdUpdateDTO.MatchBirdId);
 
@@ -106,7 +106,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task UpdateResultMatch(Guid matchId, MatchBirdUpdateResultDTO updateResultData, Guid userId)
+        public async Task UpdateResultMatch(Guid matchId, MatchDetailUpdateResultDTO updateResultData, Guid userId)
         {
             await _unitOfValidation.Base.ValidateMatchId(matchId);
             await _unitOfValidation.Base.ValidateBirdId(updateResultData.BirdId);

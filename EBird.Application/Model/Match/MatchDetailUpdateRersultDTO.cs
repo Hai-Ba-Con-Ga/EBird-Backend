@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Match
 {
-    public class MatchBirdUpdateResultDTO
+    public class MatchDetailUpdateResultDTO
     {
         public Guid BirdId { get; set; }
         public string Result { get; set; }
