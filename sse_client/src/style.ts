@@ -20,20 +20,21 @@ export const EventForm = styled.form`
   gap: 1rem;
 `;
 export const MessageContainer = styled(Box)`
-  height: 100%; ;
+  height: 100%;
   width: 100%;
   min-height: 10rem;
-  background-color: #F4F7F7;
-border-radius: 5px;
-border : 2px solid #848080;
-display: flex;
-flex-direction: column;
-justify-content: flex-start;
-padding : 1rem ;
+  background-color: #f4f7f7;
+  border-radius: 5px;
+  border: 2px solid #848080;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
 `;
 
 export const MessageServer = styled.span`
-    display : flex;
-    gap : 1rem;
-    align-items: center;
-`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0.5rem 0;
+`;
