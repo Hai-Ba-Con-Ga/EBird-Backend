@@ -54,7 +54,7 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
-            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchBirdResponseDTO>>(match.MatchBirds);
+            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchBirds);
 
             return matchDTO;
         }
@@ -85,7 +85,7 @@ namespace EBird.Application.Services
 
             foreach (var item in lisDto)
             {
-                item.MatchBirdList = _mapper.Map<ICollection<MatchBirdResponseDTO>>(list
+                item.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
                                                 .Where(x => x.Id == item.Id)
                                                 .FirstOrDefault()
                                                 .MatchBirds);

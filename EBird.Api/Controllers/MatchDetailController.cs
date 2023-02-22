@@ -15,18 +15,18 @@ namespace EBird.Api.Controllers
 {
     [ApiController]
     [Route("match-bird")]
-    public class MatchBirdController : ControllerBase
+    public class MatchDetailController : ControllerBase
     {
-        private readonly IMatchBirdService _matchBirdService;
+        private readonly IMatchDetailService _matchBirdService;
 
-        public MatchBirdController(IMatchBirdService matchBirdService)
+        public MatchDetailController(IMatchDetailService matchBirdService)
         {
             _matchBirdService = matchBirdService;
         }
 
         //update bird in match
         [HttpPut]
-        public async Task<ActionResult<Response<string>>> Put([FromBody] MatchBirdUpdateDTO updateData)
+        public async Task<ActionResult<Response<string>>> Put([FromBody] MatchDetailUpdateDTO updateData)
         {
             var response = new Response<string>();
             try
@@ -147,7 +147,7 @@ namespace EBird.Api.Controllers
 
         [HttpPut("result/{matchId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<string>>> UpdateResult(Guid matchId, [FromBody] MatchBirdUpdateResultDTO updateResultDto)
+        public async Task<ActionResult<Response<string>>> UpdateResult(Guid matchId, [FromBody] MatchDetailUpdateResultDTO updateResultDto)
         {
             var response = new Response<string>();
             try
