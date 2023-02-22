@@ -69,9 +69,17 @@ public class ChatHub : Hub
         try
         {
             var chatRoomIdRaw = Context.GetHttpContext().Request.Query["chatRoomId"].ToString().ToLower();
+            var userIdRaw = Context.GetHttpContext().Request.Query["userId"].ToString().ToLower();
+            Console.WriteLine("===================");
+            
+            Console.WriteLine("userIdRaw: " + userIdRaw);
+            Console.WriteLine("chatRoomIdRaw: " + chatRoomIdRaw);
 
-            var userId = Context.User.GetUserId();
+            // var userId = Context.User.GetUserId();
+            Context.User.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userIdRaw) }));
+            var userId = Guid.Parse(userIdRaw);
             var chatRoomId = Guid.Parse(chatRoomIdRaw);
+            Console.WriteLine("===================");
 
             var checkJoinChatRoom = await _chatRoomRepository.FindWithCondition(x => x.Id == chatRoomId && x.Participants.Any(y => y.AccountId == userId));
             if (checkJoinChatRoom == null)
