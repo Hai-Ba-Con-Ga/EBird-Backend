@@ -3,6 +3,7 @@ using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Request;
 using EBird.Domain.Entities;
+using EBird.Domain.Enums;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -99,6 +100,53 @@ namespace EBird.Infrastructure.Repositories
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();
         }
+
+        public async Task MergeRequest(Guid hostRequestId, Guid challengerRequestId)
+        {
+            var hostRequest = await this.GetByIdActiveAsync(hostRequestId);
+            var challengerRequest = await this.GetByIdActiveAsync(challengerRequestId);
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var newRequest = new RequestEntity()
+                    {
+                        HostId = hostRequest.HostId,
+                        HostBirdId = hostRequest.HostBirdId,
+                        ChallengerId = challengerRequest.HostId,
+                        ChallengerBirdId = challengerRequest.HostBirdId,
+                        Status = RequestStatus.Matched,
+                        PlaceId = hostRequest.PlaceId,
+                        RoomId = hostRequest.RoomId,
+                        GroupId = hostRequest.GroupId,
+                        CreateDatetime = DateTime.Now,
+                        ExpDatetime = DateTime.Now.AddDays(1),
+                        RequestDatetime = hostRequest.RequestDatetime,
+                    };
+
+                    _context.Requests.Add(newRequest);
+                    await _context.SaveChangesAsync();
+
+                    hostRequest.IsDeleted = true;
+                    hostRequest.Status = RequestStatus.Matched;
+                    challengerRequest.IsDeleted = true;
+                    challengerRequest.Status = RequestStatus.Matched;
+
+                    _context.Requests.UpdateRange(hostRequest, challengerRequest);
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+
 
         // public async Task UpdateRequest(RequestEntity entity)
         // {

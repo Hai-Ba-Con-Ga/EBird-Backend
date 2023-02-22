@@ -17,5 +17,6 @@ namespace EBird.Application.Services.IServices
         public Task<PagedList<RequestResponse>> GetRequests(RequestParameters parameters);
         public Task<ICollection<RequestResponse>> GetRequests();
         public Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
+        public Task MergeRequest(Guid hostRequestId, Guid challengerRequestId);
     }
 }
