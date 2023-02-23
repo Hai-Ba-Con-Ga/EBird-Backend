@@ -80,8 +80,21 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false);
 
+            if (parameters.RoomId != Guid.Empty && parameters.RoomId != null)
+            {
+                requests = requests.Where(r => r.RoomId == parameters.RoomId);
+            }
+
             PagedList<RequestEntity> pagedRequests = new PagedList<RequestEntity>();
-            await pagedRequests.LoadData(requests, parameters.PageNumber, parameters.PageSize);
+
+            if (parameters.PageSize == 0)
+            {
+                await pagedRequests.LoadData(requests);
+            }
+            else
+            {
+                await pagedRequests.LoadData(requests, parameters.PageNumber, parameters.PageSize);
+            }
 
             return pagedRequests;
         }
