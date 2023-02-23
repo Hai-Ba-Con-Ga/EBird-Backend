@@ -36,7 +36,8 @@ namespace EBird.Api.Controllers
             try
             {
                 ICollection<RequestResponse> listDTO = null;
-                if (parameters.PageSize == 0)
+
+                if (parameters.PageSize == 0 && parameters.RoomId == Guid.Empty)
                 {
                     listDTO = await _requestService.GetRequests();
 
@@ -253,7 +254,7 @@ namespace EBird.Api.Controllers
         [HttpPut("join/{requestId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestDto)
-        
+
         {
             Response<string> response = null;
             try
