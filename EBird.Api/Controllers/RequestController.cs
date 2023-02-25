@@ -128,6 +128,44 @@ namespace EBird.Api.Controllers
             }
         }
 
+        [HttpGet("groupId")]
+        public async Task<ActionResult<Response<ICollection<RequestResponse>>>> GetRequestsByGroupId(Guid groupId)
+        {
+            // ResponseWithPaging<ICollection<RequestResponse>> response = null;
+            Response<ICollection<RequestResponse>> response;
+            try
+            {
+                ICollection<RequestResponse> listDTO = null;
+
+                listDTO = await _requestService.GetRequestsByGroupId(groupId);
+
+                response = Response<ICollection<RequestResponse>>.Builder()
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage($"Get all request in {groupId} successful")
+                .SetData(listDTO);
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException)
+                {
+                    response = Response<ICollection<RequestResponse>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+                response = Response<ICollection<RequestResponse>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
         // POST api/<RequestController>
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -253,7 +291,7 @@ namespace EBird.Api.Controllers
         [HttpPut("join/{requestId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestDto)
-        
+
         {
             Response<string> response = null;
             try
