@@ -62,7 +62,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var entity = await _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.Id == id && e.IsDeleted == false)
                 .FirstOrDefaultAsync();
@@ -74,7 +74,7 @@ namespace EBird.Infrastructure.Repositories
 
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -95,7 +95,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -168,7 +168,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -191,6 +191,70 @@ namespace EBird.Infrastructure.Repositories
             return await collection.ToListAsync();
         }
 
-       
+        public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
+        {
+            var request = await _context.Requests.FindAsync(matchCreateDTO.RequestId);
+
+            if (request == null) throw new BadRequestException("Request not found");
+
+            using (var transction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    MatchEntity match = new MatchEntity()
+                    {
+                        HostId = request.HostId,
+                        ChallengerId = request.ChallengerId,
+                        GroupId = request.GroupId,
+                        PlaceId = request.PlaceId,
+                        RoomId = request.RoomId
+                    };
+
+                    match.MatchStatus = MatchStatus.Pending;
+                    match.CreateDatetime = DateTime.Now;
+                    match.ExpDatetime = match.CreateDatetime.AddHours(48);
+
+                    // var place = match.Place;
+                    // if (place != null) place.CreatedDate = DateTime.Now;
+
+                    await _context.Matches.AddAsync(match);
+                    var rowEffect = await _context.SaveChangesAsync();
+
+                    List<Guid> guids = new List<Guid>();
+                    guids.Add(request.HostBirdId);
+                    guids.Add(request.ChallengerBirdId ?? Guid.Empty);
+
+                    foreach (var birdId in guids)
+                    {
+                        if (birdId == Guid.Empty) throw new BadRequestException("Bird is empty");
+
+                        var matchBird = new MatchDetailEntity();
+                        matchBird.MatchId = match.Id;
+                        matchBird.BirdId = birdId;
+                        matchBird.Result = MatchDetailResult.Ready;
+                        matchBird.UpdateDatetime = DateTime.Now;
+
+                        var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                        if (birdEntity == null) throw new BadRequestException("Bird not found");
+
+                        matchBird.BeforeElo = birdEntity.Elo;
+
+                        await _context.MatchBirds.AddAsync(matchBird);
+                        await _context.SaveChangesAsync();
+                        
+                        birdEntity.Status = BirdStatus.InMatch.GetDescription();
+                        _context.Birds.Update(birdEntity);
+                        await _context.SaveChangesAsync();
+                    }
+                    transction.Commit();
+                    return match.Id;
+                }
+                catch (Exception ex)
+                {
+                    transction.Rollback();
+                    throw ex;
+                }
+            }
+        }
     }
 }

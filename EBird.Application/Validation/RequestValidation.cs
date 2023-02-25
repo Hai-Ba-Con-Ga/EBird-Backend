@@ -6,6 +6,7 @@ using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Request;
+using EBird.Domain.Enums;
 
 namespace EBird.Application.Validation
 {
@@ -52,7 +53,40 @@ namespace EBird.Application.Validation
             {
                 throw new BadRequestException("Bird have existed in this request");
             }
-          
+
+        }
+
+        public async Task ValidateMergeRequest(params Guid[] requestIds)
+        {
+            foreach (var id in requestIds)
+            {
+                if (id == Guid.Empty)
+                {
+                    throw new BadRequestException("Request Id cannot be empty");
+                }
+
+                var request = await _repository.Request.GetByIdActiveAsync(id);
+
+                if (request == null)
+                {
+                    throw new BadRequestException("Request does not exist");
+                }
+
+                if (request.Status != RequestStatus.Waiting)
+                {
+                    throw new BadRequestException("Request is not waiting for join");
+                }
+
+                if (request.ExpDatetime > DateTime.Now)
+                {
+                    throw new BadRequestException("Request is expired");
+                }
+
+                if (request.ChallengerBirdId != null || request.ChallengerId != null)
+                {
+                    throw new BadRequestException("Request have challenger");
+                }
+            }
         }
 
         public void ValidateRequestDatetime(DateTime requestDate)
