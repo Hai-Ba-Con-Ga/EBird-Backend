@@ -12,6 +12,7 @@ namespace EBird.Application.Interfaces.IRepository
     {
         public Task ConfirmMatch(Guid matchId);
         public Task<Guid> CreateMatch(MatchEntity match, MatchDetailEntity matchBirdEntity);
+        Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO);
         public Task<MatchEntity> GetMatch(Guid id);
         public Task<ICollection<MatchEntity>> GetMatches(MatchParameters param);
         public Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param);

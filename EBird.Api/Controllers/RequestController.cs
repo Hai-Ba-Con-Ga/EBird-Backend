@@ -36,7 +36,8 @@ namespace EBird.Api.Controllers
             try
             {
                 ICollection<RequestResponse> listDTO = null;
-                if (parameters.PageSize == 0)
+
+                if (parameters.PageSize == 0 && parameters.RoomId == Guid.Empty)
                 {
                     listDTO = await _requestService.GetRequests();
 

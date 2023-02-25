@@ -27,20 +27,20 @@ namespace EBird.Application.Services
             _validation = validation;
         }
 
-        public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
-        {
-            MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
+        // public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
+        // {
+        //     MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
 
-            MatchDetailEntity matchBird = new MatchDetailEntity()
-            {
-                BirdId = matchCreateDTO.BirdHostId,
-                Result = Domain.Enums.MatchDetailResult.Ready
-            };
+        //     MatchDetailEntity matchBird = new MatchDetailEntity()
+        //     {
+        //         BirdId = matchCreateDTO.BirdHostId,
+        //         Result = Domain.Enums.MatchDetailResult.Ready
+        //     };
 
-            var matchId = await _repository.Match.CreateMatch(match, matchBird);
+        //     var matchId = await _repository.Match.CreateMatch(match, matchBird);
 
-            return matchId;
-        }
+        //     return matchId;
+        // }
 
         public async Task DeleteMatch(Guid matchId)
         {
@@ -54,7 +54,7 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
-            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchBirds);
+            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
 
             return matchDTO;
         }
@@ -88,7 +88,7 @@ namespace EBird.Application.Services
                 item.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
                                                 .Where(x => x.Id == item.Id)
                                                 .FirstOrDefault()
-                                                .MatchBirds);
+                                                .MatchDetails);
             }
 
             return lisDto;
@@ -126,7 +126,7 @@ namespace EBird.Application.Services
             if (match.MatchStatus != MatchStatus.Pending)
                 throw new BadRequestException("Match is not pending");
 
-            var matchBirds = match.MatchBirds;
+            var matchBirds = match.MatchDetails;
 
             foreach (var matchBird in matchBirds)
             {
@@ -176,6 +176,15 @@ namespace EBird.Application.Services
             var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
 
             return matchDTOList;
+        }
+
+        public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
+        {
+            await _validation.Match.ValidateCreateMatch(matchCreateDTO);
+            
+            Guid createdId = await _repository.Match.CreateMatchFromRequest(matchCreateDTO);
+
+            return createdId;
         }
     }
 }

@@ -143,7 +143,7 @@ namespace EBird.Infrastructure.Context
                 .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between MatchEntity and MatchBirdEntity
             modelBuilder.Entity<MatchEntity>()
-                .HasMany(m => m.MatchBirds)
+                .HasMany(m => m.MatchDetails)
                 .WithOne(mt => mt.Match)
                 .HasForeignKey(mt => mt.MatchId)
                 .OnDelete(DeleteBehavior.NoAction);
@@ -171,13 +171,14 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Matches)
                 .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //Config for one to many relationship between BirdEntity and MatchBirdEntity
+           
+            //Config for one to many relationship between BirdEntity and MatchDetailEntity
             modelBuilder.Entity<MatchDetailEntity>()
                 .HasOne(m => m.Bird)
                 .WithMany(mt => mt.MatchBirds)
                 .HasForeignKey(m => m.BirdId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //Config HasConversation MatchBirdEntity and Enum MatchBirdResult
+            //Config HasConversation MatchBirdEntity and Enum MatchDetailEntity
             modelBuilder.Entity<MatchDetailEntity>()
                 .Property(m => m.Result)
                 .HasConversion<string>();
