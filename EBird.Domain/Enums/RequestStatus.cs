@@ -7,6 +7,7 @@ namespace EBird.Domain.Enums
         [Description("Waiting")]
         Waiting,
         [Description("Matched")]
-        Matched
+        Matched,
+        Closed
     }
 }

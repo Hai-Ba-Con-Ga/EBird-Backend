@@ -57,7 +57,7 @@ namespace EBird.Application.Validation
         }
 
         public async Task ValidateMergeRequest(params Guid[] requestIds)
-        {
+        {   
             foreach (var id in requestIds)
             {
                 if (id == Guid.Empty)
@@ -77,7 +77,7 @@ namespace EBird.Application.Validation
                     throw new BadRequestException("Request is not waiting for join");
                 }
 
-                if (request.ExpDatetime > DateTime.Now)
+                if (request.ExpDatetime < DateTime.Now)
                 {
                     throw new BadRequestException("Request is expired");
                 }
