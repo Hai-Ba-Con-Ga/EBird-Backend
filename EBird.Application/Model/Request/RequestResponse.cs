@@ -29,6 +29,7 @@ namespace EBird.Application.Model.Request
         public GroupResponseDTO? Group { get; set; }
         public PlaceResponseDTO Place { get; set; }
         public RoomResponseDTO Room { get; set; }
+        public string? Reference { get; set; }
 
         // public void MappingFrom(Profile profile)
         // {

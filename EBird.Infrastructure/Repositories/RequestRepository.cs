@@ -120,10 +120,13 @@ namespace EBird.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task MergeRequest(Guid hostRequestId, Guid challengerRequestId)
+        public async Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId)
         {
             var hostRequest = await this.GetByIdActiveAsync(hostRequestId);
             var challengerRequest = await this.GetByIdActiveAsync(challengerRequestId);
+
+            
+            string reference = $"{{\"HostRequestId\": \"{hostRequestId}\", \"ChallengerRequestId\":\"{challengerRequestId}\"}}";
 
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -142,6 +145,7 @@ namespace EBird.Infrastructure.Repositories
                         CreateDatetime = DateTime.Now,
                         ExpDatetime = DateTime.Now.AddDays(1),
                         RequestDatetime = hostRequest.RequestDatetime,
+                        Reference = reference
                     };
 
                     _context.Requests.Add(newRequest);
@@ -156,6 +160,8 @@ namespace EBird.Infrastructure.Repositories
                     await _context.SaveChangesAsync();
 
                     transaction.Commit();
+                    
+                    return newRequest.Id;
                 }
                 catch (Exception ex)
                 {

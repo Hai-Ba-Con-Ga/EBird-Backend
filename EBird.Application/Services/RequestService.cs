@@ -83,11 +83,11 @@ namespace EBird.Application.Services
 
         }
 
-        public async Task MergeRequest(Guid hostRequestId, Guid challengerRequestId)
+        public async Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId)
         {
             await _unitOfValidation.Request.ValidateMergeRequest(hostRequestId, challengerRequestId);
 
-            await _repository.Request.MergeRequest(hostRequestId, challengerRequestId);
+            return await _repository.Request.MergeRequest(hostRequestId, challengerRequestId);
         }
 
         public async Task UpdateRequest(Guid id, RequestUpdateDTO request)

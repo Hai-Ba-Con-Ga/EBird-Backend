@@ -35,6 +35,10 @@ namespace EBird.Domain.Entities
         [Required]
         public RequestStatus Status { get; set; } = RequestStatus.Waiting;
 
+        [Column("Reference")]
+        [MaxLength(255)]
+        public string? Reference { get; set; }
+
         //forgein key
 
         [ForeignKey("HostId")]

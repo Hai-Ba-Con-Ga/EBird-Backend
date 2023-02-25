@@ -201,38 +201,46 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
+                    //Create match
                     MatchEntity match = new MatchEntity()
                     {
                         HostId = request.HostId,
                         ChallengerId = request.ChallengerId,
                         GroupId = request.GroupId,
                         PlaceId = request.PlaceId,
-                        RoomId = request.RoomId
+                        RoomId = request.RoomId,
+                        MatchDatetime = request.RequestDatetime,
+                        MatchStatus = MatchStatus.During,
+                        CreateDatetime = DateTime.Now,
+                        ExpDatetime = DateTime.Now.AddDays(2),
+                        FromRequestId = request.Id,
+
                     };
-
-                    match.MatchStatus = MatchStatus.Pending;
-                    match.CreateDatetime = DateTime.Now;
-                    match.ExpDatetime = match.CreateDatetime.AddHours(48);
-
-                    // var place = match.Place;
-                    // if (place != null) place.CreatedDate = DateTime.Now;
 
                     await _context.Matches.AddAsync(match);
                     var rowEffect = await _context.SaveChangesAsync();
 
-                    List<Guid> guids = new List<Guid>();
-                    guids.Add(request.HostBirdId);
-                    guids.Add(request.ChallengerBirdId ?? Guid.Empty);
 
+                    //Create match details
+                    List<Guid> guids = new List<Guid>()
+                    {
+                        request.HostBirdId,
+                        request.ChallengerBirdId ?? Guid.Empty
+                    };
+
+                    //Create match detail for each player (host and challenger)
                     foreach (var birdId in guids)
                     {
-                        if (birdId == Guid.Empty) throw new BadRequestException("Bird is empty");
+                        if (birdId == Guid.Empty) 
+                            throw new BadRequestException("Bird is empty");
 
-                        var matchBird = new MatchDetailEntity();
-                        matchBird.MatchId = match.Id;
-                        matchBird.BirdId = birdId;
-                        matchBird.Result = MatchDetailResult.Ready;
-                        matchBird.UpdateDatetime = DateTime.Now;
+                        var matchBird = new MatchDetailEntity()
+                        {
+                            MatchId = match.Id,
+                            BirdId = birdId,
+                            Result = MatchDetailResult.NotReady,
+                            UpdateDatetime = DateTime.Now
+                        };
 
                         var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
                         if (birdEntity == null) throw new BadRequestException("Bird not found");
@@ -241,11 +249,17 @@ namespace EBird.Infrastructure.Repositories
 
                         await _context.MatchBirds.AddAsync(matchBird);
                         await _context.SaveChangesAsync();
-                        
-                        birdEntity.Status = BirdStatus.InMatch.GetDescription();
-                        _context.Birds.Update(birdEntity);
-                        await _context.SaveChangesAsync();
+
+                        // birdEntity.Status = BirdStatus.InMatch.GetDescription();
+                        // _context.Birds.Update(birdEntity);
+                        // await _context.SaveChangesAsync();
                     }
+
+                    //Enable request : change request status to closed state
+                    request.Status = RequestStatus.Closed;
+                    _context.Requests.Update(request);
+                    await _context.SaveChangesAsync();
+
                     transction.Commit();
                     return match.Id;
                 }

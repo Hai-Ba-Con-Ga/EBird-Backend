@@ -73,53 +73,6 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // //creat match
-        // [HttpPost]
-        // [Authorize(AuthenticationSchemes = "Bearer")]
-        // public async Task<ActionResult<Response<Guid>>> Post([FromBody] MatchCreateDTO matchCreateDTO)
-        // {
-        //     var response = new Response<Guid>();
-        //     try
-        //     {
-        //         var userIdRaw = this.GetUserId();
-
-        //         if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
-
-        //         matchCreateDTO.HostId = Guid.Parse(userIdRaw);
-
-        //         var matchId = await _matchService.CreateMatch(matchCreateDTO);
-
-        //         response = Response<Guid>.Builder()
-        //             .SetSuccess(true)
-        //             .SetStatusCode((int)HttpStatusCode.OK)
-        //             .SetMessage("Create match is success")
-        //             .SetData(matchId);
-
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         if (ex is BadRequestException ||
-        //             ex is NotFoundException ||
-        //             ex is UnauthorizedException)
-        //         {
-        //             response = Response<Guid>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.BadRequest)
-        //                     .SetMessage(ex.Message);
-
-        //             return StatusCode((int)response.StatusCode, response);
-        //         }
-
-        //         response = Response<Guid>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.InternalServerError)
-        //                     .SetMessage("Internal Server Error");
-
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        // }
-
         //get match by id
         [HttpGet("{matchId}")]
         public async Task<ActionResult<Response<MatchResponseDTO>>> Get(Guid matchId)
@@ -157,8 +110,6 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
-
-
 
         //get all match
         [HttpGet("all")]
