@@ -56,7 +56,7 @@ namespace EBird.Application.Services
             var requestDto = _mapper.Map<RequestResponse>(result);
             return requestDto;
         }
-        public async Task<ICollection<RequestResponse>> GetRequetsByGroupId(Guid groupId)
+        public async Task<ICollection<RequestResponse>> GetRequestsByGroupId(Guid groupId)
         {
             await _unitOfValidation.Request.ValidateGroupId(groupId);
             var result = await _repository.Request.GetRequestsByGroupId(groupId);

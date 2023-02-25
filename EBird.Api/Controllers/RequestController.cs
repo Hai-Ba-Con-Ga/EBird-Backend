@@ -128,7 +128,7 @@ namespace EBird.Api.Controllers
             }
         }
 
-        [HttpGet("groupId")]
+        [HttpGet("group/{groupId}")]
         public async Task<ActionResult<Response<ICollection<RequestResponse>>>> GetRequestsByGroupId(Guid groupId)
         {
             // ResponseWithPaging<ICollection<RequestResponse>> response = null;
