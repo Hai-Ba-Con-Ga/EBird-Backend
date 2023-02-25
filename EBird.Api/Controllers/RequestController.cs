@@ -334,7 +334,7 @@ namespace EBird.Api.Controllers
             }
         }
 
-        [HttpPut("merge")]
+        [HttpPost("merge")]
         public async Task<ActionResult<Response<string>>> Merge([FromBody] RequestMergeDTO requestMergeDto)
         {
             Response<string> response = null;
@@ -363,6 +363,52 @@ namespace EBird.Api.Controllers
                 }
                 Console.WriteLine($"Error: {ex.Message}");
                 
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //Put: change request IsReady to true
+        [HttpPut("ready/{requestId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> ReadyRequest(Guid requestId)
+        {
+            Response<string> response = null;
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null)
+                    throw new UnauthorizedException("Not allow to access this resource");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                await _requestService.ReadyRequest(requestId, userId);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Ready request successful")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
                 response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)

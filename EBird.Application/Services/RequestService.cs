@@ -113,5 +113,11 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Request cannot be updated");
             }
         }
+
+        public async Task ReadyRequest(Guid requestId, Guid userId)
+        {
+            await _unitOfValidation.Request.ValidateReadyRequest(requestId, userId);
+            await _repository.Request.ReadyRequest(requestId);
+        }
     }
 }

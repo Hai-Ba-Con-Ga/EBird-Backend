@@ -18,5 +18,6 @@ namespace EBird.Application.Interfaces.IRepository
         Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId);
 
         Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId);
+        Task ReadyRequest(Guid requestId);
     }
 }
