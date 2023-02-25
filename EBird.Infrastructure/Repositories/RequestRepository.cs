@@ -53,7 +53,8 @@ namespace EBird.Infrastructure.Repositories
                 .Include(e => e.ChallengerBird)
                 .Include(e => e.Place)
                 .Include(e => e.Room)
-                .Where(e => e.Id == id && e.IsDeleted == false)
+                .Where(e => e.Id == id 
+                    && e.IsDeleted == false)
                 .FirstOrDefaultAsync();
             return entity;
         }
@@ -69,7 +70,8 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.ChallengerBird)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
-                                .Where(e => e.IsDeleted == false)
+                                .Where(e => e.IsDeleted == false 
+                                    && e.Status != RequestStatus.Closed)
                                 .ToListAsync();
         }
 
@@ -84,7 +86,8 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.ChallengerBird)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
-                                .Where(e => e.IsDeleted == false);
+                                .Where(e => e.IsDeleted == false 
+                                    && e.Status != RequestStatus.Closed);
 
             if (parameters.RoomId != Guid.Empty && parameters.RoomId != null)
             {
@@ -163,10 +166,8 @@ namespace EBird.Infrastructure.Repositories
                     _context.Requests.Add(newRequest);
                     await _context.SaveChangesAsync();
 
-                    hostRequest.IsDeleted = true;
-                    hostRequest.Status = RequestStatus.Matched;
-                    challengerRequest.IsDeleted = true;
-                    challengerRequest.Status = RequestStatus.Matched;
+                    hostRequest.Status = RequestStatus.Closed;
+                    challengerRequest.Status = RequestStatus.Closed;
 
                     _context.Requests.UpdateRange(hostRequest, challengerRequest);
                     await _context.SaveChangesAsync();

@@ -37,7 +37,7 @@ namespace EBird.Application.Validation
                 throw new BadRequestException("Request does not exist");
             }
 
-            if (request.Status != Domain.Enums.RequestStatus.Waiting)
+            if (request.Status != RequestStatus.Waiting)
             {
                 throw new BadRequestException("Request is not waiting for join");
             }
