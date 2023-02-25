@@ -26,7 +26,7 @@ jobs:
       with:
         host: wyvernpserver.tech
         username: admin
-        password: haibaconga
+        password: ${{ secrets.SSH_PASSWORD }}
         port: 22
         script: >
           cd ./ebird &&
