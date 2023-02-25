@@ -184,6 +184,21 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
+        public async Task ReadyRequest(Guid requestId)
+        {
+            var request = await _context.Requests.FindAsync(requestId);
+
+            if (request == null)
+            {
+                throw new BadRequestException("Request not found");
+            }
+
+            request.IsReady = true;
+
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
+        }
+
 
 
         // public async Task UpdateRequest(RequestEntity entity)

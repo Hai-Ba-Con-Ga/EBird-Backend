@@ -12,5 +12,6 @@ namespace EBird.Application.Interfaces.IValidation
         Task ValidateJoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
         public void ValidateRequestDatetime(DateTime requestDate);
         public Task ValidateMergeRequest(params Guid[] requestIds);
+        public Task ValidateReadyRequest(Guid requestId, Guid userId);
     }
 }

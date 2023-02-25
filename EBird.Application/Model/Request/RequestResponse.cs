@@ -30,6 +30,7 @@ namespace EBird.Application.Model.Request
         public PlaceResponseDTO Place { get; set; }
         public RoomResponseDTO Room { get; set; }
         public string? Reference { get; set; }
+        public bool? IsReady { get; set; }
 
         // public void MappingFrom(Profile profile)
         // {
