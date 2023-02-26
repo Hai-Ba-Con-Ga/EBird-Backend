@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Request
 {
-    public class RequestResponse : IMapFrom<RequestEntity>
+    public class RequestResponseDTO : IMapFrom<RequestEntity>
     {
         public int Number { get; set; }
         public Guid Id { get; set; }

@@ -199,6 +199,23 @@ namespace EBird.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<ICollection<RequestEntity>> GetRequestByUserId(Guid userId)
+        {
+             return await dbSet.AsNoTracking()
+                                .OrderByDescending(r => r.CreateDatetime)
+                                .Include(e => e.Group)
+                                .Include(e => e.HostBird)
+                                .Include(e => e.Host)
+                                .Include(e => e.Challenger)
+                                .Include(e => e.ChallengerBird)
+                                .Include(e => e.Place)
+                                .Include(e => e.Room)
+                                .Where(e => e.IsDeleted == false 
+                                    && e.Status != RequestStatus.Closed
+                                    && (e.HostId == userId || e.ChallengerId == userId)) 
+                                .ToListAsync();
+        }
+
 
 
         // public async Task UpdateRequest(RequestEntity entity)
