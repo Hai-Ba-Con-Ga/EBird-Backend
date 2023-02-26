@@ -13,6 +13,7 @@ namespace EBird.Application.Model.Bird
 {
     public class BirdResponseDTO : IMapFrom<BirdEntity>
     {
+        public int Number { get; set; }
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
