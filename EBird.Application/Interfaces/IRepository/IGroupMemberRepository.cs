@@ -8,6 +8,7 @@ namespace EBird.Application.Interfaces.IRepository
 {
     public interface IGroupMemberRepository : IGenericRepository<GroupMemberEntity>
     {
+        Task<ICollection<GroupMemberEntity>> GetGroupsHaveJoined(Guid userId);
         Task OutGroup(Guid userId, Guid groupId);
     }
 }

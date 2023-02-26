@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
+using EBird.Application.Model.GroupMember;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 
@@ -21,6 +22,15 @@ namespace EBird.Application.Services
             _mapper = mapper;
             _repository = wapperRepository;
             _validation = validation;
+        }
+
+        public async Task<ICollection<GroupMemberResponseDTO>> GetGroupsHaveJoined(Guid userId)
+        {
+            await _validation.Base.ValidateAccountId(userId);
+
+            var groupMembers = await _repository.GroupMember.GetGroupsHaveJoined(userId);   
+
+            return _mapper.Map<ICollection<GroupMemberResponseDTO>>(groupMembers);
         }
 
         public async Task<Guid> JoinGroup(Guid userId, Guid groupId)
