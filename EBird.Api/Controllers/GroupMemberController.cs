@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using EBird.Api.Controllers.Exentions;
 using EBird.Application.Exceptions;
+using EBird.Application.Model.GroupMember;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -107,6 +108,53 @@ namespace EBird.Api.Controllers
                 }
 
                 response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+         //get all group user have joined
+        [HttpGet("in")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<ICollection<GroupMemberResponseDTO>>>> GetGroupHaveJoined()
+        {
+            Response<ICollection<GroupMemberResponseDTO>> response = null;
+            try
+            {
+                string rawUserId = this.GetUserId();
+
+                Guid userId = Guid.Parse(rawUserId);
+
+                if (userId == Guid.Empty)
+                    throw new UnauthorizedException("Not allow to access");
+
+                var groupMemberList = await _groupMemberService.GetGroupsHaveJoined(userId);
+
+                response = Response<ICollection<GroupMemberResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get group have joined successful")
+                    .SetData(groupMemberList);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<ICollection<GroupMemberResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+                Console.WriteLine($"Error: {ex.Message}");
+                
+                response = Response<ICollection<GroupMemberResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");

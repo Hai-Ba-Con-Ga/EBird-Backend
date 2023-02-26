@@ -15,6 +15,15 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
+        public async Task<ICollection<GroupMemberEntity>> GetGroupsHaveJoined(Guid userId)
+        {
+            return await _context.GroupMembers
+                .Where(x => x.UserId == userId
+                        && x.IsDeleted == false)
+                .Include(x => x.Group)
+                .ToListAsync();
+        }
+
         public async Task OutGroup(Guid userId, Guid groupId)
         {
             var groupMember = await _context.GroupMembers
