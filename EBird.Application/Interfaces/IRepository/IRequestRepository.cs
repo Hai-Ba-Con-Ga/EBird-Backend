@@ -19,5 +19,6 @@ namespace EBird.Application.Interfaces.IRepository
 
         Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId);
         Task ReadyRequest(Guid requestId);
+        Task<ICollection<RequestEntity>> GetRequestByUserId(Guid userId);
     }
 }

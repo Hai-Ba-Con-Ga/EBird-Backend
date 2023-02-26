@@ -29,19 +29,19 @@ namespace EBird.Api.Controllers
 
         // GET: all
         [HttpGet("all")]
-        public async Task<ActionResult<Response<ICollection<RequestResponse>>>> Get([FromQuery] RequestParameters parameters)
+        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> Get([FromQuery] RequestParameters parameters)
         {
             // ResponseWithPaging<ICollection<RequestResponse>> response = null;
-            Response<ICollection<RequestResponse>> response;
+            Response<ICollection<RequestResponseDTO>> response;
             try
             {
-                ICollection<RequestResponse> listDTO = null;
+                ICollection<RequestResponseDTO> listDTO = null;
 
                 if (parameters.PageSize == 0 && parameters.RoomId == Guid.Empty)
                 {
                     listDTO = await _requestService.GetRequests();
 
-                    response = Response<ICollection<RequestResponse>>.Builder()
+                    response = Response<ICollection<RequestResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all request successful")
@@ -53,15 +53,15 @@ namespace EBird.Api.Controllers
 
                     PagingData metaData = new PagingData()
                     {
-                        CurrentPage = ((PagedList<RequestResponse>)listDTO).CurrentPage,
-                        PageSize = ((PagedList<RequestResponse>)listDTO).PageSize,
-                        TotalCount = ((PagedList<RequestResponse>)listDTO).TotalCount,
-                        TotalPages = ((PagedList<RequestResponse>)listDTO).TotalPages,
-                        HasNext = ((PagedList<RequestResponse>)listDTO).HasNext,
-                        HasPrevious = ((PagedList<RequestResponse>)listDTO).HasPrevious
+                        CurrentPage = ((PagedList<RequestResponseDTO>)listDTO).CurrentPage,
+                        PageSize = ((PagedList<RequestResponseDTO>)listDTO).PageSize,
+                        TotalCount = ((PagedList<RequestResponseDTO>)listDTO).TotalCount,
+                        TotalPages = ((PagedList<RequestResponseDTO>)listDTO).TotalPages,
+                        HasNext = ((PagedList<RequestResponseDTO>)listDTO).HasNext,
+                        HasPrevious = ((PagedList<RequestResponseDTO>)listDTO).HasPrevious
                     };
 
-                    response = ResponseWithPaging<ICollection<RequestResponse>>.Builder()
+                    response = ResponseWithPaging<ICollection<RequestResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all request successful")
@@ -75,14 +75,14 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException)
                 {
-                    response = Response<ICollection<RequestResponse>>.Builder()
+                    response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                response = Response<ICollection<RequestResponse>>.Builder()
+                response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -93,18 +93,18 @@ namespace EBird.Api.Controllers
 
         // GET
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<RequestResponse>>> Get(Guid id)
+        public async Task<ActionResult<Response<RequestResponseDTO>>> Get(Guid id)
         {
-            Response<RequestResponse> response = null;
+            Response<RequestResponseDTO> response = null;
             try
             {
-                var requestDTO = await _requestService.GetRequest(id);
+                var RequestResponse = await _requestService.GetRequest(id);
 
-                response = Response<RequestResponse>.Builder()
+                response = Response<RequestResponseDTO>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get request successful")
-                    .SetData(requestDTO);
+                    .SetData(RequestResponse);
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -112,7 +112,7 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException)
                 {
-                    response = Response<RequestResponse>.Builder()
+                    response = Response<RequestResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
@@ -120,7 +120,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
 
-                response = Response<RequestResponse>.Builder()
+                response = Response<RequestResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -130,17 +130,17 @@ namespace EBird.Api.Controllers
         }
 
         [HttpGet("group/{groupId}")]
-        public async Task<ActionResult<Response<ICollection<RequestResponse>>>> GetRequestsByGroupId(Guid groupId)
+        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> GetRequestsByGroupId(Guid groupId)
         {
             // ResponseWithPaging<ICollection<RequestResponse>> response = null;
-            Response<ICollection<RequestResponse>> response;
+            Response<ICollection<RequestResponseDTO>> response;
             try
             {
-                ICollection<RequestResponse> listDTO = null;
+                ICollection<RequestResponseDTO> listDTO = null;
 
                 listDTO = await _requestService.GetRequestsByGroupId(groupId);
 
-                response = Response<ICollection<RequestResponse>>.Builder()
+                response = Response<ICollection<RequestResponseDTO>>.Builder()
                 .SetSuccess(true)
                 .SetStatusCode((int)HttpStatusCode.OK)
                 .SetMessage($"Get all request in {groupId} successful")
@@ -151,14 +151,14 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException)
                 {
-                    response = Response<ICollection<RequestResponse>>.Builder()
+                    response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode(((BaseHttpException)ex).StatusCode)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-                response = Response<ICollection<RequestResponse>>.Builder()
+                response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -291,7 +291,7 @@ namespace EBird.Api.Controllers
 
         [HttpPut("join/{requestId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestDto)
+        public async Task<ActionResult<Response<string>>> JoinRequest(Guid requestId, [FromBody] JoinRequestDTO joinRequestResponse)
         {
             Response<string> response = null;
             try
@@ -303,7 +303,7 @@ namespace EBird.Api.Controllers
 
                 Guid userId = Guid.Parse(userRawId);
 
-                await _requestService.JoinRequest(requestId, userId, joinRequestDto);
+                await _requestService.JoinRequest(requestId, userId, joinRequestResponse);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
@@ -410,6 +410,52 @@ namespace EBird.Api.Controllers
                 }
 
                 response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        //Get: get all request where hostId = userId or challengerId = userId
+        [HttpGet("user")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> GetRequestByUserId()
+        {
+            Response<ICollection<RequestResponseDTO>> response = null;
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null)
+                    throw new UnauthorizedException("Not allow to access this resource");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                var requests = await _requestService.GetRequestByUserId(userId);
+
+                response = Response<ICollection<RequestResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get request successful")
+                    .SetData(requests);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<ICollection<RequestResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
