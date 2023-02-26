@@ -59,11 +59,10 @@ namespace EBird.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task<ICollection<RequestEntity>> GetRequests()
+        public async Task<ICollection<RequestEntity>> GetRequestsInAllRoom()
         {
             return await dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
-                                .Include(e => e.Group)
                                 .Include(e => e.HostBird)
                                 .Include(e => e.Host)
                                 .Include(e => e.Challenger)
@@ -71,15 +70,15 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false 
-                                    && e.Status != RequestStatus.Closed)
+                                    && e.Status != RequestStatus.Closed
+                                    && e.GroupId == null)
                                 .ToListAsync();
         }
 
-        public async Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters)
+        public async Task<PagedList<RequestEntity>> GetRequestsInAllRoom(RequestParameters parameters)
         {
             var requests = dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
-                                .Include(e => e.Group)
                                 .Include(e => e.HostBird)
                                 .Include(e => e.Host)
                                 .Include(e => e.Challenger)
@@ -87,7 +86,8 @@ namespace EBird.Infrastructure.Repositories
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false 
-                                    && e.Status != RequestStatus.Closed);
+                                    && e.Status != RequestStatus.Closed
+                                    && e.GroupId == null);
 
             if (parameters.RoomId != Guid.Empty && parameters.RoomId != null)
             {

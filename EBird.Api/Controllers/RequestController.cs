@@ -28,8 +28,8 @@ namespace EBird.Api.Controllers
         }
 
         // GET: all
-        [HttpGet("all")]
-        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> Get([FromQuery] RequestParameters parameters)
+        [HttpGet("room")]
+        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> GetRequestFromAllRoom([FromQuery] RequestParameters parameters)
         {
             // ResponseWithPaging<ICollection<RequestResponse>> response = null;
             Response<ICollection<RequestResponseDTO>> response;
