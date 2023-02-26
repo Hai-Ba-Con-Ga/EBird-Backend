@@ -17,6 +17,7 @@ namespace EBird.Application.Validation
         private IBirdTypeValidation _birdType;
         private IWapperRepository _repository;
         private IMatchValidation _match;
+        private IGroupMemberValidation _groupMember;
 
         public UnitOfValidation(IWapperRepository repository)
         {
@@ -105,6 +106,18 @@ namespace EBird.Application.Validation
                     _match = new MatchValidation(_repository);
                 }
                 return _match;
+            }
+        }
+
+        public IGroupMemberValidation GroupMember 
+        {
+            get
+            {
+                if (_groupMember == null)
+                {
+                    _groupMember = new GroupMemberValidation(_repository);
+                }
+                return _groupMember;
             }
         }
     }

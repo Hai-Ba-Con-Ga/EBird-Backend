@@ -23,5 +23,6 @@ namespace EBird.Application.Interfaces
         public IPostRepository Post { get; }
         public IMatchDetailRepository MatchBird { get; }
         public IMatchRepository Match { get; }
+        public IGroupMemberRepository GroupMember { get; }
     }
 }
