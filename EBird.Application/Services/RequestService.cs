@@ -67,7 +67,7 @@ namespace EBird.Application.Services
         {
             _unitOfValidation.Request.ValidateParameter(parameters);
 
-            var resultEntityList = await _repository.Request.GetRequests(parameters);
+            var resultEntityList = await _repository.Request.GetRequestsInAllRoom(parameters);
 
             var requestDTOList = _mapper.Map<PagedList<RequestResponseDTO>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
@@ -77,7 +77,7 @@ namespace EBird.Application.Services
 
         public async Task<ICollection<RequestResponseDTO>> GetRequests()
         {
-            var result = await _repository.Request.GetRequests();
+            var result = await _repository.Request.GetRequestsInAllRoom();
             return _mapper.Map<ICollection<RequestResponseDTO>>(result);
         }
 
