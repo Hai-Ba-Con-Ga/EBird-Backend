@@ -227,6 +227,18 @@ namespace EBird.Infrastructure.Context
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
+            //Config for one to many relationship between AccountEntity and GroupMemberEntity
+            modelBuilder.Entity<GroupMemberEntity>()
+                .HasOne(m => m.User)
+                .WithMany(acc => acc.MemberInGroups)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between GroupEntity and GroupMemberEntity
+            modelBuilder.Entity<GroupMemberEntity>()
+                .HasOne(m => m.Group)
+                .WithMany(acc => acc.GroupMembers)
+                .HasForeignKey(b => b.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
@@ -254,10 +266,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<MatchDetailEntity> MatchBirds { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
-
         public DbSet<PostEntity> Posts { get; set; }
-
         public DbSet<MatchResourceEntity> MatchResources { get; set; }
+        public DbSet<GroupMemberEntity> GroupMembers { get; set; }
 
         #endregion
     }

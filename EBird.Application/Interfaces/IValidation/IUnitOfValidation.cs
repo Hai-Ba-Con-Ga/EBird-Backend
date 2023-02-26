@@ -14,5 +14,6 @@ namespace EBird.Application.Interfaces.IValidation
         public IBirdValidation Bird { get; }
         public IBirdTypeValidation BirdType { get; }
         public IMatchValidation Match { get; }
+        public IGroupMemberValidation GroupMember { get; }
     }
 }
