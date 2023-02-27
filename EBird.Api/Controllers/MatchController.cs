@@ -297,6 +297,47 @@ namespace EBird.Api.Controllers
             }
         }
 
+        [HttpGet("group/{groupId}")]
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByGroup(Guid groupId)
+        {
+            var response = new Response<ICollection<MatchResponseDTO>>();
+            try
+            {
+                ICollection<MatchResponseDTO> matches = null;
+
+                matches = await _matchService.GetMatchByGroupId(groupId);
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all match is success")
+                    .SetData(matches);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
         // //join match with bird id
         // [HttpPut("join/{id}")]
         // [Authorize(AuthenticationSchemes = "Bearer")]

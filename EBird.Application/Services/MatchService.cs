@@ -186,5 +186,17 @@ namespace EBird.Application.Services
 
             return createdId;
         }
+
+        public async Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId)
+        {
+            await _validation.Base.ValidateGroupId(groupId);
+
+            ICollection<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId);
+
+            var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+
+            return matchDTOList;
+        }
+
     }
 }

@@ -18,5 +18,6 @@ namespace EBird.Application.Interfaces.IRepository
         public Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param);
         public Task<ICollection<MatchEntity>> GetWithOwnerAndStatus(Guid userId, RolePlayer rolePlayer, MatchStatus matchStatus);
         public Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO);
+        public Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId);
     }
 }

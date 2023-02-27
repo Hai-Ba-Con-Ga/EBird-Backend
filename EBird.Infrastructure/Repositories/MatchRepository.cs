@@ -231,7 +231,7 @@ namespace EBird.Infrastructure.Repositories
                     //Create match detail for each player (host and challenger)
                     foreach (var birdId in guids)
                     {
-                        if (birdId == Guid.Empty) 
+                        if (birdId == Guid.Empty)
                             throw new BadRequestException("Bird is empty");
 
                         var matchBird = new MatchDetailEntity()
@@ -269,6 +269,23 @@ namespace EBird.Infrastructure.Repositories
                     throw ex;
                 }
             }
+        }
+        public async Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId)
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchDetails)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
+            if (groupId != null)
+            {
+
+                collection = collection.Where(e => e.GroupId == groupId);
+            }
+
+            return await collection.ToListAsync();
         }
     }
 }
