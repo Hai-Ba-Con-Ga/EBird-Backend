@@ -50,19 +50,19 @@ public class ChatHub : Hub
             var principal = new ClaimsPrincipal(userIdentity);
 
             Context.User.AddIdentity(userIdentity);
-           await  Clients.All.SendAsync("First",claims);
-        //    await  Clients.All.SendAsync("First","OK");
+            await Clients.All.SendAsync("First", claims);
+            //    await  Clients.All.SendAsync("First","OK");
         }
         catch (Exception ex)
         {
-           await  Clients.All.SendAsync("First",ex);
+            await Clients.All.SendAsync("First", ex);
 
         }
     }
-  public async Task Second()
+    public async Task Second()
     {
-        
-           await  Clients.All.SendAsync("First",Context.User.Claims);
+
+        await Clients.All.SendAsync("First", Context.User.Claims);
     }
     public override async Task OnConnectedAsync()
     {
@@ -71,7 +71,7 @@ public class ChatHub : Hub
             var chatRoomIdRaw = Context.GetHttpContext().Request.Query["chatRoomId"].ToString().ToLower();
             var userIdRaw = Context.GetHttpContext().Request.Query["userId"].ToString().ToLower();
             Console.WriteLine("===================");
-            
+
             Console.WriteLine("userIdRaw: " + userIdRaw);
             Console.WriteLine("chatRoomIdRaw: " + chatRoomIdRaw);
 
