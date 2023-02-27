@@ -15,11 +15,15 @@ namespace EBird.Domain.Entities
         [Column("Content", TypeName = "text")]
         [MaxLength(50)]
         public string? Content { get; set; }
-
+        
         [Required]
         [Column("CreateDateTime", TypeName = "datetime")]
         public DateTime CreateDateTime { get; set; } = DateTime.Now;
 
+        [Required]
+        [Column("IsRead", TypeName = "bit")]
+        public bool IsRead { get; set; } = false;
+        
         //PK accountID
         [ForeignKey("AccountId")]
         public Guid AccountId { get; set; }
