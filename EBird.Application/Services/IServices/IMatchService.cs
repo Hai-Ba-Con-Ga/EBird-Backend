@@ -20,5 +20,6 @@ namespace EBird.Application.Services.IServices
         Task ConfirmMatch(Guid matchId, Guid userConfirmId);
         public Task<ICollection<MatchResponseDTO>> GetWithOwnerAndStatus(Guid userId, string rolePlayer, string matchStatus);
         Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO);
+        Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId);
     }
 }
