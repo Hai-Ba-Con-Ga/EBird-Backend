@@ -20,7 +20,8 @@ namespace EBird.Application.Model.Match
         public Guid ChallengerId { get; set; }
         public Guid PlaceId { get; set; }
         public PlaceResponseDTO Place { get; set; }
-        public ICollection<MatchDetailResponseDTO> MatchBirdList { get; set; }
+        public Guid GroupId { get; set; }
+        public ICollection<MatchDetailResponseDTO> MatchDetails { get; set; }
         
     }
 }

@@ -14,14 +14,14 @@ using Response;
 namespace EBird.Api.Controllers
 {
     [ApiController]
-    [Route("match-bird")]
+    [Route("match-detail")]
     public class MatchDetailController : ControllerBase
     {
-        private readonly IMatchDetailService _matchBirdService;
+        private readonly IMatchDetailService _matchDetailService;
 
         public MatchDetailController(IMatchDetailService matchBirdService)
         {
-            _matchBirdService = matchBirdService;
+            _matchDetailService = matchBirdService;
         }
 
         //update bird in match
@@ -31,7 +31,7 @@ namespace EBird.Api.Controllers
             var response = new Response<string>();
             try
             {
-                await _matchBirdService.UpdateBirdInMatch(updateData);
+                await _matchDetailService.UpdateBirdInMatch(updateData);
                 response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
@@ -68,7 +68,7 @@ namespace EBird.Api.Controllers
             var response = new Response<string>();
             try
             {
-                await _matchBirdService.UpdateMatchResult(updateData);
+                await _matchDetailService.UpdateMatchResult(updateData);
                 response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
@@ -112,7 +112,7 @@ namespace EBird.Api.Controllers
 
                 updateData.ChallengerId = Guid.Parse(userRawId);
 
-                await _matchBirdService.UpdateChallengerReady(updateData);
+                await _matchDetailService.UpdateChallengerReady(updateData);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
@@ -158,7 +158,7 @@ namespace EBird.Api.Controllers
 
                 Guid userId = Guid.Parse(userRawId);
 
-                await _matchBirdService.UpdateResultMatch(matchId, updateResultDto, userId);
+                await _matchDetailService.UpdateResultMatch(matchId, updateResultDto, userId);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)

@@ -54,16 +54,26 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
-            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
+            matchDTO.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
 
             return matchDTO;
         }
 
         public async Task<ICollection<MatchResponseDTO>> GetMatches()
         {
-            var collection = await _repository.Match.GetAllActiveAsync();
+            var collection = await _repository.Match.GetMatches();
 
-            return _mapper.Map<ICollection<MatchResponseDTO>>(collection);
+            var matchDtoList = _mapper.Map<ICollection<MatchResponseDTO>>(collection);
+
+            foreach (var matchDto in matchDtoList)
+            {
+                matchDto.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(collection
+                                                .Where(x => x.Id == matchDto.Id)
+                                                .FirstOrDefault()
+                                                .MatchDetails);
+            }
+
+            return matchDtoList;
         }
 
         public async Task<ICollection<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
@@ -85,7 +95,7 @@ namespace EBird.Application.Services
 
             foreach (var item in lisDto)
             {
-                item.MatchBirdList = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
+                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
                                                 .Where(x => x.Id == item.Id)
                                                 .FirstOrDefault()
                                                 .MatchDetails);
