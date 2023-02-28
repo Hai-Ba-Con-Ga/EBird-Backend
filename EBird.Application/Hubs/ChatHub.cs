@@ -7,10 +7,12 @@ using EBird.Application.Model.Chat;
 using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-
+using EBird.Application.Services;
+using EBird.Application.Services.IServices;
 
 namespace EBird.Application.Hubs;
-[Authorize(AuthenticationSchemes = "Bearer")]
+// [Authorize]
+//    [Authorize(AuthenticationSchemes = "Bearer")]
 public class ChatHub : Hub
 {
     private readonly static string _Connections = "Connections";
@@ -21,25 +23,63 @@ public class ChatHub : Hub
     private readonly IGenericRepository<MessageEntity> _messageRepository;
     private readonly IGenericRepository<ParticipantEntity> _participantRepository;
     private readonly IMapper _mapper;
+    private readonly IAuthenticationServices _authenticationServices;
 
 
 
-    public ChatHub(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IGenericRepository<ParticipantEntity> participantRepository, IMapper mapper)
+    public ChatHub(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IGenericRepository<ParticipantEntity> participantRepository, IMapper mapper, IAuthenticationServices authenticationServices)
     {
         _chatRoomRepository = chatRoomRepository;
         _accountRepository = accountRepository;
         _messageRepository = messageRepository;
         _participantRepository = participantRepository;
+        _authenticationServices = authenticationServices;
         _mapper = mapper;
+    }
+    public async Task First()
+    {
+        try
+        {
+            // var user = _authenticationServices.GetAccountById(new Guid("c395e8ed-33dc-4659-2c61-08db07458949"));
+            var claims = new List<Claim>
+            {
+        //    await  Clients.All.SendAsync("First","OK");
+                new Claim(ClaimTypes.Sid, "c395e8ed-33dc-4659-2c61-08db07458949")
+            };
+            var userIdentity = new ClaimsIdentity(claims, "login");
+            var principal = new ClaimsPrincipal(userIdentity);
+
+            Context.User.AddIdentity(userIdentity);
+            await Clients.All.SendAsync("First", claims);
+            //    await  Clients.All.SendAsync("First","OK");
+        }
+        catch (Exception ex)
+        {
+            await Clients.All.SendAsync("First", ex);
+
+        }
+    }
+    public async Task Second()
+    {
+
+        await Clients.All.SendAsync("First", Context.User.Claims);
     }
     public override async Task OnConnectedAsync()
     {
         try
         {
             var chatRoomIdRaw = Context.GetHttpContext().Request.Query["chatRoomId"].ToString().ToLower();
+            var userIdRaw = Context.GetHttpContext().Request.Query["userId"].ToString().ToLower();
+            Console.WriteLine("===================");
 
-            var userId = Context.User.GetUserId();
+            Console.WriteLine("userIdRaw: " + userIdRaw);
+            Console.WriteLine("chatRoomIdRaw: " + chatRoomIdRaw);
+
+            // var userId = Context.User.GetUserId();
+            Context.User.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userIdRaw) }));
+            var userId = Guid.Parse(userIdRaw);
             var chatRoomId = Guid.Parse(chatRoomIdRaw);
+            Console.WriteLine("===================");
 
             var checkJoinChatRoom = await _chatRoomRepository.FindWithCondition(x => x.Id == chatRoomId && x.Participants.Any(y => y.AccountId == userId));
             if (checkJoinChatRoom == null)

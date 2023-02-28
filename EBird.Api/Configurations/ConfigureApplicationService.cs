@@ -26,7 +26,8 @@ namespace EBird.Api.Configurations
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IMatchService, MatchService>();
-            services.AddScoped<IMatchBirdService, MatchBirdService>();
+            services.AddScoped<IMatchDetailService, MatchDeatailService>();
+            services.AddScoped<IGroupMemberService, GroupMemberService>();
             //register Validation services
             services.AddScoped<IUnitOfValidation, UnitOfValidation>();
             //register AutoMapper services
@@ -40,6 +41,9 @@ namespace EBird.Api.Configurations
             services.AddScoped<IReportServices, ReportServices>();
 
             services.AddScoped<IPostService, PostService>();
+
+            services.AddScoped<IMapsServices, MapsService>();
+            services.AddHttpClient<IMapsServices, MapsService>();
         }
     }
 }

@@ -3,6 +3,7 @@ using AutoMapper;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Auth;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
@@ -19,14 +20,16 @@ namespace EBird.Application.Services
         private readonly IMapper _mapper;
         private readonly IAuthenticationServices _authenticationServices;
         private readonly IEmailServices _emailServices;
+        private readonly IUnitOfValidation _validation;
 
-        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IGenericRepository<VerifcationStoreEntity> verifcationStoreRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices)
+        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IGenericRepository<VerifcationStoreEntity> verifcationStoreRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices, IUnitOfValidation validation)
         {
             _accountRepository = accountRepository;
             _verifcationStoreRepository = verifcationStoreRepository;
             _mapper = mapper;
             _authenticationServices = authenticationServices;
             _emailServices = emailServices;
+            _validation = validation;
         }
 
         public async Task<AccountResponse> GetAccountById(Guid id)
@@ -71,12 +74,14 @@ namespace EBird.Application.Services
         }
         public async Task DeleteAccount(Guid id)
         {
+            await _validation.Base.ValidateAccountId(id);
+
             var account = await _accountRepository.DeleteSoftAsync(id);
+            
             if (account == null)
             {
                 throw new NotFoundException("Account is not exist");
             }
-            
         }
         public async Task ChangePassword(Guid id, ChangePasswordModel model)
         {
@@ -156,8 +161,7 @@ namespace EBird.Application.Services
                 throw new NotFoundException("The account is not exist");
             }
             account.Role = Domain.Enums.RoleAccount.Admin;
-            await _accountRepository.UpdateAsync(account);
-           
+            await _accountRepository.UpdateAsync(account); 
         }
 
 

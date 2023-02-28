@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Match
 {
-    public class MatchBirdUpdateDTO
+    public class MatchDetailUpdateDTO
     {
         [Required]
         public Guid MatchBirdId { get; set; }

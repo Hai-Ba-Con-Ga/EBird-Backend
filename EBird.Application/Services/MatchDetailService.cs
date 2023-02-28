@@ -14,7 +14,7 @@ using EBird.Domain.Enums;
 
 namespace EBird.Application.Services
 {
-    public class MatchBirdService : IMatchBirdService
+    public class MatchDeatailService : IMatchDetailService
     {
         private IWapperRepository _repository;
         private IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EBird.Application.Services
         private IGenericRepository<ResourceEntity> _resourceRepository;
         private IGenericRepository<MatchResourceEntity> _matchResourceRepository;
         private IGenericRepository<MatchDetailEntity> _matchBirdEntityRepository;
-        public MatchBirdService(IWapperRepository repository, IMapper mapper,
+        public MatchDeatailService(IWapperRepository repository, IMapper mapper,
         IUnitOfValidation unitOfValidation, IGenericRepository<ResourceEntity> resourceRepository,
         IGenericRepository<MatchResourceEntity> matchResourceRepository,
         IGenericRepository<MatchDetailEntity> matchBirdEntityRepository)
@@ -35,9 +35,9 @@ namespace EBird.Application.Services
             _matchBirdEntityRepository = matchBirdEntityRepository;
         }
 
-        public async Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO)
+        public async Task UpdateBirdInMatch(MatchDetailUpdateDTO matchBirdUpdateDTO)
         {
-            var matchBird = await _repository.MatchBird.GetByIdActiveAsync(matchBirdUpdateDTO.MatchBirdId);
+            var matchBird = await _repository.MatchDetail.GetByIdActiveAsync(matchBirdUpdateDTO.MatchBirdId);
 
             if (matchBird == null)
             {
@@ -50,7 +50,7 @@ namespace EBird.Application.Services
 
             matchBird.BirdId = matchBirdUpdateDTO.NewBirdId;
 
-            await _repository.MatchBird.UpdateAsync(matchBird);
+            await _repository.MatchDetail.UpdateAsync(matchBird);
         }
 
         public async Task UpdateChallengerReady(UpdateChallengerToReadyDTO updateData)
@@ -69,7 +69,7 @@ namespace EBird.Application.Services
             if (bird.OwnerId != updateData.ChallengerId)
                 throw new BadRequestException("This bird not belong to this challenger");
 
-            await _repository.MatchBird.UpdateMatchBird(updateData);
+            await _repository.MatchDetail.UpdateMatchDetail(updateData);
         }
 
         public async Task UpdateMatchResult(UpdateMatchResultDTO matchResultDTO)
@@ -106,7 +106,7 @@ namespace EBird.Application.Services
             }
         }
 
-        public async Task UpdateResultMatch(Guid matchId, MatchBirdUpdateResultDTO updateResultData, Guid userId)
+        public async Task UpdateResultMatch(Guid matchId, MatchDetailUpdateResultDTO updateResultData, Guid userId)
         {
             await _unitOfValidation.Base.ValidateMatchId(matchId);
             await _unitOfValidation.Base.ValidateBirdId(updateResultData.BirdId);
@@ -122,7 +122,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("User not in this match");
             }
 
-            await _repository.MatchBird.UpdateResultMatch(matchId, updateResultData.BirdId, updateResultData.Result);
+            await _repository.MatchDetail.UpdateResultMatch(matchId, updateResultData.BirdId, updateResultData.Result);
         }
     }
 }

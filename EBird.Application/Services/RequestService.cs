@@ -50,29 +50,35 @@ namespace EBird.Application.Services
             await _repository.Request.DeleteSoftAsync(id);
         }
 
-        public async Task<RequestResponse> GetRequest(Guid id)
+        public async Task<RequestResponseDTO> GetRequest(Guid id)
         {
             var result = await _repository.Request.GetRequest(id);
-            var requestDto = _mapper.Map<RequestResponse>(result);
+            var requestDto = _mapper.Map<RequestResponseDTO>(result);
             return requestDto;
         }
+        public async Task<ICollection<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId)
+        {
+            await _unitOfValidation.Request.ValidateGroupId(groupId);
+            var result = await _repository.Request.GetRequestsByGroupId(groupId);
+            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
+        }
 
-        public async Task<PagedList<RequestResponse>> GetRequests(RequestParameters parameters)
+        public async Task<PagedList<RequestResponseDTO>> GetRequests(RequestParameters parameters)
         {
             _unitOfValidation.Request.ValidateParameter(parameters);
 
-            var resultEntityList = await _repository.Request.GetRequests(parameters);
+            var resultEntityList = await _repository.Request.GetRequestsInAllRoom(parameters);
 
-            var requestDTOList = _mapper.Map<PagedList<RequestResponse>>(resultEntityList);
+            var requestDTOList = _mapper.Map<PagedList<RequestResponseDTO>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
 
             return requestDTOList;
         }
 
-        public async Task<ICollection<RequestResponse>> GetRequests()
+        public async Task<ICollection<RequestResponseDTO>> GetRequests()
         {
-            var result = await _repository.Request.GetRequests();
-            return _mapper.Map<ICollection<RequestResponse>>(result);
+            var result = await _repository.Request.GetRequestsInAllRoom();
+            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
         }
 
         public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
@@ -81,6 +87,13 @@ namespace EBird.Application.Services
 
             await _repository.Request.JoinRequest(requestId, userId, joinRequestDto);
 
+        }
+
+        public async Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId)
+        {
+            await _unitOfValidation.Request.ValidateMergeRequest(hostRequestId, challengerRequestId);
+
+            return await _repository.Request.MergeRequest(hostRequestId, challengerRequestId);
         }
 
         public async Task UpdateRequest(Guid id, RequestUpdateDTO request)
@@ -100,5 +113,22 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Request cannot be updated");
             }
         }
+
+        public async Task ReadyRequest(Guid requestId, Guid userId)
+        {
+            await _unitOfValidation.Request.ValidateReadyRequest(requestId, userId);
+            await _repository.Request.ReadyRequest(requestId);
+        }
+
+        public async Task<ICollection<RequestResponseDTO>> GetRequestByUserId(Guid userId)
+        {
+            await _unitOfValidation.Base.ValidateAccountId(userId);
+
+            var requestEntities = await _repository.Request.GetRequestByUserId(userId);
+            
+            return _mapper.Map<ICollection<RequestResponseDTO>>(requestEntities);
+        }
+
+
     }
 }

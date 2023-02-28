@@ -63,6 +63,7 @@ namespace EBird.Domain.Entities
 
         public ICollection<MatchEntity> MatchesWithHost { get; set; }
         public ICollection<MatchEntity> MatchesWithChallenger { get; set; }
+        public ICollection<GroupMemberEntity> MemberInGroups { get; set; }
 
     }
 }

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace EBird.Application.Model.Request
 {
-    public class RequestResponse : IMapFrom<RequestEntity>
+    public class RequestResponseDTO : IMapFrom<RequestEntity>
     {
         public int Number { get; set; }
         public Guid Id { get; set; }
@@ -24,9 +24,13 @@ namespace EBird.Application.Model.Request
         public RequestStatus Status { get; set; }
         public AccountResponse Host { get; set; }
         public BirdResponseDTO HostBird { get; set; }
+        public AccountResponse Challenger { get; set; }
+        public BirdResponseDTO ChallengerBird { get; set; }
         public GroupResponseDTO? Group { get; set; }
         public PlaceResponseDTO Place { get; set; }
         public RoomResponseDTO Room { get; set; }
+        public string? Reference { get; set; }
+        public bool? IsReady { get; set; }
 
         // public void MappingFrom(Profile profile)
         // {

@@ -8,11 +8,11 @@ using EBird.Domain.Entities;
 
 namespace EBird.Application.Services.IServices
 {
-    public interface IMatchBirdService
+    public interface IMatchDetailService
     {
-        public Task UpdateBirdInMatch(MatchBirdUpdateDTO matchBirdUpdateDTO);
+        public Task UpdateBirdInMatch(MatchDetailUpdateDTO matchBirdUpdateDTO);
         Task UpdateChallengerReady(UpdateChallengerToReadyDTO updateData);
         public Task UpdateMatchResult (UpdateMatchResultDTO matchBirdUpdateDTO);
-        Task UpdateResultMatch(Guid matchId, MatchBirdUpdateResultDTO updateResultDto, Guid userId);
+        Task UpdateResultMatch(Guid matchId, MatchDetailUpdateResultDTO updateResultDto, Guid userId);
     }
 }

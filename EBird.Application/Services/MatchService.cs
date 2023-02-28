@@ -27,20 +27,20 @@ namespace EBird.Application.Services
             _validation = validation;
         }
 
-        public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
-        {
-            MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
+        // public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
+        // {
+        //     MatchEntity match = _mapper.Map<MatchEntity>(matchCreateDTO);
 
-            MatchDetailEntity matchBird = new MatchDetailEntity()
-            {
-                BirdId = matchCreateDTO.BirdHostId,
-                Result = Domain.Enums.MatchDetailResult.Ready
-            };
+        //     MatchDetailEntity matchBird = new MatchDetailEntity()
+        //     {
+        //         BirdId = matchCreateDTO.BirdHostId,
+        //         Result = Domain.Enums.MatchDetailResult.Ready
+        //     };
 
-            var matchId = await _repository.Match.CreateMatch(match, matchBird);
+        //     var matchId = await _repository.Match.CreateMatch(match, matchBird);
 
-            return matchId;
-        }
+        //     return matchId;
+        // }
 
         public async Task DeleteMatch(Guid matchId)
         {
@@ -54,16 +54,26 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
-            matchDTO.MatchBirdList = _mapper.Map<ICollection<MatchBirdResponseDTO>>(match.MatchBirds);
+            matchDTO.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
 
             return matchDTO;
         }
 
         public async Task<ICollection<MatchResponseDTO>> GetMatches()
         {
-            var collection = await _repository.Match.GetAllActiveAsync();
+            var collection = await _repository.Match.GetMatches();
 
-            return _mapper.Map<ICollection<MatchResponseDTO>>(collection);
+            var matchDtoList = _mapper.Map<ICollection<MatchResponseDTO>>(collection);
+
+            foreach (var matchDto in matchDtoList)
+            {
+                matchDto.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(collection
+                                                .Where(x => x.Id == matchDto.Id)
+                                                .FirstOrDefault()
+                                                .MatchDetails);
+            }
+
+            return matchDtoList;
         }
 
         public async Task<ICollection<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
@@ -85,10 +95,10 @@ namespace EBird.Application.Services
 
             foreach (var item in lisDto)
             {
-                item.MatchBirdList = _mapper.Map<ICollection<MatchBirdResponseDTO>>(list
+                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
                                                 .Where(x => x.Id == item.Id)
                                                 .FirstOrDefault()
-                                                .MatchBirds);
+                                                .MatchDetails);
             }
 
             return lisDto;
@@ -126,7 +136,7 @@ namespace EBird.Application.Services
             if (match.MatchStatus != MatchStatus.Pending)
                 throw new BadRequestException("Match is not pending");
 
-            var matchBirds = match.MatchBirds;
+            var matchBirds = match.MatchDetails;
 
             foreach (var matchBird in matchBirds)
             {
@@ -177,5 +187,26 @@ namespace EBird.Application.Services
 
             return matchDTOList;
         }
+
+        public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
+        {
+            await _validation.Match.ValidateCreateMatch(matchCreateDTO);
+            
+            Guid createdId = await _repository.Match.CreateMatchFromRequest(matchCreateDTO);
+
+            return createdId;
+        }
+
+        public async Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId)
+        {
+            await _validation.Base.ValidateGroupId(groupId);
+
+            ICollection<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId);
+
+            var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+
+            return matchDTOList;
+        }
+
     }
 }

@@ -30,12 +30,12 @@ namespace EBird.Infrastructure.Repositories
         private IPlaceRepository _placeRepository;
         
         private IRequestRepository _requestRepository;
-        private IMatchBirdRepository _matchBirdRepository;
+        private IMatchDetailRepository _matchDetailRepository;
         private IMatchRepository _matchRepository;
         private INotificationRepository _NotificationRepository;
         private INotificationTypeRepository _NotificationTypeRepository;
-
         private IPostRepository _postRepository;
+        private IGroupMemberRepository _groupMemberRepository;
 
         public WapperRepository(ApplicationDbContext context)
         {
@@ -138,15 +138,15 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
-        public IMatchBirdRepository MatchBird
+        public IMatchDetailRepository MatchDetail
         {
             get
             {
-                if(_matchBirdRepository == null)
+                if(_matchDetailRepository == null)
                 {
-                    _matchBirdRepository = new MatchBirdRepository(_context);
+                    _matchDetailRepository = new MatchDetailRepository(_context);
                 }
-                return _matchBirdRepository;
+                return _matchDetailRepository;
             }
         }
 
@@ -193,6 +193,18 @@ namespace EBird.Infrastructure.Repositories
                     _postRepository = new PostRepository(_context);
                 }
                 return _postRepository;
+            }
+        }
+
+        public IGroupMemberRepository GroupMember
+        {
+            get
+            {
+                if (_groupMemberRepository == null)
+                {
+                    _groupMemberRepository = new GroupMemberRepository(_context);
+                }
+                return _groupMemberRepository;
             }
         }
     }

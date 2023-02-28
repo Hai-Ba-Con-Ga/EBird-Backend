@@ -12,13 +12,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EBird.Infrastructure.Repositories
 {
-    public class MatchBirdRepository : GenericRepository<MatchDetailEntity>, IMatchBirdRepository
+    public class MatchDetailRepository : GenericRepository<MatchDetailEntity>, IMatchDetailRepository
     {
-        public MatchBirdRepository(ApplicationDbContext context) : base(context)
+        public MatchDetailRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        public async Task UpdateMatchBird(UpdateChallengerToReadyDTO updateData)
+        public async Task UpdateMatchDetail(UpdateChallengerToReadyDTO updateData)
         {
             var matchBird = await _context.MatchBirds.Where(m => m.MatchId == updateData.MatchId 
                                                         && m.BirdId == updateData.BirdId)
@@ -39,33 +39,33 @@ namespace EBird.Infrastructure.Repositories
             //                                             && m.IsDeleted == false
             //                                             && m.Result == MatchBirdResult.Ready);
 
-            var matchBird = await _context.MatchBirds.Where(m => m.MatchId == matchId
+            var matchDetail = await _context.MatchBirds.Where(m => m.MatchId == matchId
                                                         && m.BirdId == birdId
                                                         && m.IsDeleted == false
                                                         && m.Result == MatchDetailResult.Ready)
                                                         .FirstOrDefaultAsync();
 
-            if (matchBird == null)
+            if (matchDetail == null)
             {
-                throw new BadRequestException("Match-Bird not found");
+                throw new BadRequestException("MatchDetail not found");
             }
 
             switch (result.ToLower())
             {
                 case "win":
-                    matchBird.Result = MatchDetailResult.Win;
+                    matchDetail.Result = MatchDetailResult.Win;
                     break;
                 case "lose":
-                    matchBird.Result = MatchDetailResult.Lose;
+                    matchDetail.Result = MatchDetailResult.Lose;
                     break;
                 case "draw":
-                    matchBird.Result = MatchDetailResult.Draw;
+                    matchDetail.Result = MatchDetailResult.Draw;
                     break;
                 default:
                     throw new BadRequestException("Result not valid");
             }
 
-            _context.MatchBirds.Update(matchBird);
+            _context.MatchBirds.Update(matchDetail);
             await _context.SaveChangesAsync();
         }
     }

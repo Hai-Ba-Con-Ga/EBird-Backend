@@ -107,17 +107,29 @@ namespace EBird.Api.Controllers
             var response = new Response<string>();
             try
             {
-                await _accountRepository.DeleteAsync(id);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Delete account successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                await _accountServices.DeleteAccount(id);
+
+                response = Response<string>.Builder()
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage("Delete account successfully");
             }
             catch (Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
-
+                if (ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<string>.Builder()
+                    .SetSuccess(false)
+                    .SetStatusCode((int)HttpStatusCode.BadRequest)
+                    .SetMessage(ex.Message);
+                }
+                else
+                {
+                    response = Response<string>.Builder()
+                    .SetSuccess(false)
+                    .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                    .SetMessage(ex.Message);
+                }
             }
             return StatusCode((int)response.StatusCode, response);
         }
@@ -152,6 +164,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+        
         [HttpPut("forgot-password")]
         public async Task<ActionResult<Response<string>>> ForgotPassword([FromBody] ForgotPasswordRequest req)
         {
@@ -171,6 +184,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+        
         [HttpPut("reset-password")]
         public async Task<ActionResult<Response<string>>> ResetPassword([FromBody] ResetPasswordModel req)
         {
@@ -194,6 +208,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+       
         [HttpPost("email")]
         public async Task<ActionResult<Response<string>>> CheckEmail([FromBody] CheckEmailRequest req)
         {
