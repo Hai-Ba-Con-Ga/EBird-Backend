@@ -15,5 +15,6 @@ namespace EBird.Application.Services.IServices
         public Task<NotificationDTO> DeleteNotification(Guid NotificationId);
 
         public Task<List<NotificationDTO>> GetAllNotificationsByAccountId(Guid accountId);
+        public Task<Guid> AddNotificationWithZapier(NotificationCreateDTO notificationCreateDTO);
     }
 }

@@ -136,6 +136,44 @@ namespace EBird.Api.Controllers
             }
         }
 
+        // POST create with zapier 
+        [HttpPost("send")]
+        public async Task<ActionResult<Response<Guid>>> PostWithZapier([FromBody] NotificationCreateDTO notificationCreateDTO)
+        {
+            Response<Guid> response = null;
+            try
+            {
+                Guid id = await _notificationService.AddNotificationWithZapier(notificationCreateDTO);
+
+                response = Response<Guid>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Create Notification is success")
+                    .SetData(id);
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+            catch(Exception ex)
+            {
+                if(ex is BadRequestException || ex is NotFoundException)
+                {
+                    response = Response<Guid>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int) response.StatusCode, response);
+                }
+
+                response = Response<Guid>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int) response.StatusCode, response);
+            }
+        }
+
         // PUT update 
         [HttpPut("{id}")]
         public async Task<ActionResult<Response<NotificationUpdateDTO>>> Put(Guid id, [FromBody] NotificationUpdateDTO notificationUpdateDTO)
@@ -211,5 +249,7 @@ namespace EBird.Api.Controllers
                 return StatusCode((int) response.StatusCode, response);
             }
         }
+
+
     }
 }
