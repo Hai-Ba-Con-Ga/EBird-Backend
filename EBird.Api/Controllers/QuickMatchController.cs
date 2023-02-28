@@ -42,7 +42,7 @@ public class QuickMatchController : ControllerBase
             //// Console.WriteLine(lq);
             //System.Console.WriteLine(QuickMatch(new List<RequestTuple>() { lq[1] }, lq[0])[0]);
 
-            var list = await _requestService.GetRequests();
+            var list = (await _requestService.GetRequests()).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             //var finder = list.Where(x => x.Id == id);
             var finder = new RequestTuple();
 
@@ -63,6 +63,63 @@ public class QuickMatchController : ControllerBase
                 else 
                     listRequest.Add(requestTuple); 
                 //Console.WriteLine(requestTuple);
+
+                //requestTuple = lq[0];
+                //Console.WriteLine(requestTuple);
+            }
+            var priorityRequestList = QuickMatch(listRequest, finder).Select(x => x.id).ToList();
+
+
+            //var requests = await _requestService.GetRequests();
+            response = Response<List<Guid>>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetMessage("Requests are retrieved successfully")
+                        .SetData(priorityRequestList);
+        }
+        catch (NotFoundException ex)
+        {
+            response = Response<List<Guid>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            response = Response<List<Guid>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
+        }
+        return response;
+    }
+
+
+
+    [HttpGet("group/{groupId}/{requestId}/")]
+    public async Task<ActionResult<Response<List<Guid>>>> QuickMatchGroup(Guid groupId, Guid requestId)
+    {
+        var response = new Response<List<Guid>>();
+        try
+        {
+            var list = (await _requestService.GetRequestsByGroupId(groupId)).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
+            var finder = new RequestTuple();
+
+            var listRequest = new List<RequestTuple>();
+            foreach(var item in list)
+            {
+                var requestTuple = new RequestTuple(
+                    item.Id,
+                    ((double)item.Place.Latitude, (double)item.Place.Longitude),
+                    item.HostBird.Elo,
+                    item.RequestDatetime,
+                    false
+                );
+                if (requestId == item.Id) 
+                    finder = requestTuple;
+                else 
+                    listRequest.Add(requestTuple); 
+                Console.WriteLine(requestTuple);
 
                 //requestTuple = lq[0];
                 //Console.WriteLine(requestTuple);
