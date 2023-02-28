@@ -72,10 +72,10 @@ namespace EBird.Application.Validation
                     throw new BadRequestException("Request does not exist");
                 }
 
-                if (request.Status != RequestStatus.Waiting)
-                {
-                    throw new BadRequestException("Request is not waiting for join");
-                }
+                // if (request.Status != RequestStatus.Waiting)
+                // {
+                //     throw new BadRequestException("Request is not waiting for M");
+                // }
 
                 if (request.ExpDatetime < DateTime.Now)
                 {
@@ -84,9 +84,14 @@ namespace EBird.Application.Validation
 
                 if (request.ChallengerBirdId != null || request.ChallengerId != null)
                 {
-                    throw new BadRequestException("Request have challenger");
+                    throw new BadRequestException("Request had a challenger");
                 }
             }
+
+           var isValid =  await ValidateTowRequestIsSameUser(requestIds[0], requestIds[1]);
+
+           if (isValid == false)
+            throw new BadRequestException("Request is same user or same bird");
         }
 
         public async Task ValidateReadyRequest(Guid requestId, Guid userId)
@@ -125,6 +130,39 @@ namespace EBird.Application.Validation
             }
         }
 
+        public async Task<bool> ValidateTowRequestIsSameUser(Guid hostRequestID, Guid challengerRequestID)
+        {
+            if (hostRequestID == challengerRequestID)
+            {
+                return false;
+            }
 
+            var hostRequest = await _repository.Request.GetByIdActiveAsync(hostRequestID);
+
+            if (hostRequest == null)
+            {
+                return false;
+            }
+            
+            var challengerRequest = await _repository.Request.GetByIdActiveAsync(challengerRequestID);
+
+            if (challengerRequest == null)
+            {
+                return false;
+            }
+
+            if (hostRequest.HostId == challengerRequest.HostId)
+            {
+                return false;
+            }
+
+            if (hostRequest.HostBirdId == challengerRequest.HostBirdId)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
     }
 }
