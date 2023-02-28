@@ -12,7 +12,7 @@ namespace EBird.Application.Services.IServices
     {
         public Task UpdateBirdInMatch(MatchDetailUpdateDTO matchBirdUpdateDTO);
         Task UpdateChallengerReady(UpdateChallengerToReadyDTO updateData);
-        public Task UpdateMatchResult (UpdateMatchResultDTO matchBirdUpdateDTO);
+        // public Task UpdateMatchResult (UpdateMatchResultDTO matchBirdUpdateDTO);
         Task UpdateResultMatch(Guid matchId, MatchDetailUpdateResultDTO updateResultDto, Guid userId);
     }
 }
