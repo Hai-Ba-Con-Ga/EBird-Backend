@@ -21,7 +21,7 @@ namespace EBird.Application.Interfaces
         public INotificationRepository Notification { get; }
         public INotificationTypeRepository NotificationType { get; }
         public IPostRepository Post { get; }
-        public IMatchDetailRepository MatchBird { get; }
+        public IMatchDetailRepository MatchDetail { get; }
         public IMatchRepository Match { get; }
         public IGroupMemberRepository GroupMember { get; }
     }
