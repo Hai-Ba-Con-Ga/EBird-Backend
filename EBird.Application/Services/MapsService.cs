@@ -11,7 +11,7 @@ public class MapsService : IMapsServices
     private readonly HttpClient _httpClient;
     //private readonly static IConfiguration _configuration;
     private const string ApiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
-    private const string ApiKey = "AIzaSyAY3ufqDLAZJz8dS54hHPWxUCl9pMnsKQE";
+    private const string ApiKey = "AIzaSyAvK1xA1KBzYE1vZkoMskSQ3j9JY9X7XI4";
     
     //GoogleSetting google = _configuration.GetSection(GoogleSetting.GoogleSettingString).Get<GoogleSetting>();
 
