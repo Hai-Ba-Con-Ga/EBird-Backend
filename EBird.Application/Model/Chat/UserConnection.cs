@@ -4,7 +4,7 @@ namespace EBird.Application.Model.Chat
     {
         public Guid UserId { get; set; }
 
-        public Guid ChatRoomId { get; set; }
+        public Guid ReferenceId { get; set; }
     }
 
 }
