@@ -72,39 +72,39 @@ namespace EBird.Application.Services
             await _repository.MatchDetail.UpdateMatchDetail(updateData);
         }
 
-        public async Task UpdateMatchResult(UpdateMatchResultDTO matchResultDTO)
-        {
-            var matchBird = await _matchBirdEntityRepository.GetByIdActiveAsync(matchResultDTO.MatchBirdId);
-            if (matchBird == null)
-            {
-                throw new BadRequestException("Match Bird not found");
-            }
-            int effectRow;
-            matchBird.Result = matchResultDTO.Result;
-            await _matchBirdEntityRepository.UpdateAsync(matchBird);
-            if (matchResultDTO.ListResource != null)
-            {
-                foreach (var resource in matchResultDTO.ListResource)
-                {
-                    var resourceEntity = _mapper.Map<ResourceEntity>(resource);
-                    effectRow = await _resourceRepository.CreateAsync(resourceEntity);
-                    if (effectRow == 0)
-                    {
-                        throw new BadRequestException("Create resource failed");
-                    }
-                    var matchResource = new MatchResourceEntity
-                    {
-                        MatchBirdId = matchBird.Id,
-                        ResourceId = resourceEntity.Id
-                    };
-                    effectRow = await _matchResourceRepository.CreateAsync(matchResource);
-                    if (effectRow == 0)
-                    {
-                        throw new BadRequestException("Create match resource failed");
-                    }
-                }
-            }
-        }
+        // public async Task UpdateMatchResult(UpdateMatchResultDTO matchResultDTO)
+        // {
+        //     var matchBird = await _matchBirdEntityRepository.GetByIdActiveAsync(matchResultDTO.MatchBirdId);
+        //     if (matchBird == null)
+        //     {
+        //         throw new BadRequestException("Match Bird not found");
+        //     }
+        //     int effectRow;
+        //     matchBird.Result = matchResultDTO.Result;
+        //     await _matchBirdEntityRepository.UpdateAsync(matchBird);
+        //     if (matchResultDTO.ListResource != null)
+        //     {
+        //         foreach (var resource in matchResultDTO.ListResource)
+        //         {
+        //             var resourceEntity = _mapper.Map<ResourceEntity>(resource);
+        //             effectRow = await _resourceRepository.CreateAsync(resourceEntity);
+        //             if (effectRow == 0)
+        //             {
+        //                 throw new BadRequestException("Create resource failed");
+        //             }
+        //             var matchResource = new MatchResourceEntity
+        //             {
+        //                 MatchBirdId = matchBird.Id,
+        //                 ResourceId = resourceEntity.Id
+        //             };
+        //             effectRow = await _matchResourceRepository.CreateAsync(matchResource);
+        //             if (effectRow == 0)
+        //             {
+        //                 throw new BadRequestException("Create match resource failed");
+        //             }
+        //         }
+        //     }
+        // }
 
         public async Task UpdateResultMatch(Guid matchId, MatchDetailUpdateResultDTO updateResultData, Guid userId)
         {
@@ -122,7 +122,7 @@ namespace EBird.Application.Services
                 throw new BadRequestException("User not in this match");
             }
 
-            await _repository.MatchDetail.UpdateResultMatch(matchId, updateResultData.BirdId, updateResultData.Result);
+            await _repository.MatchDetail.UpdateMatchResult(matchId, updateResultData.BirdId, updateResultData.Result);
         }
     }
 }
