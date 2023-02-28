@@ -463,5 +463,55 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
+
+        //Post: check tow request come from same user
+        [HttpPut("check")]
+        public async Task<ActionResult<Response<bool>>> CheckRequest([FromBody] RequestCheckDTO requestCheckDto)
+        {
+            Response<bool> response = null;
+            try
+            {
+                bool isValid = await _requestService.CheckRequest(requestCheckDto.HostRequestID, requestCheckDto.ChallengerRequestID);
+
+                string message = "";
+
+                if (isValid == false)
+                {
+                    message = "Tow requests are not valid to merge";
+                } 
+                else
+                {
+                    message = "Tow requests are valid to merge";
+                } 
+
+                response = Response<bool>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage(message)
+                    .SetData(isValid);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<bool>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+                Console.WriteLine($"Error: {ex.Message}");
+                
+                response = Response<bool>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
     }
 }

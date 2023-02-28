@@ -13,5 +13,6 @@ namespace EBird.Application.Interfaces.IValidation
         public void ValidateRequestDatetime(DateTime requestDate);
         public Task ValidateMergeRequest(params Guid[] requestIds);
         public Task ValidateReadyRequest(Guid requestId, Guid userId);
+        public Task<bool> ValidateTowRequestIsSameUser(Guid hostRequestID, Guid challengerRequestID);
     }
 }

@@ -129,6 +129,9 @@ namespace EBird.Application.Services
             return _mapper.Map<ICollection<RequestResponseDTO>>(requestEntities);
         }
 
-
+        public async Task<bool> CheckRequest(Guid hostRequestID, Guid challengerRequestID)
+        {
+          return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
+        }
     }
 }
