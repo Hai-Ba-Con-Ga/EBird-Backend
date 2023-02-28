@@ -8,22 +8,25 @@ namespace EBird.Application.Services
 {
     public class MatchingService
     {
-        public static RequestTuple QuickMatch(List<RequestTuple> listRequest, RequestTuple finder) {
-            var min = double.MaxValue;
-            RequestTuple result = null;
+        public static List<RequestTuple> QuickMatch(List<RequestTuple> listRequest, RequestTuple finder) {
+            //var min = double.MaxValue;
+            List<(RequestTuple, double)> result = new List<(RequestTuple, double)>();
             foreach(var item in listRequest) {
                 var capacity = EdgeDistance.CapacityOfTwoRequest(finder, item);
+                Console.WriteLine(capacity);
                 if (capacity < 0) continue;
                 // System.Console.WriteLine("capacity = " + capacity);
-                if (capacity < min) {
-                    min = capacity;
-                    result = item;
-                }
+                //if (capacity < min) {
+                //    min = capacity;
+                //    result = item;
+                //}
+                result.Add((item, capacity));
             }
-            if (result == null) {
+            if (result.Count == 0) {
                 throw new NotFoundException("Can not found any request match with this request.");
             }
-            return result;
+            return result.OrderBy(x => x.Item2).Select(x => x.Item1).Take(5).ToList();
+
         }
 
         public static void BinarySearch(List<RequestTuple> listRequest) {

@@ -8,8 +8,11 @@ namespace EBird.Application.Services.Algorithm
         public static readonly int EloLimit = 400;
         public static readonly int DateLimit = 7;
 
-        public static readonly double RatioLocationElo = 1;
-        public static readonly double RatioLocationDate = 1;
+        //  20km ~ 100elo
+        public static readonly double RatioLocationElo = 0;
+
+        // 20km ~ 7days
+        public static readonly double RatioLocationDate = 0;
         
         public static double DegToRad(double deg)
         {
@@ -50,9 +53,9 @@ namespace EBird.Application.Services.Algorithm
         public static double CapacityOfTwoRequest(RequestTuple request1, RequestTuple request2)
         {
             //validation
-            if (!IsLocationSatisfied(request1, request2)) return -1;
-            if (!IsEloSatisfied(request1, request2)) return -1;
-            if (!IsDateSatisfied(request1, request2)) return -1;
+            //if (!IsLocationSatisfied(request1, request2)) return -1;
+            //if (!IsEloSatisfied(request1, request2)) return -1;
+            //if (!IsDateSatisfied(request1, request2)) return -1;
             // IsCapacitySatisfied...
 
             // calculate the distance between 3 weights of two requests
