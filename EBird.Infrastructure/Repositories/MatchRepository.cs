@@ -109,6 +109,19 @@ namespace EBird.Infrastructure.Repositories
             return await collection.ToListAsync();
         }
 
+        public async Task<ICollection<MatchEntity>> GetMatches()
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchDetails)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
+
+            return await collection.ToListAsync();
+        }
+
         public async Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO)
         {
             var match = await _context.Matches.FindAsync(matchId);
@@ -222,27 +235,33 @@ namespace EBird.Infrastructure.Repositories
 
 
                     //Create match details
-                    List<Guid> guids = new List<Guid>()
+                    Dictionary<string, Guid> guidDictionary = new Dictionary<string, Guid>()
                     {
-                        request.HostBirdId,
-                        request.ChallengerBirdId ?? Guid.Empty
+                          {"host", request.HostBirdId},
+                          {"challenger", request.ChallengerBirdId ?? Guid.Empty}
                     };
 
                     //Create match detail for each player (host and challenger)
-                    foreach (var birdId in guids)
+                    foreach (var item in guidDictionary)
                     {
-                        if (birdId == Guid.Empty)
+                        if (item.Value == Guid.Empty)
                             throw new BadRequestException("Bird is empty");
 
                         var matchBird = new MatchDetailEntity()
                         {
                             MatchId = match.Id,
-                            BirdId = birdId,
+                            BirdId = item.Value,
                             Result = MatchDetailResult.NotReady,
                             UpdateDatetime = DateTime.Now
                         };
 
+                        if (item.Key.Equals("host"))
+                        {
+                            matchBird.Result = MatchDetailResult.Ready;
+                        }
+
                         var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                        
                         if (birdEntity == null) throw new BadRequestException("Bird not found");
 
                         matchBird.BeforeElo = birdEntity.Elo;
@@ -276,16 +295,16 @@ namespace EBird.Infrastructure.Repositories
                 .Include(e => e.Place)
                 .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
-                .Where(e => e.IsDeleted == false)
-                .OrderByDescending(e => e.CreateDatetime)
-                .AsNoTracking();
+                .Where(e => e.IsDeleted == false);
+
             if (groupId != null)
             {
-
                 collection = collection.Where(e => e.GroupId == groupId);
             }
 
-            return await collection.ToListAsync();
+            return await collection
+                        .OrderByDescending(e => e.CreateDatetime)
+                        .ToListAsync();
         }
     }
 }

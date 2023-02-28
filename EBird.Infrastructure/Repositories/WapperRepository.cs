@@ -30,7 +30,7 @@ namespace EBird.Infrastructure.Repositories
         private IPlaceRepository _placeRepository;
         
         private IRequestRepository _requestRepository;
-        private IMatchDetailRepository _matchBirdRepository;
+        private IMatchDetailRepository _matchDetailRepository;
         private IMatchRepository _matchRepository;
         private INotificationRepository _NotificationRepository;
         private INotificationTypeRepository _NotificationTypeRepository;
@@ -138,15 +138,15 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
-        public IMatchDetailRepository MatchBird
+        public IMatchDetailRepository MatchDetail
         {
             get
             {
-                if(_matchBirdRepository == null)
+                if(_matchDetailRepository == null)
                 {
-                    _matchBirdRepository = new MatchDetailRepository(_context);
+                    _matchDetailRepository = new MatchDetailRepository(_context);
                 }
-                return _matchBirdRepository;
+                return _matchDetailRepository;
             }
         }
 
