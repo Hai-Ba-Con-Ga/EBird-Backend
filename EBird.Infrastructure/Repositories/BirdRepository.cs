@@ -87,7 +87,11 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<List<BirdEntity>> GetBirdsActiveAsync()
         {
-            return await this.GetAllActiveAsync();
+            var birds = dbSet
+                        .Include(b => b.Owner)
+                        .AsNoTracking()
+                        .OrderByDescending(b => b.Elo);
+            return await birds.ToListAsync();
         }
 
         /// <summary>
@@ -97,8 +101,13 @@ namespace EBird.Infrastructure.Repositories
         /// <returns></returns>
         public async Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
         {
-            var birds = dbSet.AsNoTracking();
-            birds = birds.OrderByDescending(b => b.Elo);
+            // var birds = dbSet.AsNoTracking();
+            // birds = birds.OrderByDescending(b => b.Elo);
+
+            var birds = dbSet
+                        .Include(b => b.Owner)
+                        .AsNoTracking()
+                        .OrderByDescending(b => b.Elo);
 
             PagedList<BirdEntity> pagedList = new PagedList<BirdEntity>();
             await pagedList.LoadData(birds, birdParameters.PageNumber, birdParameters.PageSize);

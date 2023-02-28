@@ -62,42 +62,42 @@ namespace EBird.Api.Controllers
 
         }
 
-        [HttpPut("result")]
-        public async Task<ActionResult<Response<string>>> UpdateResult([FromBody] UpdateMatchResultDTO updateData)
-        {
-            var response = new Response<string>();
-            try
-            {
-                await _matchDetailService.UpdateMatchResult(updateData);
-                response = Response<string>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Update match result is success")
-                    .SetData("");
+        // [HttpPut("result")]
+        // public async Task<ActionResult<Response<string>>> UpdateResult([FromBody] UpdateMatchResultDTO updateData)
+        // {
+        //     var response = new Response<string>();
+        //     try
+        //     {
+        //         await _matchDetailService.UpdateMatchResult(updateData);
+        //         response = Response<string>.Builder()
+        //             .SetSuccess(true)
+        //             .SetStatusCode((int)HttpStatusCode.OK)
+        //             .SetMessage("Update match result is success")
+        //             .SetData("");
 
-                return StatusCode((int)response.StatusCode, response);
-            }
-            catch (Exception ex)
-            {
-                if (ex is BadRequestException || ex is NotFoundException)
-                {
-                    response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.BadRequest)
-                            .SetMessage(ex.Message);
+        //         return StatusCode((int)response.StatusCode, response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         if (ex is BadRequestException || ex is NotFoundException)
+        //         {
+        //             response = Response<string>.Builder()
+        //                     .SetSuccess(false)
+        //                     .SetStatusCode((int)HttpStatusCode.BadRequest)
+        //                     .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
-                }
+        //             return StatusCode((int)response.StatusCode, response);
+        //         }
 
-                response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
+        //         response = Response<string>.Builder()
+        //                     .SetSuccess(false)
+        //                     .SetStatusCode((int)HttpStatusCode.InternalServerError)
+        //                     .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
-            }
+        //         return StatusCode((int)response.StatusCode, response);
+        //     }
 
-        }
+        // }
 
         [HttpPut("challenger/ready")]
         [Authorize(AuthenticationSchemes = "Bearer")]

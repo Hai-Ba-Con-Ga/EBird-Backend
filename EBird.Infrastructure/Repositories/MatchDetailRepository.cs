@@ -20,7 +20,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task UpdateMatchDetail(UpdateChallengerToReadyDTO updateData)
         {
-            var matchBird = await _context.MatchBirds.Where(m => m.MatchId == updateData.MatchId 
+            var matchBird = await _context.MatchBirds.Where(m => m.MatchId == updateData.MatchId
                                                         && m.BirdId == updateData.BirdId)
                                                         .FirstOrDefaultAsync();
 
@@ -29,43 +29,92 @@ namespace EBird.Infrastructure.Repositories
             matchBird.Result = MatchDetailResult.Ready;
 
             _context.MatchBirds.Update(matchBird);
-           await  _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateResultMatch(Guid matchId, Guid birdId, string result)
+        public async Task UpdateMatchResult(Guid matchId, Guid birdId, string result)
         {
-            //  var matchBird = await _repository.MatchBird.FindWithCondition(m => m.MatchId == matchId
-            //                                             && m.BirdId == updateResultData.BirdId
-            //                                             && m.IsDeleted == false
-            //                                             && m.Result == MatchBirdResult.Ready);
-
-            var matchDetail = await _context.MatchBirds.Where(m => m.MatchId == matchId
-                                                        && m.BirdId == birdId
-                                                        && m.IsDeleted == false
-                                                        && m.Result == MatchDetailResult.Ready)
-                                                        .FirstOrDefaultAsync();
-
-            if (matchDetail == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                throw new BadRequestException("MatchDetail not found");
-            }
+                try
+                {
+                    var matchDetail = await _context.MatchBirds.Where(m => m.MatchId == matchId
+                                                           && m.BirdId == birdId
+                                                           && m.IsDeleted == false)
+                                                           .FirstOrDefaultAsync();
+                    if (matchDetail == null)
+                    {
+                        throw new BadRequestException("MatchDetail not found");
+                    }
 
-            switch (result.ToLower())
-            {
-                case "win":
-                    matchDetail.Result = MatchDetailResult.Win;
-                    break;
-                case "lose":
-                    matchDetail.Result = MatchDetailResult.Lose;
-                    break;
-                case "draw":
-                    matchDetail.Result = MatchDetailResult.Draw;
-                    break;
-                default:
-                    throw new BadRequestException("Result not valid");
-            }
+                    switch (result.ToLower())
+                    {
+                        case "win":
+                            matchDetail.Result = MatchDetailResult.Win;
+                            break;
+                        case "lose":
+                            matchDetail.Result = MatchDetailResult.Lose;
+                            break;
+                        case "draw":
+                            matchDetail.Result = MatchDetailResult.Draw;
+                            break;
+                        default:
+                            throw new BadRequestException("Result not valid");
+                    }
 
-            _context.MatchBirds.Update(matchDetail);
+                    _context.MatchBirds.Update(matchDetail);
+                    await _context.SaveChangesAsync();
+
+                    var matchDetailCompetitor = await _context.MatchBirds
+                                                        .Where(m => m.MatchId == matchId
+                                                           && m.BirdId != birdId
+                                                           && m.IsDeleted == false)
+                                                           .FirstOrDefaultAsync();
+
+                    if (matchDetailCompetitor == null)
+                        throw new BadRequestException("MatchDetail competitor not found");
+
+                    bool isMatchCompleted =
+                            (matchDetailCompetitor.Result == MatchDetailResult.Win
+                            && matchDetail.Result == MatchDetailResult.Lose)
+                        || (matchDetailCompetitor.Result == MatchDetailResult.Lose
+                            && matchDetail.Result == MatchDetailResult.Win);
+
+                    if (isMatchCompleted)
+                    {
+                        await UpdateMatchResult(matchId, MatchStatus.Completed);
+                    }
+                    else if (matchDetailCompetitor.Result == matchDetail.Result 
+                            && matchDetail.Result == MatchDetailResult.Draw)
+                    {
+                        await UpdateMatchResult(matchId, MatchStatus.Completed);
+                    }
+                    else if (matchDetailCompetitor.Result == matchDetail.Result)
+                    {
+                        await UpdateMatchResult(matchId, MatchStatus.Conflict);
+                    }
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }
+        }
+
+        public async Task UpdateMatchResult(Guid matchId, MatchStatus matchStatus)
+        {
+            var match = await _context.Matches
+                                            .Where(m => m.Id == matchId)
+                                            .FirstOrDefaultAsync();
+            if (match == null)
+                throw new BadRequestException("Match not found");
+
+            match.MatchStatus = matchStatus;
+
+            _context.Matches.Update(match);
+
             await _context.SaveChangesAsync();
         }
     }
