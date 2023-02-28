@@ -6,6 +6,9 @@ using EBird.Domain.Enums;
 namespace EBird.Domain.Entities;
 public class ChatRoomEntity : BaseEntity
 {
+    
+    [Column("ReferenceId", TypeName = "uniqueidentifier")]
+    public Guid ReferenceId { get; set; }
     [Column("Name", TypeName = "nvarchar")]
     [MaxLength(100)]
     public string Name { get; set; }

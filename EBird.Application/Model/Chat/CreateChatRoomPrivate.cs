@@ -6,6 +6,6 @@ namespace EBird.Application.Model.Chat
     public class CreateChatRoomPrivate
     {
         public Guid ReceiverId { get; set; }
-        public TypeChatRoom TypeChatRoom { get; set; } = TypeChatRoom.Private;
+        public TypeChatRoom TypeChatRoom { get; set; } = TypeChatRoom.Request;
     }
 }

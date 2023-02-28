@@ -2,7 +2,7 @@ namespace EBird.Application.Model.Chat
 {
     public class AddParticipant
     {
-        public Guid ChatRoomId { get; set; }
+        public Guid ReferenceId { get; set; }
         public List<Guid> AccountId { get; set; }
     }
 }
