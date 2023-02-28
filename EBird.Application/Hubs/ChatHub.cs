@@ -136,7 +136,7 @@ public class ChatHub : Hub
             var userId = Context.User.GetUserId();
             var account = await _accountRepository.GetByIdActiveAsync(userId);
             if ( referenceId != null)
-            {
+            {   
                 var newMessage = new MessageEntity()
                 {
                     Content = message,
@@ -144,7 +144,7 @@ public class ChatHub : Hub
                     SenderId = userId,
                     Timestamp = DateTime.Now
                 };
-                await Clients.Group( referenceId.ToString()).SendAsync(HubEvents.NewMessage, userId, newMessage);
+                await Clients.Group( referenceId.ToString().ToLower()).SendAsync(HubEvents.NewMessage, account, newMessage);
                 await _messageRepository.CreateAsync(newMessage);
             }
         }
