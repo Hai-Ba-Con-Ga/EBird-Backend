@@ -13,7 +13,7 @@ namespace EBird.Application.Services
             List<(RequestTuple, double)> result = new List<(RequestTuple, double)>();
             foreach(var item in listRequest) {
                 var capacity = EdgeDistance.CapacityOfTwoRequest(finder, item);
-                Console.WriteLine(capacity);
+                //Console.WriteLine(capacity);
                 if (capacity < 0) continue;
                 // System.Console.WriteLine("capacity = " + capacity);
                 //if (capacity < min) {

@@ -48,7 +48,7 @@ public class QuickMatchController : ControllerBase
 
             var listRequest = new List<RequestTuple>();
 
-            Console.WriteLine(list.Count + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Console.WriteLine(list.Count + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             foreach(var item in list)
             {
                 var requestTuple = new RequestTuple(
@@ -62,7 +62,7 @@ public class QuickMatchController : ControllerBase
                     finder = requestTuple;
                 else 
                     listRequest.Add(requestTuple); 
-                Console.WriteLine(requestTuple);
+                //Console.WriteLine(requestTuple);
 
                 //requestTuple = lq[0];
                 //Console.WriteLine(requestTuple);
