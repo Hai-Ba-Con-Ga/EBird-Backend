@@ -6,6 +6,7 @@ using EBird.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EBird.Infrastructure.Context
 {
@@ -112,6 +113,13 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Requests)
                 .HasForeignKey(m => m.PlaceId)
                 .OnDelete(DeleteBehavior.NoAction);
+            //Config for decimal type for longitude and latitude
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Longitude)
+                .HasColumnType("decimal(18,6)");
+            modelBuilder.Entity<PlaceEntity>()
+                .Property(p => p.Latitude)
+                .HasColumnType("decimal(18,6)");
             //Config for one to one relationship between RequestEntity and RoomEntity
             modelBuilder.Entity<RequestEntity>()
                 .HasOne(m => m.Room)
@@ -135,7 +143,7 @@ namespace EBird.Infrastructure.Context
                 .OnDelete(DeleteBehavior.NoAction);
             //Config for one to many relationship between MatchEntity and MatchBirdEntity
             modelBuilder.Entity<MatchEntity>()
-                .HasMany(m => m.MatchBirds)
+                .HasMany(m => m.MatchDetails)
                 .WithOne(mt => mt.Match)
                 .HasForeignKey(mt => mt.MatchId)
                 .OnDelete(DeleteBehavior.NoAction);
@@ -163,13 +171,14 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Matches)
                 .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //Config for one to many relationship between BirdEntity and MatchBirdEntity
+           
+            //Config for one to many relationship between BirdEntity and MatchDetailEntity
             modelBuilder.Entity<MatchDetailEntity>()
                 .HasOne(m => m.Bird)
                 .WithMany(mt => mt.MatchBirds)
                 .HasForeignKey(m => m.BirdId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //Config HasConversation MatchBirdEntity and Enum MatchBirdResult
+            //Config HasConversation MatchBirdEntity and Enum MatchDetailEntity
             modelBuilder.Entity<MatchDetailEntity>()
                 .Property(m => m.Result)
                 .HasConversion<string>();
@@ -204,6 +213,32 @@ namespace EBird.Infrastructure.Context
                 .HasOne(s => s.Post)
                 .WithOne(s => s.Thumbnail)
                 .HasForeignKey<PostEntity>(s => s.ThumbnailId);
+            //Config for not update number column
+                //BirdnEntity
+            modelBuilder.Entity<BirdEntity>().Property(b => b.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //requestEntity
+            modelBuilder.Entity<RequestEntity>().Property(r => r.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                //MatchEntity
+            modelBuilder.Entity<MatchEntity>().Property(m => m.Number)
+            .ValueGeneratedOnAdd()
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+
+            //Config for one to many relationship between AccountEntity and GroupMemberEntity
+            modelBuilder.Entity<GroupMemberEntity>()
+                .HasOne(m => m.User)
+                .WithMany(acc => acc.MemberInGroups)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            //Config for one to many relationship between GroupEntity and GroupMemberEntity
+            modelBuilder.Entity<GroupMemberEntity>()
+                .HasOne(m => m.Group)
+                .WithMany(acc => acc.GroupMembers)
+                .HasForeignKey(b => b.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
@@ -231,10 +266,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<MatchDetailEntity> MatchBirds { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
-
         public DbSet<PostEntity> Posts { get; set; }
-
         public DbSet<MatchResourceEntity> MatchResources { get; set; }
+        public DbSet<GroupMemberEntity> GroupMembers { get; set; }
 
         #endregion
     }

@@ -305,5 +305,47 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
+
+        // GET: get all by account id sort by Elo desc
+        [HttpGet("owner/{id}")]
+        public async Task<ActionResult<Response<List<BirdResponseDTO>>>> GetAllByOwnerSortByEloDesc(Guid id)
+        {
+            Response<List<BirdResponseDTO>> response = null;
+            try
+            {
+                var responseData = await _birdService.GetAllBirdByAccount(id);
+                responseData = responseData.OrderBy(x => -x.Elo).ToList();
+
+                response = Response<List<BirdResponseDTO>>.Builder()
+                   .SetSuccess(true)
+                   .SetStatusCode((int)HttpStatusCode.OK)
+                   .SetMessage("Get bird by account id is successful")
+                   .SetData(responseData);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is UnauthorizedException ||
+                    ex is NotFoundException)
+                {
+                    response = Response<List<BirdResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<List<BirdResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
     }
 }

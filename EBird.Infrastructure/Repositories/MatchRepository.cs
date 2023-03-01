@@ -62,7 +62,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var entity = await _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.Id == id && e.IsDeleted == false)
                 .FirstOrDefaultAsync();
@@ -74,7 +74,7 @@ namespace EBird.Infrastructure.Repositories
 
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -95,7 +95,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -105,6 +105,19 @@ namespace EBird.Infrastructure.Repositories
             {
                 collection = collection.Where(e => e.MatchStatus == param.MatchStatus);
             }
+
+            return await collection.ToListAsync();
+        }
+
+        public async Task<ICollection<MatchEntity>> GetMatches()
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchDetails)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false)
+                .OrderByDescending(e => e.CreateDatetime)
+                .AsNoTracking();
 
             return await collection.ToListAsync();
         }
@@ -168,7 +181,7 @@ namespace EBird.Infrastructure.Repositories
         {
             var collection = _context.Matches
                 .Include(e => e.Place)
-                .Include(e => e.MatchBirds)
+                .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
@@ -191,6 +204,107 @@ namespace EBird.Infrastructure.Repositories
             return await collection.ToListAsync();
         }
 
-       
+        public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
+        {
+            var request = await _context.Requests.FindAsync(matchCreateDTO.RequestId);
+
+            if (request == null) throw new BadRequestException("Request not found");
+
+            using (var transction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    //Create match
+                    MatchEntity match = new MatchEntity()
+                    {
+                        HostId = request.HostId,
+                        ChallengerId = request.ChallengerId,
+                        GroupId = request.GroupId,
+                        PlaceId = request.PlaceId,
+                        RoomId = request.RoomId,
+                        MatchDatetime = request.RequestDatetime,
+                        MatchStatus = MatchStatus.During,
+                        CreateDatetime = DateTime.Now,
+                        ExpDatetime = DateTime.Now.AddDays(2),
+                        FromRequestId = request.Id,
+
+                    };
+
+                    await _context.Matches.AddAsync(match);
+                    var rowEffect = await _context.SaveChangesAsync();
+
+
+                    //Create match details
+                    Dictionary<string, Guid> guidDictionary = new Dictionary<string, Guid>()
+                    {
+                          {"host", request.HostBirdId},
+                          {"challenger", request.ChallengerBirdId ?? Guid.Empty}
+                    };
+
+                    //Create match detail for each player (host and challenger)
+                    foreach (var item in guidDictionary)
+                    {
+                        if (item.Value == Guid.Empty)
+                            throw new BadRequestException("Bird is empty");
+
+                        var matchBird = new MatchDetailEntity()
+                        {
+                            MatchId = match.Id,
+                            BirdId = item.Value,
+                            Result = MatchDetailResult.NotReady,
+                            UpdateDatetime = DateTime.Now
+                        };
+
+                        if (item.Key.Equals("host"))
+                        {
+                            matchBird.Result = MatchDetailResult.Ready;
+                        }
+
+                        var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                        
+                        if (birdEntity == null) throw new BadRequestException("Bird not found");
+
+                        matchBird.BeforeElo = birdEntity.Elo;
+
+                        await _context.MatchBirds.AddAsync(matchBird);
+                        await _context.SaveChangesAsync();
+
+                        // birdEntity.Status = BirdStatus.InMatch.GetDescription();
+                        // _context.Birds.Update(birdEntity);
+                        // await _context.SaveChangesAsync();
+                    }
+
+                    //Enable request : change request status to closed state
+                    request.Status = RequestStatus.Closed;
+                    _context.Requests.Update(request);
+                    await _context.SaveChangesAsync();
+
+                    transction.Commit();
+                    return match.Id;
+                }
+                catch (Exception ex)
+                {
+                    transction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+        public async Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId)
+        {
+            var collection = _context.Matches
+                .Include(e => e.Place)
+                .Include(e => e.MatchDetails)
+                .ThenInclude(e => e.Bird)
+                .Where(e => e.IsDeleted == false);
+
+            if (groupId != null)
+            {
+                collection = collection.Where(e => e.GroupId == groupId);
+            }
+
+            return await collection
+                        .OrderByDescending(e => e.CreateDatetime)
+                        .ToListAsync();
+        }
     }
 }

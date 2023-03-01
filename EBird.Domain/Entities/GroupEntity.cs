@@ -40,5 +40,6 @@ namespace EBird.Domain.Entities
 
         public ICollection<RequestEntity> Requests { get; set; }
         public ICollection<MatchEntity> Matches { get; set; }
+        public ICollection<GroupMemberEntity> GroupMembers { get; set; }
     }
 }

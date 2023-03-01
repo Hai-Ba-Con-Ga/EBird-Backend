@@ -12,8 +12,13 @@ namespace EBird.Application.Interfaces.IRepository
     public interface IRequestRepository : IGenericRepository<RequestEntity>
     {
         Task<RequestEntity> GetRequest(Guid id);
-        Task<PagedList<RequestEntity>> GetRequests(RequestParameters parameters);
-        Task<ICollection<RequestEntity>> GetRequests();
+        Task<PagedList<RequestEntity>> GetRequestsInAllRoom(RequestParameters parameters);
+        Task<ICollection<RequestEntity>> GetRequestsInAllRoom();
         Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
+        Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId);
+
+        Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId);
+        Task ReadyRequest(Guid requestId);
+        Task<ICollection<RequestEntity>> GetRequestByUserId(Guid userId);
     }
 }

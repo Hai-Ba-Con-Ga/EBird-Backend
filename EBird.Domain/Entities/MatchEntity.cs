@@ -56,6 +56,11 @@ namespace EBird.Domain.Entities
         public Guid RoomId { get; set; }
         public RoomEntity Room { get; set; }
 
-        public ICollection<MatchDetailEntity> MatchBirds { get; set; }
+        [ForeignKey("FromRequestId")]
+        [Required]
+        public Guid FromRequestId { get; set; }
+        public RequestEntity FromRequest { get; set; }
+
+        public ICollection<MatchDetailEntity> MatchDetails { get; set; }
     }
 }

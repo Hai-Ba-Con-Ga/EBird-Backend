@@ -14,24 +14,24 @@ using Response;
 namespace EBird.Api.Controllers
 {
     [ApiController]
-    [Route("match-bird")]
-    public class MatchBirdController : ControllerBase
+    [Route("match-detail")]
+    public class MatchDetailController : ControllerBase
     {
-        private readonly IMatchBirdService _matchBirdService;
+        private readonly IMatchDetailService _matchDetailService;
 
-        public MatchBirdController(IMatchBirdService matchBirdService)
+        public MatchDetailController(IMatchDetailService matchBirdService)
         {
-            _matchBirdService = matchBirdService;
+            _matchDetailService = matchBirdService;
         }
 
         //update bird in match
         [HttpPut]
-        public async Task<ActionResult<Response<string>>> Put([FromBody] MatchBirdUpdateDTO updateData)
+        public async Task<ActionResult<Response<string>>> Put([FromBody] MatchDetailUpdateDTO updateData)
         {
             var response = new Response<string>();
             try
             {
-                await _matchBirdService.UpdateBirdInMatch(updateData);
+                await _matchDetailService.UpdateBirdInMatch(updateData);
                 response = Response<string>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
@@ -62,42 +62,42 @@ namespace EBird.Api.Controllers
 
         }
 
-        [HttpPut("result")]
-        public async Task<ActionResult<Response<string>>> UpdateResult([FromBody] UpdateMatchResultDTO updateData)
-        {
-            var response = new Response<string>();
-            try
-            {
-                await _matchBirdService.UpdateMatchResult(updateData);
-                response = Response<string>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Update match result is success")
-                    .SetData("");
+        // [HttpPut("result")]
+        // public async Task<ActionResult<Response<string>>> UpdateResult([FromBody] UpdateMatchResultDTO updateData)
+        // {
+        //     var response = new Response<string>();
+        //     try
+        //     {
+        //         await _matchDetailService.UpdateMatchResult(updateData);
+        //         response = Response<string>.Builder()
+        //             .SetSuccess(true)
+        //             .SetStatusCode((int)HttpStatusCode.OK)
+        //             .SetMessage("Update match result is success")
+        //             .SetData("");
 
-                return StatusCode((int)response.StatusCode, response);
-            }
-            catch (Exception ex)
-            {
-                if (ex is BadRequestException || ex is NotFoundException)
-                {
-                    response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.BadRequest)
-                            .SetMessage(ex.Message);
+        //         return StatusCode((int)response.StatusCode, response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         if (ex is BadRequestException || ex is NotFoundException)
+        //         {
+        //             response = Response<string>.Builder()
+        //                     .SetSuccess(false)
+        //                     .SetStatusCode((int)HttpStatusCode.BadRequest)
+        //                     .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
-                }
+        //             return StatusCode((int)response.StatusCode, response);
+        //         }
 
-                response = Response<string>.Builder()
-                            .SetSuccess(false)
-                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                            .SetMessage("Internal Server Error");
+        //         response = Response<string>.Builder()
+        //                     .SetSuccess(false)
+        //                     .SetStatusCode((int)HttpStatusCode.InternalServerError)
+        //                     .SetMessage("Internal Server Error");
 
-                return StatusCode((int)response.StatusCode, response);
-            }
+        //         return StatusCode((int)response.StatusCode, response);
+        //     }
 
-        }
+        // }
 
         [HttpPut("challenger/ready")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -112,7 +112,7 @@ namespace EBird.Api.Controllers
 
                 updateData.ChallengerId = Guid.Parse(userRawId);
 
-                await _matchBirdService.UpdateChallengerReady(updateData);
+                await _matchDetailService.UpdateChallengerReady(updateData);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
@@ -147,7 +147,7 @@ namespace EBird.Api.Controllers
 
         [HttpPut("result/{matchId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<Response<string>>> UpdateResult(Guid matchId, [FromBody] MatchBirdUpdateResultDTO updateResultDto)
+        public async Task<ActionResult<Response<string>>> UpdateResult(Guid matchId, [FromBody] MatchDetailUpdateResultDTO updateResultDto)
         {
             var response = new Response<string>();
             try
@@ -158,7 +158,7 @@ namespace EBird.Api.Controllers
 
                 Guid userId = Guid.Parse(userRawId);
 
-                await _matchBirdService.UpdateResultMatch(matchId, updateResultDto, userId);
+                await _matchDetailService.UpdateResultMatch(matchId, updateResultDto, userId);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)

@@ -20,7 +20,7 @@ namespace EBird.Api.Mapper
             ApplyMappingsFromAssembly(Assembly.Load("EBird.Application"));
         }
 
-        private void ApplyMappingsFromAssembly(Assembly assembly)
+        private void ApplyMappingsFromAssembly(params Assembly[] assemblies)
         {
             var mapFromType = typeof(IMapFrom<>);
             var mapToType = typeof(IMapTo<>);
@@ -32,21 +32,28 @@ namespace EBird.Api.Mapper
             bool HasMapToInterface(Type t) => t.IsGenericType && t.GetGenericTypeDefinition() == mapToType;
             bool HasInterfaces(Type t) => HasMapFromInterface(t) || HasMapToInterface(t);
 
-            var types = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(HasInterfaces)).ToList();
+            List<Type> allType = new List<Type>();
 
-            foreach (var type in types)
+            foreach (var assembly in assemblies)
+            {
+                var types = assembly.GetExportedTypes()
+                                    .Where(t => t.GetInterfaces().Any(HasInterfaces))
+                                    .ToList();
+                allType.AddRange(types);
+            }
+
+            foreach (var type in allType)
             {
                 var instance = Activator.CreateInstance(type);
-            
-                var methodMappingFromInfo = type.GetMethod(mapFromMethodName) ?? 
+
+                var methodMappingFromInfo = type.GetMethod(mapFromMethodName) ??
                              instance!.GetType().GetInterface(mapFromType.Name)?.GetMethod(mapFromMethodName);
 
-                var methodMappingToInfo = type.GetMethod(mapToMethodName) ?? 
+                var methodMappingToInfo = type.GetMethod(mapToMethodName) ??
                              instance!.GetType().GetInterface(mapToType.Name)?.GetMethod(mapToMethodName);
 
-                 methodMappingFromInfo?.Invoke(instance, new object[] { this });
-                 methodMappingToInfo?.Invoke(instance, new object[] { this });
+                methodMappingFromInfo?.Invoke(instance, new object[] { this });
+                methodMappingToInfo?.Invoke(instance, new object[] { this });
             }
         }
 

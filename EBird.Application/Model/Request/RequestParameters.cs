@@ -8,6 +8,6 @@ namespace EBird.Application.Model.Request
 {
     public class RequestParameters : QueryStringParameters
     {
-        
+        public Guid? RoomId { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EBird.Application.Interfaces.IMapper;
+using EBird.Application.Model.Auth;
 using EBird.Application.Model.Resource;
 using EBird.Domain.Entities;
 
@@ -13,6 +14,7 @@ namespace EBird.Application.Model.Bird
 {
     public class BirdResponseDTO : IMapFrom<BirdEntity>
     {
+        public int Number { get; set; }
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
@@ -25,6 +27,7 @@ namespace EBird.Application.Model.Bird
         public Guid BirdTypeId { get; set; }
         public Guid OwnerId { get; set; }
         public DateTime CreatedDatetime { get; set; }
+        public AccountResponse Owner { get; set; }
         public ICollection<ResourceResponse>? ResourceList { get; set; }
     }
 }

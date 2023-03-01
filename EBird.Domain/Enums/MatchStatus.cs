@@ -6,6 +6,7 @@ namespace EBird.Domain.Enums
         During,
         Completed,
         Approved,
-        Cancelled
+        Cancelled,
+        Conflict
     }
 }

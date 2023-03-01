@@ -7,10 +7,12 @@ using EBird.Application.Model.Chat;
 using EBird.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-
+using EBird.Application.Services;
+using EBird.Application.Services.IServices;
 
 namespace EBird.Application.Hubs;
-[Authorize(AuthenticationSchemes = "Bearer")]
+// [Authorize]
+//    [Authorize(AuthenticationSchemes = "Bearer")]
 public class ChatHub : Hub
 {
     private readonly static string _Connections = "Connections";
@@ -21,43 +23,83 @@ public class ChatHub : Hub
     private readonly IGenericRepository<MessageEntity> _messageRepository;
     private readonly IGenericRepository<ParticipantEntity> _participantRepository;
     private readonly IMapper _mapper;
+    private readonly IAuthenticationServices _authenticationServices;
 
 
 
-    public ChatHub(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IGenericRepository<ParticipantEntity> participantRepository, IMapper mapper)
+    public ChatHub(IGenericRepository<ChatRoomEntity> chatRoomRepository, IGenericRepository<AccountEntity> accountRepository, IGenericRepository<MessageEntity> messageRepository, IGenericRepository<ParticipantEntity> participantRepository, IMapper mapper, IAuthenticationServices authenticationServices)
     {
         _chatRoomRepository = chatRoomRepository;
         _accountRepository = accountRepository;
         _messageRepository = messageRepository;
         _participantRepository = participantRepository;
+        _authenticationServices = authenticationServices;
         _mapper = mapper;
+    }
+    public async Task First()
+    {
+        try
+        {
+            // var user = _authenticationServices.GetAccountById(new Guid("c395e8ed-33dc-4659-2c61-08db07458949"));
+            var claims = new List<Claim>
+            {
+        //    await  Clients.All.SendAsync("First","OK");
+                new Claim(ClaimTypes.Sid, "c395e8ed-33dc-4659-2c61-08db07458949")
+            };
+            var userIdentity = new ClaimsIdentity(claims, "login");
+            var principal = new ClaimsPrincipal(userIdentity);
+
+            Context.User.AddIdentity(userIdentity);
+            await Clients.All.SendAsync("First", claims);
+            //    await  Clients.All.SendAsync("First","OK");
+        }
+        catch (Exception ex)
+        {
+            await Clients.All.SendAsync("First", ex);
+
+        }
+    }
+    public async Task Second()
+    {
+
+        await Clients.All.SendAsync("First", Context.User.Claims);
     }
     public override async Task OnConnectedAsync()
     {
         try
         {
-            var chatRoomIdRaw = Context.GetHttpContext().Request.Query["chatRoomId"].ToString().ToLower();
+            var referenceIdRaw = Context.GetHttpContext().Request.Query["referenceId"].ToString().ToLower();
+            var userIdRaw = Context.GetHttpContext().Request.Query["userId"].ToString().ToLower();
+            var type = Context.GetHttpContext().Request.Query["type"].ToString().ToLower();
+            Console.WriteLine("===================");
 
-            var userId = Context.User.GetUserId();
-            var chatRoomId = Guid.Parse(chatRoomIdRaw);
+            Console.WriteLine("userIdRaw: " + userIdRaw);
+            Console.WriteLine("referenceIdRaw: " + referenceIdRaw);
 
-            var checkJoinChatRoom = await _chatRoomRepository.FindWithCondition(x => x.Id == chatRoomId && x.Participants.Any(y => y.AccountId == userId));
+            // var userId = Context.User.GetUserId();
+            Context.User.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userIdRaw) }));
+            var userId = Guid.Parse(userIdRaw);
+            var referenceId = Guid.Parse(referenceIdRaw);
+            Console.WriteLine("===================");
+
+            var chatRoom = await _chatRoomRepository.FindWithCondition(x => x.ReferenceId == referenceId);
+            var checkJoinChatRoom = await _chatRoomRepository.FindWithCondition(x => x.ReferenceId == referenceId && x.Participants.Any(y => y.AccountId == userId));
             if (checkJoinChatRoom == null)
             {
 
                 var participant = new ParticipantEntity()
                 {
                     AccountId = userId,
-                    ChatRoomId = chatRoomId
+                    ChatRoomId = chatRoom.Id,
                 };
 
                 await _participantRepository.CreateAsync(participant);
             }
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatRoomIdRaw);
-            await UserConnected(new UserConnection() { UserId = userId, ChatRoomId = chatRoomId }, Context.ConnectionId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, referenceIdRaw);
+            await UserConnected(new UserConnection() { UserId = userId, ReferenceId = referenceId }, Context.ConnectionId);
             var account = await _accountRepository.GetByIdActiveAsync(userId);
 
-            await Clients.Group(chatRoomIdRaw).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has joined {chatRoomId}");
+            await Clients.Group(referenceIdRaw).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has joined {referenceId}");
         }
         catch (Exception ex)
         {
@@ -69,14 +111,14 @@ public class ChatHub : Hub
     {
         try
         {
-            var chatRoomId = OnlineUsers.FirstOrDefault(x => x.Value.Contains(Context.ConnectionId)).Key.ChatRoomId;
+            var referenceId = OnlineUsers.FirstOrDefault(x => x.Value.Contains(Context.ConnectionId)).Key.ReferenceId;
             var userId = Context.User.GetUserId();
-            var isOffline = await UserDisconnected(new UserConnection() { UserId = userId, ChatRoomId = chatRoomId }, Context.ConnectionId);
+            var isOffline = await UserDisconnected(new UserConnection() { UserId = userId, ReferenceId = referenceId }, Context.ConnectionId);
             if (isOffline)
             {
                 var account = await _accountRepository.GetByIdActiveAsync(userId);
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatRoomId.ToString().ToLower());
-                await Clients.Group(chatRoomId.ToString().ToLower()).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has left {chatRoomId}");
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, referenceId.ToString().ToLower());
+                await Clients.Group(referenceId.ToString().ToLower()).SendAsync(HubEvents.UserActive, $"{account.FirstName} {account.LastName} has left {referenceId}");
             }
         }
         catch (Exception ex)
@@ -89,11 +131,12 @@ public class ChatHub : Hub
     {
         try
         {
-            var chatRoomId = OnlineUsers.FirstOrDefault(x => x.Value.Contains(Context.ConnectionId)).Key.ChatRoomId;
+            var referenceId = OnlineUsers.FirstOrDefault(x => x.Value.Contains(Context.ConnectionId)).Key.ReferenceId;
+            var chatRoomId =  _chatRoomRepository.FindWithCondition(x => x.ReferenceId == referenceId).Result.Id;
             var userId = Context.User.GetUserId();
             var account = await _accountRepository.GetByIdActiveAsync(userId);
-            if (chatRoomId != null)
-            {
+            if ( referenceId != null)
+            {   
                 var newMessage = new MessageEntity()
                 {
                     Content = message,
@@ -101,7 +144,7 @@ public class ChatHub : Hub
                     SenderId = userId,
                     Timestamp = DateTime.Now
                 };
-                await Clients.Group(chatRoomId.ToString()).SendAsync(HubEvents.NewMessage, userId, newMessage);
+                await Clients.Group( referenceId.ToString().ToLower()).SendAsync(HubEvents.NewMessage, account, newMessage);
                 await _messageRepository.CreateAsync(newMessage);
             }
         }
@@ -117,7 +160,7 @@ public class ChatHub : Hub
         bool isOnline = false;
         lock (OnlineUsers)
         {
-            var temp = OnlineUsers.FirstOrDefault(x => x.Key.UserId == user.UserId && x.Key.ChatRoomId == user.ChatRoomId);
+            var temp = OnlineUsers.FirstOrDefault(x => x.Key.UserId == user.UserId && x.Key.ReferenceId == user.ReferenceId);
             if (temp.Key == null)
             {
                 OnlineUsers.Add(user, new List<string>() { connectionId });
@@ -136,7 +179,7 @@ public class ChatHub : Hub
         lock (OnlineUsers)
         {
 
-            var temp = OnlineUsers.FirstOrDefault(x => x.Key.UserId == user.UserId && x.Key.ChatRoomId == user.ChatRoomId);
+            var temp = OnlineUsers.FirstOrDefault(x => x.Key.UserId == user.UserId && x.Key.ReferenceId == user.ReferenceId);
 
             if (temp.Key == null)
             {
@@ -154,12 +197,12 @@ public class ChatHub : Hub
 
         return Task.FromResult(isOffline);
     }
-    public Task<UserConnection[]> GetOnlineUsers(Guid chatRoomId)
+    public Task<UserConnection[]> GetOnlineUsers(Guid referenceId)
     {
         UserConnection[] onlineUsers;
         lock (OnlineUsers)
         {
-            onlineUsers = OnlineUsers.Where(u => u.Key.ChatRoomId == chatRoomId).Select(k => k.Key).ToArray();
+            onlineUsers = OnlineUsers.Where(u => u.Key.ReferenceId == referenceId).Select(k => k.Key).ToArray();
         }
 
         return Task.FromResult(onlineUsers);
@@ -169,7 +212,7 @@ public class ChatHub : Hub
         List<string> connectionIds = new List<string>();
         lock (OnlineUsers)
         {
-            var temp = OnlineUsers.SingleOrDefault(x => x.Key.UserId == user.UserId && x.Key.ChatRoomId == user.ChatRoomId);
+            var temp = OnlineUsers.SingleOrDefault(x => x.Key.UserId == user.UserId && x.Key.ReferenceId == user.ReferenceId);
             if (temp.Key != null)
             {
                 connectionIds = OnlineUsers.GetValueOrDefault(temp.Key);
