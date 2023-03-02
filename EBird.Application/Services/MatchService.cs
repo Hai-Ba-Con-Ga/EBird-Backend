@@ -161,7 +161,7 @@ namespace EBird.Application.Services
                 default:
                     throw new BadRequestException("Role player not found");
             }
-            
+
             MatchStatus matchStatusEnum;
             switch (matchStatus.ToLower())
             {
@@ -191,7 +191,7 @@ namespace EBird.Application.Services
         public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
         {
             await _validation.Match.ValidateCreateMatch(matchCreateDTO);
-            
+
             Guid createdId = await _repository.Match.CreateMatchFromRequest(matchCreateDTO);
 
             return createdId;
@@ -208,5 +208,39 @@ namespace EBird.Application.Services
             return matchDTOList;
         }
 
+        public async Task<ICollection<MatchResponseDTO>> GetMatchesByBirdId(Guid birdId, string matchStatusRaw)
+        {
+            await _validation.Base.ValidateBirdId(birdId);
+
+            MatchStatus matchStatus;
+
+            ICollection<MatchEntity> matchList;
+
+            if (matchStatusRaw != null)
+            {
+                var resultParse = Enum.TryParse<MatchStatus>(matchStatusRaw, out matchStatus);
+
+                if (resultParse == false)
+                    throw new BadRequestException("Match status not found");
+
+                matchList = await _repository.Match.GetMatchesByBirdId(birdId, matchStatus);
+            }
+            else
+            {
+                matchList = await _repository.Match.GetMatchesByBirdId(birdId);
+            }
+
+            var matchListDTO = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+
+            foreach (var item in matchListDTO)
+            {
+                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(matchList
+                                                .Where(x => x.Id == item.Id)
+                                                .FirstOrDefault()
+                                                .MatchDetails);
+            }
+
+            return matchListDTO;
+        }
     }
 }
