@@ -261,7 +261,7 @@ namespace EBird.Infrastructure.Repositories
                         }
 
                         var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
-                        
+
                         if (birdEntity == null) throw new BadRequestException("Bird not found");
 
                         matchBird.BeforeElo = birdEntity.Elo;
@@ -305,6 +305,31 @@ namespace EBird.Infrastructure.Repositories
             return await collection
                         .OrderByDescending(e => e.CreateDatetime)
                         .ToListAsync();
+        }
+
+        public async Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId, MatchStatus matchStatus)
+        {
+            var result = _context.Matches
+                            .OrderByDescending(m => m.CreateDatetime)
+                            .Include(m => m.MatchDetails)
+                            .ThenInclude(md => md.Bird)
+                            .Include(m => m.Place)
+                            .Where(m => m.MatchStatus == matchStatus  
+                                    && m.MatchDetails.Any(md => md.BirdId == birdId));
+
+            return await result.ToListAsync();
+        }
+
+        public async Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId)
+        {
+            var result = _context.Matches
+                            .OrderByDescending(m => m.CreateDatetime)
+                            .Include(m => m.MatchDetails)
+                            .ThenInclude(md => md.Bird)
+                            .Include(m => m.Place)
+                            .Where(m => m.MatchDetails.Any(md => md.BirdId == birdId));
+
+            return await result.ToListAsync();
         }
     }
 }
