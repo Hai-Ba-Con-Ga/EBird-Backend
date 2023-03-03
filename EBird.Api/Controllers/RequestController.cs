@@ -513,5 +513,99 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
+    
+        // Put: leave off 
+        [HttpPut("leave/{requestId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> LeaveRequest(Guid requestId)
+        {
+            Response<string> response = null;
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null)
+                    throw new UnauthorizedException("Not allow to access this resource");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                await _requestService.LeaveRequest(requestId, userId);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Leave out request successful")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+
+        //Put: change request IsReady to true// Put: leave off 
+        [HttpPut("kick/{requestId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> KickRequest(Guid requestId, [FromBody] Guid kickedUserId)
+        {
+            Response<string> response = null;
+            try
+            {
+                var userRawId = this.GetUserId();
+
+                if (userRawId == null)
+                    throw new UnauthorizedException("Not allow to access this resource");
+
+                Guid userId = Guid.Parse(userRawId);
+
+                await _requestService.KickFromRequest(requestId, userId, kickedUserId);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Kick challenger from request successful")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException || ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
     }
 }

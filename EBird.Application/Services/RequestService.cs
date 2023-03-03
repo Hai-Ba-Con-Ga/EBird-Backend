@@ -133,5 +133,20 @@ namespace EBird.Application.Services
         {
           return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
         }
+
+        public async Task LeaveRequest(Guid requestId, Guid userId)
+        {
+            await _unitOfValidation.Request.ValidateLeaveRequest(requestId, userId);
+
+            await _repository.Request.LeaveRequest(requestId, userId);
+            
+        }
+
+        public async Task KickFromRequest(Guid requestId, Guid userId, Guid kickedUserId)
+        {
+           await _unitOfValidation.Request.ValidateKickFromRequest(requestId, userId, kickedUserId);
+
+           await _repository.Request.LeaveRequest(requestId, kickedUserId);
+        }
     }
 }

@@ -56,6 +56,44 @@ namespace EBird.Application.Validation
 
         }
 
+        public async Task ValidateKickFromRequest(Guid requestId, Guid userId, Guid kickedUserId)
+        {
+            await ValidateAccountId(userId);
+            await ValidateRequestId(requestId);
+
+            var request = await _repository.Request.GetRequest(requestId);
+
+            bool isHost = request.HostId == userId;
+
+            if (isHost == false)
+            {
+                throw new BadRequestException("User is not host in this request");
+            }
+
+            bool isChallenger = request.ChallengerId == kickedUserId;
+
+            if (isChallenger == false)
+            {
+                throw new BadRequestException("User is kicked who is not challenger in this request");
+            }
+
+        }
+
+        public async Task ValidateLeaveRequest(Guid requestId, Guid userId)
+        {
+            await ValidateAccountId(userId);
+            await ValidateRequestId(requestId);
+
+            var request = await _repository.Request.GetRequest(requestId);
+
+            bool isChallenger = request.ChallengerId == userId;
+
+            if (isChallenger == false)
+            {
+                throw new BadRequestException("User is not challenger");
+            }
+        }
+
         public async Task ValidateMergeRequest(params Guid[] requestIds)
         {
             foreach (var id in requestIds)
@@ -164,5 +202,7 @@ namespace EBird.Application.Validation
             return true;
 
         }
+
+        
     }
 }
