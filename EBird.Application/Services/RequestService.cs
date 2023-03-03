@@ -141,5 +141,12 @@ namespace EBird.Application.Services
             await _repository.Request.LeaveRequest(requestId, userId);
             
         }
+
+        public async Task KickFromRequest(Guid requestId, Guid userId, Guid kickedUserId)
+        {
+           await _unitOfValidation.Request.ValidateKickFromRequest(requestId, userId, kickedUserId);
+
+           await _repository.Request.LeaveRequest(requestId, kickedUserId);
+        }
     }
 }

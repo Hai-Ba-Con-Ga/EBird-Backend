@@ -23,5 +23,6 @@ namespace EBird.Application.Services.IServices
         Task<ICollection<RequestResponseDTO>> GetRequestByUserId(Guid userId);
         Task<bool> CheckRequest(Guid hostRequestID, Guid challengerRequestID);
         Task LeaveRequest(Guid requestId, Guid userId);
+        Task KickFromRequest(Guid requestId, Guid userId, Guid kickedUserId);
     }
 }
