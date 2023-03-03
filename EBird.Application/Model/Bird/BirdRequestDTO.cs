@@ -23,10 +23,10 @@ namespace EBird.Application.Model.Bird
         public float Weight { get; set; }
 
         [Required(ErrorMessage = "Bird elo is required")]
-        public int Elo { get; set; } = 1500;
+        public int? Elo { get; set; } = 1500;
 
         [StringLength(50, ErrorMessage = "Bird status cannot be longer than 50 characters")]
-        public string? Status { get; set; }
+        public string? Status { get; set; } = "Free";
 
         [StringLength(1000, ErrorMessage = "Bird description cannot be longer than 1000 characters")]
         public string Description { get; set; }

@@ -216,16 +216,19 @@ namespace EBird.Infrastructure.Repositories
                                 .ToListAsync();
         }
 
+        public async Task LeaveRequest(Guid requestId, Guid userId)
+        {
+            var request = dbSet.Where(r => r.Id == requestId && r.IsDeleted == false)
+                                .FirstOrDefault();
 
+            request.ChallengerId = null;
+            request.ChallengerBirdId = null;
+            request.Status = RequestStatus.Waiting;
+            request.ExpDatetime = DateTime.Now.AddDays(1);
 
-        // public async Task UpdateRequest(RequestEntity entity)
-        // {
-        //     var result = await this.UpdateAsync(entity);
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
+        }
 
-        //     if (result == 0)
-        //     {
-        //         throw new BadRequestException("Request isnt updated");
-        //     }
-        // }
     }
 }
