@@ -270,6 +270,8 @@ namespace EBird.Infrastructure.Context
         public DbSet<MatchResourceEntity> MatchResources { get; set; }
         public DbSet<GroupMemberEntity> GroupMembers { get; set; }
 
+        public DbSet<PaymentEntity> Payments { get; set; }
+
         #endregion
     }
 }
