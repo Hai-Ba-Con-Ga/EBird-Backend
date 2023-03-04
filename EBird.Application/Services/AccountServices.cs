@@ -5,6 +5,7 @@ using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Auth;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using Response;
@@ -21,8 +22,9 @@ namespace EBird.Application.Services
         private readonly IAuthenticationServices _authenticationServices;
         private readonly IEmailServices _emailServices;
         private readonly IUnitOfValidation _validation;
+        private readonly IWapperRepository _repository;
 
-        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IGenericRepository<VerifcationStoreEntity> verifcationStoreRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices, IUnitOfValidation validation)
+        public AccountServices(IGenericRepository<AccountEntity> accountRepository, IGenericRepository<VerifcationStoreEntity> verifcationStoreRepository, IMapper mapper, IAuthenticationServices authenticationServices, IEmailServices emailServices, IUnitOfValidation validation, IWapperRepository repository)
         {
             _accountRepository = accountRepository;
             _verifcationStoreRepository = verifcationStoreRepository;
@@ -30,6 +32,7 @@ namespace EBird.Application.Services
             _authenticationServices = authenticationServices;
             _emailServices = emailServices;
             _validation = validation;
+            _repository = repository;
         }
 
         public async Task<AccountResponse> GetAccountById(Guid id)
@@ -164,6 +167,16 @@ namespace EBird.Application.Services
             await _accountRepository.UpdateAsync(account); 
         }
 
+        public async Task<IList<AccountResponse>> GetAllAccountWithPagination(AccountParameters parameters)
+        {
+            _validation.Base.ValidateParameter(parameters);
 
+            PagedList<AccountEntity> accountList = await _repository.Account.GetAllWithPagination(parameters);
+
+            PagedList<AccountResponse> accountResponseList = _mapper.Map<PagedList<AccountResponse>>(accountList);
+            accountResponseList.MapMetaData(accountList);
+
+            return accountResponseList;
+        }
     }
 }
