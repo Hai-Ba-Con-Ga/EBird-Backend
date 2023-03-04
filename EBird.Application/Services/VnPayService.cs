@@ -22,12 +22,14 @@ public class VnPayService : IPaymentService
 
     private readonly VnpayConfig _config;
     private readonly IGenericRepository<PaymentEntity> _paymentRepository;
+    private readonly IGenericRepository<VipRegistrationEntity> _vipRegistrationRepository;
 
-    public VnPayService(IMapper mapper, IOptions<VnpayConfig> config, IGenericRepository<PaymentEntity> paymentRepository)
+    public VnPayService(IMapper mapper, IOptions<VnpayConfig> config, IGenericRepository<PaymentEntity> paymentRepository, IGenericRepository<VipRegistrationEntity> vipRegistrationRepository)
     {
         _mapper = mapper;
         _config = config.Value;
         _paymentRepository = paymentRepository;
+        _vipRegistrationRepository = vipRegistrationRepository;
     }
     
 
@@ -158,7 +160,7 @@ public class VnPayService : IPaymentService
         AddRequestData("vnp_OrderInfo", "Thanh toan don hang: " + entity.Id);
         AddRequestData("vnp_OrderType", "other");
         AddRequestData("vnp_ReturnUrl", vnp_Returnurl);
-        var txnRef = entity.Id + "|" + DateTime.Now.Millisecond;
+        var txnRef = entity.Id + "|" + "" + payment.LimitMonth+ "|" + DateTime.Now.Millisecond;
         AddRequestData("vnp_TxnRef", txnRef); // Mã tham chiếu của giao dịch tại hệ thống của merchant. Mã này là duy nhất dùng để phân biệt các đơn hàng gửi sang VNPAY. Không được trùng lặp trong ngày
         AddRequestData("vnp_ExpireDate", "20230924083000");
         //AddRequestData("vnp_Bill_AccountId", entity.AccountId.ToString());
@@ -204,11 +206,19 @@ public class VnPayService : IPaymentService
                         // entity.AccountId = accountId;
                         entity.Status = PaymentStatus.Paid;
                         await _paymentRepository.UpdateAsync(entity);
+                        var limitMonth = int.Parse(GetResponseData("vnp_TxnRef").Split('|')[1]);
+                        await CreateVip(entity.AccountId, paymentId, limitMonth);
                     }
                     isSuccess = 1;
                 }
                 else
                 {
+                    var entity = await _paymentRepository.GetByIdActiveAsync(paymentId);
+                    if (entity != null)
+                    {
+                        entity.Status = PaymentStatus.Failed;
+                        await _paymentRepository.UpdateAsync(entity);
+                    }
                     msg = string.Format("Thanh toan loi, OrderId={0}, VNPAY TranId={1},ResponseCode={2}",
                              paymentId, vnpTranId, vnp_ResponseCode);
 
@@ -223,5 +233,16 @@ public class VnPayService : IPaymentService
         }
         queryData.Add("be_msg", msg);
         queryData.Add("isSuccess", isSuccess.ToString());
+    }
+    private async Task CreateVip(Guid accountId, Guid paymentId, int LimitMonth)
+    {
+        var entity = new VipRegistrationEntity
+        {
+            AccountId = accountId,
+            CreatedDate = DateTime.Now,
+            ExpiredDate = DateTime.Now.AddMonths(LimitMonth),
+            PaymentId = paymentId
+        };
+        await _vipRegistrationRepository.CreateAsync(entity);
     }
 }

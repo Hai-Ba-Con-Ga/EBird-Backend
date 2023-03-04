@@ -30,4 +30,5 @@ public class PaymentEntity : BaseEntity
     public string? Description { get; set; } 
     public Guid AccountId { get; set; }
     public AccountEntity Account { get; set; } = null!;
+    public ICollection<VipRegistrationEntity> VipRegistrations { get; set; } = null!;
 }

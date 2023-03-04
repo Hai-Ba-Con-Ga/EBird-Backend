@@ -11,4 +11,5 @@ public class CreatePayment : IMapTo<PaymentEntity>
     // public string PaymentType { get; set; } = "VnPay";
     public Guid AccountId { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public int LimitMonth { get; set; }
 }

@@ -171,7 +171,7 @@ namespace EBird.Infrastructure.Context
                 .WithMany(mt => mt.Matches)
                 .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.NoAction);
-           
+
             //Config for one to many relationship between BirdEntity and MatchDetailEntity
             modelBuilder.Entity<MatchDetailEntity>()
                 .HasOne(m => m.Bird)
@@ -214,15 +214,15 @@ namespace EBird.Infrastructure.Context
                 .WithOne(s => s.Thumbnail)
                 .HasForeignKey<PostEntity>(s => s.ThumbnailId);
             //Config for not update number column
-                //BirdnEntity
+            //BirdnEntity
             modelBuilder.Entity<BirdEntity>().Property(b => b.Number)
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
-                //requestEntity
+            //requestEntity
             modelBuilder.Entity<RequestEntity>().Property(r => r.Number)
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
-                //MatchEntity
+            //MatchEntity
             modelBuilder.Entity<MatchEntity>().Property(m => m.Number)
             .ValueGeneratedOnAdd()
             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
@@ -238,6 +238,21 @@ namespace EBird.Infrastructure.Context
                 .HasOne(m => m.Group)
                 .WithMany(acc => acc.GroupMembers)
                 .HasForeignKey(b => b.GroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.Payments)
+                .WithOne(b => b.Account)
+                .HasForeignKey(b => b.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<AccountEntity>()
+                .HasMany(acc => acc.VipRegistrations)
+                .WithOne(b => b.Account)
+                .HasForeignKey(b => b.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<PaymentEntity>()
+                .HasMany(p => p.VipRegistrations)
+                .WithOne(b => b.Payment)
+                .HasForeignKey(b => b.PaymentId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
 
@@ -271,6 +286,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<GroupMemberEntity> GroupMembers { get; set; }
 
         public DbSet<PaymentEntity> Payments { get; set; }
+        public DbSet<VipRegistrationEntity> PaymentDetails { get; set; }
 
         #endregion
     }
