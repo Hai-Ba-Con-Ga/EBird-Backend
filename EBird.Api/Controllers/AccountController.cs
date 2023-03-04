@@ -245,5 +245,30 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+
+        
+        [HttpGet("search")]
+        public async Task<ActionResult<Response<List<AccountResponse>>>> SearchAccountByUsername([FromQuery] string? query)
+        {
+            var response = new Response<List<AccountResponse>>();
+            try
+            {
+                var account = await _accountServices.GetAllAccount();
+                if (query != null && query.Length != 0)
+                account = account.Where(x => x.Username.Contains(query)).ToList();
+                response = Response<List<AccountResponse>>.Builder().SetData(account).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+            }
+            catch (NotFoundException ex)
+            {
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        
     }
 }
