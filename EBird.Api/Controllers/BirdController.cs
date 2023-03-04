@@ -183,12 +183,20 @@ namespace EBird.Api.Controllers
 
         // PUT : update bird
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<Response<string>>> Put(Guid id, [FromBody] BirdRequestDTO birdDTO)
         {
             Response<string> response = null;
             try
             {
-                await _birdService.UpdateBird(id, birdDTO);
+                var userIdRaw = this.GetUserId();
+
+                if(userIdRaw == null)
+                    throw new UnauthorizedException("Not allow to access");
+
+                var userId = Guid.Parse(userIdRaw);
+                
+                await _birdService.UpdateBird(id, birdDTO, userId);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
@@ -220,13 +228,21 @@ namespace EBird.Api.Controllers
         }
 
         // DELETE : delete bird
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<string>>> Delete(Guid id)
+        [HttpDelete("{birdId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> Delete(Guid birdId)
         {
             Response<string> response = null;
             try
             {
-                await _birdService.DeleteBird(id);
+                var userIdRaw = this.GetUserId();
+
+                if(userIdRaw == null)
+                    throw new UnauthorizedException("Not allow to access");
+
+                Guid userId = Guid.Parse(userIdRaw);
+                
+                await _birdService.DeleteBird(userId, birdId);
 
                 response = Response<string>.Builder()
                     .SetSuccess(true)
