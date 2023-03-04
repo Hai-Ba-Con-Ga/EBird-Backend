@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using AutoMapper;
 using EBird.Application.AppConfig;
+using EBird.Application.Exceptions;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
@@ -244,5 +245,28 @@ public class VnPayService : IPaymentService
             PaymentId = paymentId
         };
         await _vipRegistrationRepository.CreateAsync(entity);
+    }
+
+    public async Task<PaymentEntity> GetPaymentById(Guid paymentId)
+    {
+        var payment = await _paymentRepository.GetByIdActiveAsync(paymentId);
+        if(payment == null){
+            throw new NotFoundException("Payment not found");
+        }
+        return payment;
+    }
+
+    public async Task<List<PaymentEntity>> GetPayments()
+    {
+        var payments = await _paymentRepository.GetAllActiveAsync();
+        if(payments == null){
+            throw new NotFoundException("No payments found");
+        }
+        return payments;
+    }
+
+    public async Task DeletePayment(Guid paymentId)
+    {
+        await _paymentRepository.DeleteSoftAsync(paymentId);
     }
 }

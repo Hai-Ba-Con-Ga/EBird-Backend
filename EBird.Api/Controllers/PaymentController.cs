@@ -10,6 +10,7 @@ using EBird.Application.Extensions;
 using EBird.Application.AppConfig;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using EBird.Domain.Entities;
 
 namespace EBird.Api.Controllers;
 
@@ -54,16 +55,62 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> CallbackVnPay()
     {
         var queryDictionary = QueryHelpers.ParseQuery(Request.QueryString.Value);
-        // string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        // if (rawId == null)
-        // {
-        //     return NotFound();
-        // }
-        // Guid id = Guid.Parse(rawId);
         await _paymentService.ProcessCallback(queryDictionary);
         string frontendUrlCallBack = _config.FrontendCallBack;
 
         string url = QueryHelpers.AddQueryString(frontendUrlCallBack, queryDictionary);
         return Ok(url);
     }
+    [HttpGet("all")]
+    public async Task<ActionResult<Response<List<PaymentEntity>>>> GetAllPayments()
+    {
+        var response = new Response<List<PaymentEntity>>();
+        try
+        {
+            var payments = await _paymentService.GetPayments();
+            response = Response<List<PaymentEntity>>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success").SetData(payments);
+        }
+        catch (Exception ex)
+        {
+            response = Response<List<PaymentEntity>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+        }
+        return StatusCode((int)response.StatusCode, response);
+    }
+    [HttpGet("{paymentId}")]
+    public async Task<ActionResult<Response<PaymentEntity>>> GetPaymentById(Guid paymentId)
+    {
+        var response = new Response<PaymentEntity>();
+        try
+        {
+            var payment = await _paymentService.GetPaymentById(paymentId);
+            response = Response<PaymentEntity>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success").SetData(payment);
+        }
+        catch (Exception ex)
+        {
+            response = Response<PaymentEntity>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+        }
+        return StatusCode((int)response.StatusCode, response);
+    }
+
+    [HttpDelete("{paymentId}")]
+    public async Task<ActionResult<Response<string>>> DeletePaymentById(Guid paymentId)
+    {
+       var response = new Response<string>();
+        try
+        {
+            await _paymentService.DeletePayment(paymentId);
+            response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success");
+        }
+        catch (Exception ex)
+        {
+            response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+        }
+        return StatusCode((int)response.StatusCode, response);
+    }
+
+
+    
+
+     
+
 }
