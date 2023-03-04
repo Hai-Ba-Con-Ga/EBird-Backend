@@ -9,7 +9,8 @@ namespace EBird.Application.Interfaces.IValidation
     public interface IBirdValidation : IBaseValidation
     {
         public Task ValidateCreateBird(BirdCreateDTO birdDTO);
-        public Task ValidateUpdateBird(BirdRequestDTO birdDTO);
+        public Task ValidateUpdateBird(BirdRequestDTO birdDTO, Guid birdId , Guid userId);
         public Task ValidateBirdType(BirdRequestDTO birdDTO);
+        public Task ValidateBirdDelete(Guid userId, Guid birdId);
     }
 }
