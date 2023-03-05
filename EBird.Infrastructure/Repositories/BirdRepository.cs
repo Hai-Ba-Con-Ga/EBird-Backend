@@ -101,18 +101,63 @@ namespace EBird.Infrastructure.Repositories
         /// <returns></returns>
         public async Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters)
         {
-            // var birds = dbSet.AsNoTracking();
-            // birds = birds.OrderByDescending(b => b.Elo);
+            PagedList<BirdEntity> pagedList = new PagedList<BirdEntity>();
 
             var birds = dbSet
                         .Include(b => b.Owner)
-                        .AsNoTracking()
-                        .OrderByDescending(b => b.Elo);
+                        .OrderByDescending(b => b.CreatedDatetime)
+                        .AsNoTracking();
 
-            PagedList<BirdEntity> pagedList = new PagedList<BirdEntity>();
-            await pagedList.LoadData(birds, birdParameters.PageNumber, birdParameters.PageSize);
+            if (birdParameters.SortElo.ToLower().Trim() == "desc")
+            {
+                birds = birds.OrderByDescending(b => b.Elo);
+            }
+            else if (birdParameters.SortElo.ToLower().Trim() == "asc")
+            {
+                birds = birds.OrderBy(b => b.Elo);
+            }
+
+            if (birdParameters.PageSize == 0)
+            {
+                await pagedList.LoadData(birds);
+            }
+            else
+            {
+                await pagedList.LoadData(birds, birdParameters.PageNumber, birdParameters.PageSize);
+            }
 
             return pagedList;
+        }
+
+        public async Task<long> GetBirdRank(Guid birdId)
+        {
+            long ranking = 0;
+
+            string sql = @$"
+                            SELECT Rank
+                            FROM (SELECT * , RANK() OVER (ORDER BY BirdElo DESC) as Rank FROM Bird) as br
+                            WhERE Id = '{birdId}' ";
+
+            var command = _context.Database
+                            .GetDbConnection()
+                            .CreateCommand();
+
+            command.CommandText = sql;
+
+            _context.Database.OpenConnection();
+
+            using (var result = await command.ExecuteReaderAsync())
+            {
+                
+                if (result.Read())
+                {
+                    ranking = result.GetInt64(0);
+                }
+            }
+
+            _context.Database.CloseConnection();
+
+            return ranking;
         }
 
         public async Task<bool> SoftDeleteBirdAsync(Guid birdID)
