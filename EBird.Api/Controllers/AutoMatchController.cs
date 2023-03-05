@@ -21,11 +21,13 @@ namespace EBird.Api.Controllers;
 public class AutoMatchController : ControllerBase
 {
     private readonly IRequestService _requestService;
+    private readonly IMatchingService _matchingService;
     private readonly IMapper _mapper;
 
-    public AutoMatchController(IRequestService requestService, IMapper mapper)
+    public AutoMatchController(IRequestService requestService, IMatchingService mathcingService, IMapper mapper)
     {
         _requestService = requestService;
+        _matchingService = mathcingService;
         _mapper = mapper;
     }
 
@@ -35,6 +37,14 @@ public class AutoMatchController : ControllerBase
         var response = new Response<List<Guid>>();
         try
         {
+            //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
+            //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
+            //var test = await _matchingService.BinarySearch(lq);
+            //for (int i = 0; i < test.Count; i++)
+            //{
+            //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
+            //}
+
             var list = (await _requestService.GetRequestsByGroupId(groupid))
                 .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
@@ -52,7 +62,7 @@ public class AutoMatchController : ControllerBase
                 );
                 listRequest.Add(requestTuple); 
             }
-            var priorityRequestList = BinarySearch(listRequest).ToList();
+            var priorityRequestList = await _matchingService.BinarySearch(listRequest);
 
 
             //var requests = await _requestService.GetRequests();

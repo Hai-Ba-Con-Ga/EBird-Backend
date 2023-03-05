@@ -3,12 +3,16 @@ using EBird.Application.Services.IServices;
 using EBird.Application.Services.Algorithm;
 using Newtonsoft.Json;
 using AutoMapper.Configuration.Annotations;
+using EBird.Application.Validation;
+using EBird.Application.Interfaces.IValidation;
+using Org.BouncyCastle.Asn1;
 
 namespace EBird.Application.Services
 {
-    public class MatchingService
+    public class MatchingService : IMatchingService
     {
-        public static readonly double MatchRatio = 80/100; //80%
+        public IRequestValidation _requestValidation;
+        public static readonly double MatchRatio = 0.8; //80%
         public static List<RequestTuple> QuickMatch(List<RequestTuple> listRequest, RequestTuple finder) {
             //var min = double.MaxValue;
             List<(RequestTuple, double)> result = new List<(RequestTuple, double)>();
@@ -30,66 +34,60 @@ namespace EBird.Application.Services
 
         }
 
-        public static List<(Guid,Guid)> BinarySearch(List<RequestTuple> listRequest) {
+        public async Task<List<(Guid,Guid)>> BinarySearch(List<RequestTuple> listRequest) {
             var left = 0.0;
             var right = EdgeDistance.MaxCapacity() + 0.5;
             var minEdge =  right + 0.5;
-            var initalPair = PerfectMatching(listRequest).Solve();
-
-            var init = PerfectMatching(listRequest);
-            Console.WriteLine(init.Solve());
-            foreach (var item in init.GetMate())
-            {
-                Console.WriteLine(item);
-            }
+            var initalPair = (await PerfectMatching(listRequest)).Solve();
+            //Console.WriteLine("initalPair: " + initalPair);
 
             while (Math.Abs(right - left) > 0.001)
             {
                 var mid = (left + right) / 2;
-                if (CanMatchWithCapacity(mid, listRequest, initalPair))
+                if (await CanMatchWithCapacity(mid, listRequest, initalPair))
                 {
                     right = mid;
                     minEdge = Math.Min(minEdge, mid);
                 }
                 else left = mid;
             }
-            var pairList = PerfectMatching(listRequest);
+            // *** may Hung
+            var pairList = await PerfectMatching(listRequest, minEdge);
             pairList.Solve();
-            
-            foreach (var item in pairList.GetMate())
-            {
-                Console.WriteLine(item);
-            }
 
+            //Console.WriteLine($"minEdge {minEdge}");
 
             //var resultList = new List<(RequestTuple, RequestTuple)>();
             var resultList = new List<(Guid, Guid)>();
 
             for (int i = 0; i < listRequest.Count; i++)
             {
+                //Console.WriteLine(listRequest[i]);
                 var x = pairList.GetMate()[i];
                 if (i < x)
                 {
+                    //Console.WriteLine(i + " " + x);
                     resultList.Add((listRequest[i].id, listRequest[x].id));
                 }
             }
             return resultList;
         }
 
-        public static Blossom PerfectMatching(List<RequestTuple> listRequest, double capacity = Int32.MaxValue)
+        public async Task<Blossom> PerfectMatching(List<RequestTuple> listRequest, double capacity = Int32.MaxValue)
         {
-            return GraphInitailization(listRequest, capacity);
+            return await GraphInitailization(listRequest, capacity);
 
         }
 
-        public static bool CanMatchWithCapacity(double capacity, List<RequestTuple> listRequest, int n)
+        public async Task<bool> CanMatchWithCapacity(double capacity, List<RequestTuple> listRequest, int n)
         {
-            var matching = PerfectMatching(listRequest, capacity);
+            var matching = await PerfectMatching(listRequest, capacity);
             return (double)matching.Solve() / (double)n >= MatchRatio;
         }
 
-        public static Blossom GraphInitailization(List<RequestTuple> listRequest, double capacity) {
+        public async Task<Blossom> GraphInitailization(List<RequestTuple> listRequest, double capacity) {
             var graph = new Blossom(listRequest.Count);
+            //Console.WriteLine("capacity" + capacity);
             for (int i = 0; i < listRequest.Count; i++)
             {
                 for (int j = 0; j < i; j++)
@@ -97,9 +95,16 @@ namespace EBird.Application.Services
                     //validate 2 request from same user. not yet.
 
                     var tmp = EdgeDistance.CapacityOfTwoRequest(listRequest[i], listRequest[j]);
-                    
-                    if (0 <= tmp && tmp <= capacity)
+                    //bool? sameUser = await _requestValidation.
+                    //    ValidateTowRequestIsSameUser(listRequest[i].id, listRequest[j].id);
+                    //if (sameUser == null)
+                    //    throw new NotFoundException("Have no request to check");
+                    bool sameUser = false;
+
+                    if (sameUser == false && 0 <= tmp && tmp <= capacity)
                     {
+                        //if (capacity < 2.09482027053833)
+                        //Console.WriteLine($"{i} {j} {tmp}");
                         graph.AddEdge(i, j);
                     }
                 }
@@ -107,7 +112,7 @@ namespace EBird.Application.Services
             return graph;
         }
 
-		public static dynamic LoadJson(string f)
+		public dynamic LoadJson(string f)
 		{
 			using (StreamReader r = new StreamReader("./MockData/" + f))
 			{
