@@ -187,6 +187,27 @@ namespace EBird.Application.Services
             return birdRatio;
         }
 
+        public async Task<BirdResponseDTO> GetBirdWithRank(Guid birdId)
+        {
+            BirdEntity birdEntity = await _repository.Bird.GetByIdActiveAsync(birdId);
 
+            if (birdEntity == null)
+            {
+                throw new BadRequestException("Can not found bird");
+            }
+
+            var birdDto = _mapper.Map<BirdResponseDTO>(birdEntity);
+
+            long rank = await _repository.Bird.GetBirdRank(birdId);
+
+            if (rank == 0)
+            {
+                throw new BadRequestException("Can not found bird rank");
+            }
+
+            birdDto.Rank = rank;
+            
+            return birdDto;
+        }
     }
 }

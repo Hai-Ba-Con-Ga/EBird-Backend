@@ -20,6 +20,6 @@ namespace EBird.Application.Interfaces.IRepository
         Task<bool> SoftDeleteBirdAsync(Guid birdID);
         Task<PagedList<BirdEntity>> GetBirdsActiveAsync(BirdParameters birdParameters);
         Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId);
-        
+        Task<long> GetBirdRank(Guid birdId);
     }
 }
