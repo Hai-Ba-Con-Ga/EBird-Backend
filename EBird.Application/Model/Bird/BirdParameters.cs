@@ -9,6 +9,6 @@ namespace EBird.Application.Model.Bird
 {
     public class BirdParameters : QueryStringParameters
     {
-
+       public string SortElo { get; set; } = "none";
     }
 }
