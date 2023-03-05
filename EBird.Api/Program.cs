@@ -39,8 +39,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultTokenProviders();
 
 builder.Services.AddSettingService(configuration);
-builder.Services.AddDbService(configuration);
-//builder.Services.AddDbLocalService();
+//builder.Services.AddDbService(configuration);
+builder.Services.AddDbLocalService();
 
 //register Repository
 builder.Services.AddRepositories();
@@ -115,13 +115,8 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/hub/chat", options => {
-  options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
-});
-app.MapHub<TestHub>("/hub/test",options => {
-  options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
-});
-
+app.MapHub<ChatHub>("/hub/chat");
+app.MapHub<TestHub>("/hub/test");
 // app.MapHub<RequestHub>("/requestHub");
 
 
