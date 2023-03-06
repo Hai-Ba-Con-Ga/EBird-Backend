@@ -33,39 +33,27 @@ namespace EBird.Api.Controllers
         {
             Response<IList<BirdResponseDTO>> response = null;
             try
-            {
+            {   
                 IList<BirdResponseDTO> listBirdDTO = null;
-                if (parameters.PageSize == 0)
+
+                listBirdDTO = await _birdService.GetBirdsByPagingParameters(parameters);
+
+                PagingData metaData = new PagingData()
                 {
-                    listBirdDTO = await _birdService.GetBirds();
+                    CurrentPage = ((PagedList<BirdResponseDTO>)listBirdDTO).CurrentPage,
+                    PageSize = ((PagedList<BirdResponseDTO>)listBirdDTO).PageSize,
+                    TotalCount = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalCount,
+                    TotalPages = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalPages,
+                    HasNext = ((PagedList<BirdResponseDTO>)listBirdDTO).HasNext,
+                    HasPrevious = ((PagedList<BirdResponseDTO>)listBirdDTO).HasPrevious
+                };
 
-                    response = Response<IList<BirdResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all birds successful")
-                    .SetData(listBirdDTO);
-                }
-                else
-                {
-                    listBirdDTO = await _birdService.GetBirdsByPagingParameters(parameters);
-
-                    PagingData metaData = new PagingData()
-                    {
-                        CurrentPage = ((PagedList<BirdResponseDTO>)listBirdDTO).CurrentPage,
-                        PageSize = ((PagedList<BirdResponseDTO>)listBirdDTO).PageSize,
-                        TotalCount = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalCount,
-                        TotalPages = ((PagedList<BirdResponseDTO>)listBirdDTO).TotalPages,
-                        HasNext = ((PagedList<BirdResponseDTO>)listBirdDTO).HasNext,
-                        HasPrevious = ((PagedList<BirdResponseDTO>)listBirdDTO).HasPrevious
-                    };
-
-                    response = ResponseWithPaging<IList<BirdResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all birds successful")
-                    .SetData(listBirdDTO)
-                    .SetPagingData(metaData);
-                }
+                response = ResponseWithPaging<IList<BirdResponseDTO>>.Builder()
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage("Get all birds successful")
+                .SetData(listBirdDTO)
+                .SetPagingData(metaData);
 
                 return StatusCode((int)response.StatusCode, response);
             }
