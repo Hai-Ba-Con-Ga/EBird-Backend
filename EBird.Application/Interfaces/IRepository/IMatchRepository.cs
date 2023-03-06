@@ -23,5 +23,6 @@ namespace EBird.Application.Interfaces.IRepository
         public Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId);
         Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId, MatchStatus matchStatus);
         Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId);
+        Task ChangeMatchResultToDraw(Guid matchId, ResolveMatchResultDTO updateData);
     }
 }

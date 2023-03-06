@@ -20,6 +20,10 @@ namespace EBird.Domain.Entities
         [Required]
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
+        [Column("Thumnail", TypeName = "varchar")]
+        [StringLength(255)]
+        public string? Thumnail { get; set; }
+
         public ICollection<AccountResourceEntity> AccountResources { get; set; }
 
         public ICollection<BirdResourceEntity> BirdResources { get; set; }
@@ -27,5 +31,6 @@ namespace EBird.Domain.Entities
         public ICollection<MatchResourceEntity> MatchResources { get; set; }
 
         public PostEntity? Post { get; set; }
+
     }
 }

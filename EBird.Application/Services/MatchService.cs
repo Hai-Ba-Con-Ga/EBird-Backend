@@ -20,12 +20,14 @@ namespace EBird.Application.Services
         private readonly IWapperRepository _repository;
         private readonly IMapper _mapper;
         private readonly IUnitOfValidation _validation;
+        private readonly IMatchDetailService _matchDetailService;
 
-        public MatchService(IWapperRepository repository, IMapper mapper, IUnitOfValidation validation)
+        public MatchService(IWapperRepository repository, IMapper mapper, IUnitOfValidation validation, IMatchDetailService matchDetailService)
         {
             _repository = repository;
             _mapper = mapper;
             _validation = validation;
+            _matchDetailService = matchDetailService;
         }
 
         // public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
@@ -238,6 +240,31 @@ namespace EBird.Application.Services
             }
 
             return matchListDTO;
+        }
+
+        public async Task ResolveMatchResult(Guid userId, Guid matchId, ResolveMatchResultDTO updateData)
+        {
+            await _validation.Base.ValidateAdmin(userId);
+            await _validation.Base.ValidateMatchId(matchId);
+
+            if (updateData.loseBirdId == null || updateData.loseBirdId == null)
+            {
+                await _repository.Match.ChangeMatchResultToDraw(matchId, updateData);
+            }
+            else
+            {
+                await _repository.MatchDetail.UpdateMatchResult(matchId, updateData.winBirdId, "win");
+                await _repository.MatchDetail.UpdateMatchResult(matchId, updateData.loseBirdId, "lose");
+
+                var match = await _repository.Match.GetMatch(matchId);
+
+                if (match.MatchStatus == MatchStatus.Completed)
+                {
+                    bool isInGroup = (match.GroupId != Guid.Empty && match.GroupId != null);
+
+                    await _matchDetailService.UpdateBirdsEloAfterMatchComplete(matchId, isInGroup);
+                }
+            }
         }
     }
 }

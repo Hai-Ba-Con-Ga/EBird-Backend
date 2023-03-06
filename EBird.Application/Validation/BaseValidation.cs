@@ -3,6 +3,7 @@ using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.PagingModel;
 using EBird.Application.Model.Resource;
+using EBird.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,6 +107,21 @@ namespace EBird.Application.Validation
             if (match == null)
             {
                 throw new BadRequestException("Match does not exist");
+            }
+        }
+
+        public async Task ValidateAdmin(Guid userId)
+        {
+            var account = await _repository.Account.GetByIdActiveAsync(userId);
+
+            if (account == null)
+            {
+                throw new BadRequestException("User does not exist");
+            }
+
+            if (account.Role != RoleAccount.Admin)
+            {
+                throw new BadRequestException("User is not admin");
             }
         }
     }

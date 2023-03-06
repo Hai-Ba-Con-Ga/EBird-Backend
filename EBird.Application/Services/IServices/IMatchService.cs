@@ -23,5 +23,6 @@ namespace EBird.Application.Services.IServices
         Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO);
         Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId);
         Task<ICollection<MatchResponseDTO>> GetMatchesByBirdId(Guid birdId, string matchStatus);
+        Task ResolveMatchResult(Guid userId, Guid matchId, ResolveMatchResultDTO updateData);
     }
 }

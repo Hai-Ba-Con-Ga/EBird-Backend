@@ -21,7 +21,7 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<IList<MatchDetailEntity>> GetMatchDetailsByMatchId(Guid matchId)
         {
-            var matchDetails = await _context.MatchBirds
+            var matchDetails = await _context.MatchDetails
                                         .Include(mb => mb.Bird)
                                         .Where(mb => mb.MatchId == matchId).ToListAsync();
 
@@ -30,13 +30,13 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task UpdateMatchDetails(IList<MatchDetailEntity> matchDetails)
         {
-            _context.MatchBirds.UpdateRange(matchDetails);
+            _context.MatchDetails.UpdateRange(matchDetails);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateMatchDetail(UpdateChallengerToReadyDTO updateData)
         {
-            var matchBird = await _context.MatchBirds.Where(m => m.MatchId == updateData.MatchId
+            var matchBird = await _context.MatchDetails.Where(m => m.MatchId == updateData.MatchId
                                                         && m.BirdId == updateData.BirdId)
                                                         .FirstOrDefaultAsync();
 
@@ -44,7 +44,7 @@ namespace EBird.Infrastructure.Repositories
 
             matchBird.Result = MatchDetailResult.Ready;
 
-            _context.MatchBirds.Update(matchBird);
+            _context.MatchDetails.Update(matchBird);
             await _context.SaveChangesAsync();
         }
 
@@ -54,7 +54,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
-                    var matchDetail = await _context.MatchBirds.Where(m => m.MatchId == matchId
+                    var matchDetail = await _context.MatchDetails.Where(m => m.MatchId == matchId
                                                            && m.BirdId == birdId
                                                            && m.IsDeleted == false)
                                                            .FirstOrDefaultAsync();
@@ -78,10 +78,10 @@ namespace EBird.Infrastructure.Repositories
                             throw new BadRequestException("Result not valid");
                     }
 
-                    _context.MatchBirds.Update(matchDetail);
+                    _context.MatchDetails.Update(matchDetail);
                     await _context.SaveChangesAsync();
 
-                    var matchDetailCompetitor = await _context.MatchBirds
+                    var matchDetailCompetitor = await _context.MatchDetails
                                                         .Where(m => m.MatchId == matchId
                                                            && m.BirdId != birdId
                                                            && m.IsDeleted == false)
