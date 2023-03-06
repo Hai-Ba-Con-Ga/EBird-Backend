@@ -255,7 +255,7 @@ namespace EBird.Infrastructure.Repositories
                         if (item.Value == Guid.Empty)
                             throw new BadRequestException("Bird is empty");
 
-                        var matchBird = new MatchDetailEntity()
+                        var matchDetail = new MatchDetailEntity()
                         {
                             MatchId = match.Id,
                             BirdId = item.Value,
@@ -265,16 +265,16 @@ namespace EBird.Infrastructure.Repositories
 
                         if (item.Key.Equals("host"))
                         {
-                            matchBird.Result = MatchDetailResult.Ready;
+                            matchDetail.Result = MatchDetailResult.Ready;
                         }
 
-                        var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                        var birdEntity = await _context.Birds.FindAsync(matchDetail.BirdId);
 
                         if (birdEntity == null) throw new BadRequestException("Bird not found");
 
-                        matchBird.BeforeElo = birdEntity.Elo;
+                        matchDetail.BeforeElo = birdEntity.Elo;
 
-                        await _context.MatchBirds.AddAsync(matchBird);
+                        await _context.MatchBirds.AddAsync(matchDetail);
                         await _context.SaveChangesAsync();
 
                         // birdEntity.Status = BirdStatus.InMatch.GetDescription();

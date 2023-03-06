@@ -31,7 +31,7 @@ namespace EBird.Domain.Entities
         [EnumDataType(typeof(MatchStatus))]
         [MaxLength(50)]
         [Required]
-        public MatchStatus MatchStatus { get; set; }
+        public MatchStatus MatchStatus { get; set; } = MatchStatus.During;
 
         [Column("HostId")]
         [Required]
