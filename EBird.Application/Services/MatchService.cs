@@ -8,6 +8,7 @@ using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.Match;
+using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
@@ -76,22 +77,18 @@ namespace EBird.Application.Services
             return matchDtoList;
         }
 
-        public async Task<ICollection<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
+        public async Task<PagedList<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
         {
             _validation.Base.ValidateParameter(matchParameters);
 
-            ICollection<MatchEntity> list = null;
+            IList<MatchEntity> list = null;
 
             if (matchParameters.PageSize > 0)
             {
                 list = await _repository.Match.GetMatchesWithPaging(matchParameters);
             }
-            else
-            {
-                list = await _repository.Match.GetMatches(matchParameters);
-            }
 
-            ICollection<MatchResponseDTO> lisDto = _mapper.Map<ICollection<MatchResponseDTO>>(list);
+            PagedList<MatchResponseDTO> lisDto = _mapper.Map<PagedList<MatchResponseDTO>>(list);
 
             foreach (var item in lisDto)
             {

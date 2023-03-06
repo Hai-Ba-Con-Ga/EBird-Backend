@@ -113,43 +113,32 @@ namespace EBird.Api.Controllers
 
         //get all match
         [HttpGet("all")]
-        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
+        public async Task<ActionResult<Response<IList<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
         {
-            var response = new Response<ICollection<MatchResponseDTO>>();
+            var response = new Response<IList<MatchResponseDTO>>();
             try
             {
-                ICollection<MatchResponseDTO> matches = null;
-                if (queryParameters?.MatchStatus == null)
+                IList<MatchResponseDTO> matches = null;
+
+                matches = await _matchService.GetMatches(queryParameters);
+
+                PagingData metaData = new PagingData()
                 {
-                    matches = await _matchService.GetMatches();
+                    CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
+                    PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
+                    TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
+                    TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
+                    HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
+                    HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
+                };
 
-                    response = Response<ICollection<MatchResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all match is success")
-                    .SetData(matches);
-                }
-                else
-                {
-                    matches = await _matchService.GetMatches(queryParameters);
+                response = ResponseWithPaging<IList<MatchResponseDTO>>.Builder()
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage("Get all match is successful")
+                .SetData(matches)
+                .SetPagingData(metaData);
 
-                    PagingData metaData = new PagingData()
-                    {
-                        CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
-                        PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
-                        TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
-                        TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
-                        HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
-                        HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
-                    };
-
-                    response = ResponseWithPaging<ICollection<MatchResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all match is successful")
-                    .SetData(matches)
-                    .SetPagingData(metaData);
-                }
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -157,15 +146,16 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    response = Response<IList<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
-                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                Console.WriteLine($"Error: {ex.Message} + {ex.StackTrace}");
+                
+                response = Response<IList<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -379,7 +369,7 @@ namespace EBird.Api.Controllers
             }
         }
 
-        
+
 
     }
 }
