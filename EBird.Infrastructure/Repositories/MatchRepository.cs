@@ -69,7 +69,7 @@ namespace EBird.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
+        public async Task<PagedList<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
         {
 
             var collection = _context.Matches
@@ -86,7 +86,15 @@ namespace EBird.Infrastructure.Repositories
             }
 
             PagedList<MatchEntity> pagedList = new PagedList<MatchEntity>();
-            await pagedList.LoadData(collection, param.PageNumber, param.PageSize);
+
+            if (param.PageSize != 0)
+            {
+                await pagedList.LoadData(collection, param.PageNumber, param.PageSize);
+            } 
+            else 
+            {
+                await pagedList.LoadData(collection);
+            }
 
             return pagedList;
         }
@@ -314,7 +322,7 @@ namespace EBird.Infrastructure.Repositories
                             .Include(m => m.MatchDetails)
                             .ThenInclude(md => md.Bird)
                             .Include(m => m.Place)
-                            .Where(m => m.MatchStatus == matchStatus  
+                            .Where(m => m.MatchStatus == matchStatus
                                     && m.MatchDetails.Any(md => md.BirdId == birdId));
 
             return await result.ToListAsync();
