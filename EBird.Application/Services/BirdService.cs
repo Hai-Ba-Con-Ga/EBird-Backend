@@ -198,6 +198,8 @@ namespace EBird.Application.Services
 
             var birdDto = _mapper.Map<BirdResponseDTO>(birdEntity);
 
+            birdDto.Ratio = await GetBirdRatio(birdId);
+
             long rank = await _repository.Bird.GetBirdRank(birdId);
 
             if (rank == 0)
