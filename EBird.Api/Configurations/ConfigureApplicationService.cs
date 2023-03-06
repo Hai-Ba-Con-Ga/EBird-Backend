@@ -45,6 +45,8 @@ namespace EBird.Api.Configurations
             services.AddScoped<IMapsServices, MapsService>();
             services.AddScoped<IPaymentService, VnPayService>();
             services.AddHttpClient<IMapsServices, MapsService>();
+            services.AddScoped<IVipService, VipService>();
+            
         }
     }
 }
