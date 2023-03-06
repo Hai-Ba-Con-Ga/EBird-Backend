@@ -17,6 +17,6 @@ namespace EBird.Application.Interfaces.IValidation
         public Task ValidateRequestId(Guid id);
         public void ValidateParameter(QueryStringParameters parameters);    
         public Task ValidateMatchId(Guid matchId);
-
+        Task ValidateAdmin(Guid userId);
     }
 }

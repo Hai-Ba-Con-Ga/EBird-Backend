@@ -154,7 +154,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
                 Console.WriteLine($"Error: {ex.Message} + {ex.StackTrace}");
-                
+
                 response = Response<IList<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -370,6 +370,49 @@ namespace EBird.Api.Controllers
         }
 
 
+        //endpoint for admin resolve conflict result
+        [HttpPut("admin/resolve/result/{matchId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> ResolveMatchResult(Guid matchId, [FromBody] ResolveMatchResultDTO updateData)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var userIdRaw = this.GetUserId();
 
+                Guid userId = Guid.Parse(userIdRaw);
+
+                await _matchService.ResolveMatchResult(userId, matchId, updateData);
+
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Update match result successful")
+                    .SetData("");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
     }
 }

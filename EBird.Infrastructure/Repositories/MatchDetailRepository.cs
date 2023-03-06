@@ -14,13 +14,29 @@ namespace EBird.Infrastructure.Repositories
 {
     public class MatchDetailRepository : GenericRepository<MatchDetailEntity>, IMatchDetailRepository
     {
+
         public MatchDetailRepository(ApplicationDbContext context) : base(context)
         {
         }
 
+        public async Task<IList<MatchDetailEntity>> GetMatchDetailsByMatchId(Guid matchId)
+        {
+            var matchDetails = await _context.MatchDetails
+                                        .Include(mb => mb.Bird)
+                                        .Where(mb => mb.MatchId == matchId).ToListAsync();
+
+            return matchDetails;
+        }
+
+        public async Task UpdateMatchDetails(IList<MatchDetailEntity> matchDetails)
+        {
+            _context.MatchDetails.UpdateRange(matchDetails);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateMatchDetail(UpdateChallengerToReadyDTO updateData)
         {
-            var matchBird = await _context.MatchBirds.Where(m => m.MatchId == updateData.MatchId
+            var matchBird = await _context.MatchDetails.Where(m => m.MatchId == updateData.MatchId
                                                         && m.BirdId == updateData.BirdId)
                                                         .FirstOrDefaultAsync();
 
@@ -28,7 +44,7 @@ namespace EBird.Infrastructure.Repositories
 
             matchBird.Result = MatchDetailResult.Ready;
 
-            _context.MatchBirds.Update(matchBird);
+            _context.MatchDetails.Update(matchBird);
             await _context.SaveChangesAsync();
         }
 
@@ -38,7 +54,7 @@ namespace EBird.Infrastructure.Repositories
             {
                 try
                 {
-                    var matchDetail = await _context.MatchBirds.Where(m => m.MatchId == matchId
+                    var matchDetail = await _context.MatchDetails.Where(m => m.MatchId == matchId
                                                            && m.BirdId == birdId
                                                            && m.IsDeleted == false)
                                                            .FirstOrDefaultAsync();
@@ -62,10 +78,10 @@ namespace EBird.Infrastructure.Repositories
                             throw new BadRequestException("Result not valid");
                     }
 
-                    _context.MatchBirds.Update(matchDetail);
+                    _context.MatchDetails.Update(matchDetail);
                     await _context.SaveChangesAsync();
 
-                    var matchDetailCompetitor = await _context.MatchBirds
+                    var matchDetailCompetitor = await _context.MatchDetails
                                                         .Where(m => m.MatchId == matchId
                                                            && m.BirdId != birdId
                                                            && m.IsDeleted == false)
@@ -75,23 +91,18 @@ namespace EBird.Infrastructure.Repositories
                         throw new BadRequestException("MatchDetail competitor not found");
 
                     bool isMatchCompleted =
-                            (matchDetailCompetitor.Result == MatchDetailResult.Win
-                            && matchDetail.Result == MatchDetailResult.Lose)
-                        || (matchDetailCompetitor.Result == MatchDetailResult.Lose
-                            && matchDetail.Result == MatchDetailResult.Win);
+                        (matchDetailCompetitor.Result == matchDetail.Result && matchDetail.Result == MatchDetailResult.Draw)
+                        || (matchDetailCompetitor.Result == MatchDetailResult.Win && matchDetail.Result == MatchDetailResult.Lose)
+                        || (matchDetailCompetitor.Result == MatchDetailResult.Lose && matchDetail.Result == MatchDetailResult.Win);
 
                     if (isMatchCompleted)
                     {
-                        await UpdateMatchResult(matchId, MatchStatus.Completed);
+                        await UpdateMatchStatus(matchId, MatchStatus.Completed);
                     }
-                    else if (matchDetailCompetitor.Result == matchDetail.Result 
-                            && matchDetail.Result == MatchDetailResult.Draw)
+                    else if (matchDetailCompetitor.Result == matchDetail.Result
+                        && (matchDetail.Result == MatchDetailResult.Win || matchDetail.Result == MatchDetailResult.Lose))
                     {
-                        await UpdateMatchResult(matchId, MatchStatus.Completed);
-                    }
-                    else if (matchDetailCompetitor.Result == matchDetail.Result)
-                    {
-                        await UpdateMatchResult(matchId, MatchStatus.Conflict);
+                        await UpdateMatchStatus(matchId, MatchStatus.Conflict);
                     }
 
                     await transaction.CommitAsync();
@@ -99,11 +110,12 @@ namespace EBird.Infrastructure.Repositories
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw ex;
                 }
             }
         }
 
-        public async Task UpdateMatchResult(Guid matchId, MatchStatus matchStatus)
+        public async Task UpdateMatchStatus(Guid matchId, MatchStatus matchStatus)
         {
             var match = await _context.Matches
                                             .Where(m => m.Id == matchId)

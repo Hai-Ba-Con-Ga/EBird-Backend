@@ -279,7 +279,7 @@ namespace EBird.Infrastructure.Context
         public DbSet<PlaceEntity> Places { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
         public DbSet<MatchEntity> Matches { get; set; }
-        public DbSet<MatchDetailEntity> MatchBirds { get; set; }
+        public DbSet<MatchDetailEntity> MatchDetails { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
         public DbSet<PostEntity> Posts { get; set; }
         public DbSet<MatchResourceEntity> MatchResources { get; set; }
