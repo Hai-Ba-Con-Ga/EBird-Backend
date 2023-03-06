@@ -119,29 +119,24 @@ namespace EBird.Infrastructure.Repositories
         {
             long ranking = 0;
 
-            string sql = @$"
-                            SELECT Rank
+            string sql = @$"SELECT Rank
                             FROM (SELECT * , RANK() OVER (ORDER BY BirdElo DESC) as Rank FROM Bird) as br
                             WhERE Id = '{birdId}' ";
 
-            var command = _context.Database
-                            .GetDbConnection()
-                            .CreateCommand();
-
-            command.CommandText = sql;
-
-            _context.Database.OpenConnection();
-
-            using (var result = await command.ExecuteReaderAsync())
+            using (var command = _context.Database.GetDbConnection().CreateCommand())
             {
-                
-                if (result.Read())
+                command.CommandText = sql;
+
+                _context.Database.OpenConnection();
+
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    ranking = result.GetInt64(0);
+                    if (reader.Read())
+                    {
+                        ranking = reader.GetInt64(0);
+                    }
                 }
             }
-
-            _context.Database.CloseConnection();
 
             return ranking;
         }
