@@ -27,17 +27,17 @@ namespace EBird.Application.Services
 
         private static double GetWinEloInRoom(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightRoom * (_win + eloDifference)) * _vip;
+            return currentElo + (_weight.KWeightRoom * (_win - eloDifference)) * _vip;
         }
 
         private static double GetWinEloInGroup(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightGroup * (_win + eloDifference)) * _vip;
+            return currentElo + (_weight.KWeightGroup * (_win - eloDifference)) * _vip;
         }
 
         private static double GetLoseElo(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightRoom * (_lose + eloDifference));
+            return currentElo + (_weight.KWeightRoom * (_lose - eloDifference));
         }
 
         public static Dictionary<string,double> GetResutlEloInRoom(double winnerElo, double loserElo)
