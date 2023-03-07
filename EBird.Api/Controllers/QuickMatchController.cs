@@ -23,14 +23,14 @@ public class QuickMatchController : ControllerBase
 {
     private readonly IRequestService _requestService;
     private readonly IPlaceService _placeService;
-    private readonly IRequestValidation _requestValidation;
+    private readonly IUnitOfValidation _unitOfValidation;
     private readonly IMapper _mapper;
 
-    public QuickMatchController(IRequestService requestService, IPlaceService placeService, IRequestValidation requestValidation, IMapper mapper)
+    public QuickMatchController(IRequestService requestService, IPlaceService placeService, IUnitOfValidation unitOfValidation, IMapper mapper)
     {
         _requestService = requestService;
         _placeService = placeService;
-        _requestValidation = requestValidation;
+        _unitOfValidation = unitOfValidation;
         _mapper = mapper;
     }
 
@@ -55,7 +55,7 @@ public class QuickMatchController : ControllerBase
 
             foreach(var item in list)
             {
-                if (await _requestValidation.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
+                if (await _unitOfValidation.Request.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
                     continue;
 
                 var requestTuple = new RequestTuple(
@@ -111,7 +111,7 @@ public class QuickMatchController : ControllerBase
 
             foreach(var item in list)
             {
-                if (await _requestValidation.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
+                if (await _unitOfValidation.Request.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
                     continue;
                 var requestTuple = new RequestTuple(
                     item.Id,
