@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +8,17 @@ using Response;
 
 namespace EBird.Api.Controllers
 {
+    
     [ApiController]
     [Route("generate")]
     public class GenerateDataController : ControllerBase
     {
+ private readonly IWebHostEnvironment _env;
 
+    public GenerateDataController(IWebHostEnvironment env)
+    {
+        _env = env;
+    }
         [HttpPost("room")]
         public ActionResult<Response<string>> GenerateRoomData()
         {
@@ -26,12 +33,44 @@ namespace EBird.Api.Controllers
             }
         }
 
-        [HttpPost("account")]
+        [HttpGet("account")]
         public ActionResult<Response<string>> GenerateAccountData()
         {
             try
             {
+        //         private  readonly ProcessStartInfo cmdStartInfo = new()
+        // {
+        //     FileName = "cmd.exe",
+        //     RedirectStandardInput = true,
+        //     RedirectStandardOutput = true,
+        //     UseShellExecute = false
+        // };
+
+        // private  readonly string[] commands =
+        // {
+        //     @"cd C:\Path\To\Sql\Scripts", // Change to the directory containing the SQL script
+        //     @"sqlcmd -S YourServerName -d YourDatabaseName -U YourUsername -P YourPassword -i script.sql" // Execute the SQL script
+        // };
+        System.Console.WriteLine($"{_env.ContentRootPath}data/script/account_gen.py");
                 //action to do  here
+                string pythonScriptPath = $"{_env.ContentRootPath}data/script/account_gen.py";
+                string pythonExecutablePath = "python3";
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = pythonExecutablePath,
+                Arguments = pythonScriptPath,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+
+        process.Start();
+        string result = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
                 return Ok();
             }
             catch (Exception ex)
