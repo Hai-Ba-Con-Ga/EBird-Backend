@@ -27,6 +27,15 @@ namespace EBird.Application.Validation
             await ValidateGroupId(request.GroupId);
             await ValidateBirdId(request.HostBirdId);
             ValidateRequestDatetime(request.RequestDatetime);
+
+            //Validation is required for the bird that is not existing in another request 
+            //when creating a new request
+            var isBirdExisted = await _repository.Request.IsBirdExistingInRequest(request.HostBirdId);
+
+            if (isBirdExisted == true)
+            {
+                throw new BadRequestException("Bird is existed in another request");
+            }
         }
 
         public async Task ValidateJoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
@@ -52,6 +61,13 @@ namespace EBird.Application.Validation
             if (request.HostBirdId == joinRequestDto.ChallengerBirdId)
             {
                 throw new BadRequestException("Bird have existed in this request");
+            }
+
+            var isBirdExisted = await _repository.Request.IsBirdExistingInRequest(joinRequestDto.ChallengerBirdId);
+
+            if (isBirdExisted == true)
+            {
+                throw new BadRequestException("Bird is existed in another request");
             }
 
         }
