@@ -56,6 +56,7 @@ namespace EBird.Application.Services
             var requestDto = _mapper.Map<RequestResponseDTO>(result);
             return requestDto;
         }
+
         public async Task<ICollection<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId)
         {
             await _unitOfValidation.Request.ValidateGroupId(groupId);
@@ -125,13 +126,13 @@ namespace EBird.Application.Services
             await _unitOfValidation.Base.ValidateAccountId(userId);
 
             var requestEntities = await _repository.Request.GetRequestByUserId(userId);
-            
+
             return _mapper.Map<ICollection<RequestResponseDTO>>(requestEntities);
         }
 
         public async Task<bool> CheckRequest(Guid hostRequestID, Guid challengerRequestID)
         {
-          return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
+            return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
         }
 
         public async Task LeaveRequest(Guid requestId, Guid userId)
@@ -139,14 +140,14 @@ namespace EBird.Application.Services
             await _unitOfValidation.Request.ValidateLeaveRequest(requestId, userId);
 
             await _repository.Request.LeaveRequest(requestId, userId);
-            
+
         }
 
         public async Task KickFromRequest(Guid requestId, Guid userId, Guid kickedUserId)
         {
-           await _unitOfValidation.Request.ValidateKickFromRequest(requestId, userId, kickedUserId);
+            await _unitOfValidation.Request.ValidateKickFromRequest(requestId, userId, kickedUserId);
 
-           await _repository.Request.LeaveRequest(requestId, kickedUserId);
+            await _repository.Request.LeaveRequest(requestId, kickedUserId);
         }
     }
 }

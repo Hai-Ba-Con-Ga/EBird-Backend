@@ -7,6 +7,7 @@ using EBird.Application.Model.PagingModel;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace EBird.Infrastructure.Repositories
 {
@@ -36,6 +37,24 @@ namespace EBird.Infrastructure.Repositories
             }
             
             return pageList;
+        }
+
+        public async Task<bool> IsVipAccount(Guid userId)
+        {
+            var account = await dbSet
+                            .Include(a => a.VipRegistrations)
+                            .Where(a => a.Id == userId && a.IsDeleted == false).FirstOrDefaultAsync();
+            
+            var vipRegistration = account.VipRegistrations
+                                    .OrderByDescending(v => v.CreatedDate)
+                                    .FirstOrDefault(v => v.IsDeleted == false);
+            
+            if(vipRegistration?.ExpiredDate > DateTime.Now)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
