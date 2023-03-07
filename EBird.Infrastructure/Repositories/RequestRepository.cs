@@ -230,5 +230,13 @@ namespace EBird.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> IsBirdExistingInRequest(Guid birdId)
+        {
+            var request = await dbSet.Where(r => (r.HostBirdId == birdId || r.ChallengerBirdId == birdId) 
+                                            && r.Status != RequestStatus.Closed
+                                            && r.IsDeleted == false)
+                                .FirstOrDefaultAsync();
+            return request != null ? true : false;
+        }
     }
 }

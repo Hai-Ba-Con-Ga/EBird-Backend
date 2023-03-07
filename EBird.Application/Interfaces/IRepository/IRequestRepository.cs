@@ -21,5 +21,6 @@ namespace EBird.Application.Interfaces.IRepository
         Task ReadyRequest(Guid requestId);
         Task<ICollection<RequestEntity>> GetRequestByUserId(Guid userId);
         Task LeaveRequest(Guid requestId, Guid userId);
+        Task<bool> IsBirdExistingInRequest(Guid hostBirdId);
     }
 }
