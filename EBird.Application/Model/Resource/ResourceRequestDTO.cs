@@ -16,5 +16,8 @@ namespace EBird.Application.Model.Resource
 
         [MaxLength(100)]
         public string Description { get; set; }
+
+        [MaxLength(255)]
+        public string Thumnail { get; set; }
     }
 }
