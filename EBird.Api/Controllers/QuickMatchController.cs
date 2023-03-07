@@ -14,6 +14,7 @@ using EBird.Api.Configurations;
 using EBird.Application.Services;
 using static EBird.Application.Services.MatchingService;
 using EBird.Application.Services.Algorithm;
+using EBird.Application.Interfaces.IValidation;
 
 namespace EBird.Api.Controllers;
 [Route("quickmatch")]
@@ -22,11 +23,14 @@ public class QuickMatchController : ControllerBase
 {
     private readonly IRequestService _requestService;
     private readonly IPlaceService _placeService;
+    private readonly IRequestValidation _requestValidation;
     private readonly IMapper _mapper;
 
-    public QuickMatchController(IRequestService requestService, IMapper mapper)
+    public QuickMatchController(IRequestService requestService, IPlaceService placeService, IRequestValidation requestValidation, IMapper mapper)
     {
         _requestService = requestService;
+        _placeService = placeService;
+        _requestValidation = requestValidation;
         _mapper = mapper;
     }
 
@@ -45,12 +49,15 @@ public class QuickMatchController : ControllerBase
             var list = (await _requestService.GetRequests()).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             //var finder = list.Where(x => x.Id == id);
             var finder = new RequestTuple();
+            var accountIdFinder = (await _requestService.GetRequest(id)).Host.Id;
 
             var listRequest = new List<RequestTuple>();
 
-            //Console.WriteLine(list.Count + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             foreach(var item in list)
             {
+                if (await _requestValidation.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
+                    continue;
+
                 var requestTuple = new RequestTuple(
                     item.Id,
                     ((double)item.Place.Latitude, (double)item.Place.Longitude),
@@ -62,15 +69,9 @@ public class QuickMatchController : ControllerBase
                     finder = requestTuple;
                 else 
                     listRequest.Add(requestTuple); 
-                //Console.WriteLine(requestTuple);
-
-                //requestTuple = lq[0];
-                //Console.WriteLine(requestTuple);
             }
             var priorityRequestList = QuickMatch(listRequest, finder).Select(x => x.id).ToList();
 
-
-            //var requests = await _requestService.GetRequests();
             response = Response<List<Guid>>.Builder()
                         .SetSuccess(true)
                         .SetStatusCode((int)HttpStatusCode.OK)
@@ -104,10 +105,14 @@ public class QuickMatchController : ControllerBase
         {
             var list = (await _requestService.GetRequestsByGroupId(groupId)).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
+            var accountIdFinder = (await _requestService.GetRequest(requestId)).Host.Id;
 
             var listRequest = new List<RequestTuple>();
+
             foreach(var item in list)
             {
+                if (await _requestValidation.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
+                    continue;
                 var requestTuple = new RequestTuple(
                     item.Id,
                     ((double)item.Place.Latitude, (double)item.Place.Longitude),
@@ -119,15 +124,9 @@ public class QuickMatchController : ControllerBase
                     finder = requestTuple;
                 else 
                     listRequest.Add(requestTuple); 
-                Console.WriteLine(requestTuple);
-
-                //requestTuple = lq[0];
-                //Console.WriteLine(requestTuple);
             }
             var priorityRequestList = QuickMatch(listRequest, finder).Select(x => x.id).ToList();
 
-
-            //var requests = await _requestService.GetRequests();
             response = Response<List<Guid>>.Builder()
                         .SetSuccess(true)
                         .SetStatusCode((int)HttpStatusCode.OK)

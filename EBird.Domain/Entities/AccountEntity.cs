@@ -65,5 +65,8 @@ namespace EBird.Domain.Entities
         public ICollection<MatchEntity> MatchesWithChallenger { get; set; }
         public ICollection<GroupMemberEntity> MemberInGroups { get; set; }
 
+        public ICollection<PaymentEntity> Payments { get; set; }
+        public ICollection<VipRegistrationEntity> VipRegistrations { get; set; }
+
     }
 }

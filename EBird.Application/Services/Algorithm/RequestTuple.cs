@@ -19,8 +19,12 @@ public class RequestTuple
 
 	public RequestTuple()
 	{
-		
-	}
+        this.id = Guid.Empty;
+        this.location = (0, 0);
+        this.elo = 0;
+        this.date = DateTime.Now;
+        this.isVip = false;
+    }
 	
 	public override string ToString()
 	{

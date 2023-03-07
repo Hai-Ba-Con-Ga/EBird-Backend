@@ -14,5 +14,8 @@ namespace EBird.Application.Model.Auth
         public RoleAccount Role { get; set; }
         public string Username { get; set; } = null!;
         public string Description { get; set; } = null!;
+
+        public VipResponse? Vip { get; set; }
+         
     }
 }

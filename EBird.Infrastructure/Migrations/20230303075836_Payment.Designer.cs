@@ -4,6 +4,7 @@ using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBird.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230303075836_Payment")]
+    partial class Payment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -908,11 +910,6 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Thumnail")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("Thumnail");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreateById");
@@ -1011,39 +1008,6 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VerifcationStore");
-                });
-
-            modelBuilder.Entity("EBird.Domain.Entities.VipRegistrationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpiredDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("VipRegistration");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
@@ -1282,7 +1246,7 @@ namespace EBird.Infrastructure.Migrations
                     b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
                         .WithMany("Payments")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
@@ -1424,25 +1388,6 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("EBird.Domain.Entities.VipRegistrationEntity", b =>
-                {
-                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
-                        .WithMany("VipRegistrations")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("EBird.Domain.Entities.PaymentEntity", "Payment")
-                        .WithMany("VipRegistrations")
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Payment");
-                });
-
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("AccountResources");
@@ -1480,8 +1425,6 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Rooms");
 
                     b.Navigation("Rules");
-
-                    b.Navigation("VipRegistrations");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -1529,11 +1472,6 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.NotificationTypeEntity", b =>
                 {
                     b.Navigation("Notifications");
-                });
-
-            modelBuilder.Entity("EBird.Domain.Entities.PaymentEntity", b =>
-                {
-                    b.Navigation("VipRegistrations");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>

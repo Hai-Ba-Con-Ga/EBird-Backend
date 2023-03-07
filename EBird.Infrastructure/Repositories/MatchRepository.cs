@@ -44,7 +44,7 @@ namespace EBird.Infrastructure.Repositories
                     if (birdEntity == null) throw new BadRequestException("Bird not found");
                     matchBirdEntity.BeforeElo = birdEntity.Elo;
 
-                    await _context.MatchBirds.AddAsync(matchBirdEntity);
+                    await _context.MatchDetails.AddAsync(matchBirdEntity);
                     await _context.SaveChangesAsync();
 
                     transction.Commit();
@@ -69,7 +69,7 @@ namespace EBird.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task<ICollection<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
+        public async Task<PagedList<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
         {
 
             var collection = _context.Matches
@@ -86,7 +86,15 @@ namespace EBird.Infrastructure.Repositories
             }
 
             PagedList<MatchEntity> pagedList = new PagedList<MatchEntity>();
-            await pagedList.LoadData(collection, param.PageNumber, param.PageSize);
+
+            if (param.PageSize != 0)
+            {
+                await pagedList.LoadData(collection, param.PageNumber, param.PageSize);
+            }
+            else
+            {
+                await pagedList.LoadData(collection);
+            }
 
             return pagedList;
         }
@@ -151,7 +159,7 @@ namespace EBird.Infrastructure.Repositories
 
                     matchBird.BeforeElo = birdEntity.Elo;
 
-                    await _context.MatchBirds.AddAsync(matchBird);
+                    await _context.MatchDetails.AddAsync(matchBird);
                     await _context.SaveChangesAsync();
 
                     transction.Commit();
@@ -247,7 +255,7 @@ namespace EBird.Infrastructure.Repositories
                         if (item.Value == Guid.Empty)
                             throw new BadRequestException("Bird is empty");
 
-                        var matchBird = new MatchDetailEntity()
+                        var matchDetail = new MatchDetailEntity()
                         {
                             MatchId = match.Id,
                             BirdId = item.Value,
@@ -257,16 +265,16 @@ namespace EBird.Infrastructure.Repositories
 
                         if (item.Key.Equals("host"))
                         {
-                            matchBird.Result = MatchDetailResult.Ready;
+                            matchDetail.Result = MatchDetailResult.Ready;
                         }
 
-                        var birdEntity = await _context.Birds.FindAsync(matchBird.BirdId);
+                        var birdEntity = await _context.Birds.FindAsync(matchDetail.BirdId);
 
                         if (birdEntity == null) throw new BadRequestException("Bird not found");
 
-                        matchBird.BeforeElo = birdEntity.Elo;
+                        matchDetail.BeforeElo = birdEntity.Elo;
 
-                        await _context.MatchBirds.AddAsync(matchBird);
+                        await _context.MatchDetails.AddAsync(matchDetail);
                         await _context.SaveChangesAsync();
 
                         // birdEntity.Status = BirdStatus.InMatch.GetDescription();
@@ -314,7 +322,7 @@ namespace EBird.Infrastructure.Repositories
                             .Include(m => m.MatchDetails)
                             .ThenInclude(md => md.Bird)
                             .Include(m => m.Place)
-                            .Where(m => m.MatchStatus == matchStatus  
+                            .Where(m => m.MatchStatus == matchStatus
                                     && m.MatchDetails.Any(md => md.BirdId == birdId));
 
             return await result.ToListAsync();
@@ -330,6 +338,41 @@ namespace EBird.Infrastructure.Repositories
                             .Where(m => m.MatchDetails.Any(md => md.BirdId == birdId));
 
             return await result.ToListAsync();
+        }
+
+        public async Task ChangeMatchResultToDraw(Guid matchId, ResolveMatchResultDTO updateData)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var match = await _context.Matches.FindAsync(matchId);
+
+                    match.MatchStatus = MatchStatus.Approved;
+
+                    _context.Matches.Update(match);
+
+                    await _context.SaveChangesAsync();
+
+                    var matchDetails = await _context.MatchDetails.Where(e => e.MatchId == matchId).ToListAsync();
+
+                    foreach (var matchDetail in matchDetails)
+                    {
+                        matchDetail.Result = MatchDetailResult.Draw;
+                        matchDetail.UpdateDatetime = DateTime.Now;
+                        matchDetail.AfterElo = matchDetail.BeforeElo;
+                    }
+
+                    _context.UpdateRange(matchDetails);
+                    
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw ex;
+                }
+            }
         }
     }
 }

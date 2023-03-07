@@ -8,39 +8,39 @@ using EBird.Application.Services.IServices;
 
 namespace EBird.Application.Services
 {
-    public class ScoringService : IScoringService
+    public class ScoringService
     {
         private static readonly int _win = 1;
         private static readonly int _lose = 0;
-        private ScoringWeight _weight;
-        private int _vip = 1;
+        private static ScoringWeight _weight = new ScoringWeight(){KWeightRoom = 64, KWeightGroup = 128};
+        private static int _vip = 1;
 
-        public ScoringService(IRuleSetting settings)
+        public ScoringService()
         {
-            _weight = settings.RuleSettingModel.ScoringWeight;
+            // _weight = settings.RuleSettingModel.ScoringWeight;
         }
 
-        private double GetEloDifference(double seftElo, double competitorElo)
+        private static double GetEloDifference(double seftElo, double competitorElo)
         {
             return 1 / (1 + Math.Pow(10, ((competitorElo - seftElo) / 400)));
         }
 
-        private double GetWinEloInRoom(double eloDifference, double currentElo)
+        private static double GetWinEloInRoom(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightRoom * (_win + eloDifference)) * _vip;
+            return currentElo + (_weight.KWeightRoom * (_win - eloDifference)) * _vip;
         }
 
-        private double GetWinEloInGroup(double eloDifference, double currentElo)
+        private static double GetWinEloInGroup(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightGroup * (_win + eloDifference)) * _vip;
+            return currentElo + (_weight.KWeightGroup * (_win - eloDifference)) * _vip;
         }
 
-        private double GetLoseElo(double eloDifference, double currentElo)
+        private static double GetLoseElo(double eloDifference, double currentElo)
         {
-            return currentElo + (_weight.KWeightRoom * (_lose + eloDifference));
+            return currentElo + (_weight.KWeightRoom * (_lose - eloDifference));
         }
 
-        public Dictionary<string,double> GetResutlEloInRoom(double winnerElo, double loserElo)
+        public static Dictionary<string,double> GetResutlEloInRoom(double winnerElo, double loserElo)
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
 
@@ -55,7 +55,7 @@ namespace EBird.Application.Services
             return result;
         }
 
-        public Dictionary<string, double> GetResutlEloInGroup(double winnerElo, double loserElo)
+        public static Dictionary<string, double> GetResutlEloInGroup(double winnerElo, double loserElo)
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
 

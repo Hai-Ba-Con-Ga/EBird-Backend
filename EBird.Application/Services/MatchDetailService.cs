@@ -123,6 +123,50 @@ namespace EBird.Application.Services
             }
 
             await _repository.MatchDetail.UpdateMatchResult(matchId, updateResultData.BirdId, updateResultData.Result);
+
+            match = await _repository.Match.GetMatch(matchId);
+
+            if (match.MatchStatus == MatchStatus.Completed)
+            {
+                bool isInGroup = (match.GroupId != Guid.Empty && match.GroupId != null);
+
+                await UpdateBirdsEloAfterMatchComplete(matchId, isInGroup);
+            }
+            
         }
+
+        public async Task UpdateBirdsEloAfterMatchComplete(Guid matchId, bool isInGroup)
+        {
+            var matchBirdArr = (await _repository.MatchDetail.GetMatchDetailsByMatchId(matchId)).ToArray();
+
+            for (int i = 0; i <= 1; i++)
+            {
+                if (matchBirdArr[i].Result == MatchDetailResult.Win)
+                {
+                    var winner = matchBirdArr[i];
+                    var loser = matchBirdArr[1 - i];
+
+                    var eloDictionary = isInGroup == false ? ScoringService.GetResutlEloInRoom(winner.BeforeElo, loser.BeforeElo)
+                                                            : ScoringService.GetResutlEloInGroup(winner.BeforeElo, loser.BeforeElo);
+
+                    winner.AfterElo = (int)eloDictionary["winnerElo"];
+                    loser.AfterElo = (int)eloDictionary["loserElo"];
+
+                    winner.Bird.Elo = winner.AfterElo ?? int.MinValue;
+                    loser.Bird.Elo = loser.AfterElo ?? int.MinValue;
+
+                    if (winner.Bird.Elo == int.MinValue || loser.Bird.Elo == int.MinValue)
+                    {
+                        throw new BadRequestException("Update elo failed");
+                    }
+
+                    await  _repository.MatchDetail.UpdateMatchDetails(matchBirdArr);
+
+                    break;
+                }
+            }
+
+        }
+
     }
 }
