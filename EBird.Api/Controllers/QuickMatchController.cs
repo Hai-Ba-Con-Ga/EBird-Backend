@@ -49,14 +49,12 @@ public class QuickMatchController : ControllerBase
             var list = (await _requestService.GetRequests()).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             //var finder = list.Where(x => x.Id == id);
             var finder = new RequestTuple();
-            var accountIdFinder = (await _requestService.GetRequest(id)).Host.Id;
+            var accountIdFinder = list.Where(x => x.Id == id).ToList()?[0].Host.Id;
 
             var listRequest = new List<RequestTuple>();
 
             foreach(var item in list)
             {
-                if (await _unitOfValidation.Request.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
-                    continue;
 
                 var requestTuple = new RequestTuple(
                     item.Id,
@@ -67,8 +65,9 @@ public class QuickMatchController : ControllerBase
                 );
                 if (id == item.Id) 
                     finder = requestTuple;
-                else 
-                    listRequest.Add(requestTuple); 
+                if (item.Host.Id == accountIdFinder)
+                    continue;
+                listRequest.Add(requestTuple); 
             }
             var priorityRequestList = QuickMatch(listRequest, finder).Select(x => x.id).ToList();
 
@@ -105,14 +104,12 @@ public class QuickMatchController : ControllerBase
         {
             var list = (await _requestService.GetRequestsByGroupId(groupId)).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
-            var accountIdFinder = (await _requestService.GetRequest(requestId)).Host.Id;
+            var accountIdFinder = list.Where(x => x.Id == requestId).ToList()?[0].Host.Id;
 
             var listRequest = new List<RequestTuple>();
 
             foreach(var item in list)
             {
-                if (await _unitOfValidation.Request.ValidateTowRequestIsSameUser(item.Host.Id, accountIdFinder))
-                    continue;
                 var requestTuple = new RequestTuple(
                     item.Id,
                     ((double)item.Place.Latitude, (double)item.Place.Longitude),
@@ -122,8 +119,9 @@ public class QuickMatchController : ControllerBase
                 );
                 if (requestId == item.Id) 
                     finder = requestTuple;
-                else 
-                    listRequest.Add(requestTuple); 
+                if (item.Host.Id == accountIdFinder)
+                    continue;
+                listRequest.Add(requestTuple); 
             }
             var priorityRequestList = QuickMatch(listRequest, finder).Select(x => x.id).ToList();
 
