@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EBird.Application.Exceptions;
 using EBird.Application.Interfaces.IRepository;
 using EBird.Application.Model.Match;
+using EBird.Application.Model.Resource;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 using EBird.Infrastructure.Context;
@@ -40,7 +41,8 @@ namespace EBird.Infrastructure.Repositories
                                                         && m.BirdId == updateData.BirdId)
                                                         .FirstOrDefaultAsync();
 
-            if (matchBird == null) throw new Exception("Match Bird not found");
+            if (matchBird == null)
+                throw new Exception("Match Bird not found");
 
             matchBird.Result = MatchDetailResult.Ready;
 
@@ -48,12 +50,13 @@ namespace EBird.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateMatchResult(Guid matchId, Guid birdId, string result)
+        public async Task UpdateMatchResult(Guid matchId, Guid birdId, string result, IList<ResourceEntity> matchResources)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
+                    //update match result
                     var matchDetail = await _context.MatchDetails.Where(m => m.MatchId == matchId
                                                            && m.BirdId == birdId
                                                            && m.IsDeleted == false)
@@ -81,11 +84,31 @@ namespace EBird.Infrastructure.Repositories
                     _context.MatchDetails.Update(matchDetail);
                     await _context.SaveChangesAsync();
 
+                    if (matchResources != null)
+                    {
+                        //Create Resource
+                        _context.Resources.AddRange(matchResources);
+                        await _context.SaveChangesAsync();
+
+                        //Create MatchResource
+                        foreach (var matchResource in matchResources)
+                        {
+                            MatchResourceEntity newMatchReource = new MatchResourceEntity()
+                            {
+                                MatchDetailId = matchDetail.Id,
+                                ResourceId = matchResource.Id
+                            };
+                            _context.MatchResources.Add(newMatchReource);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+
+                    //update match status after update match result
                     var matchDetailCompetitor = await _context.MatchDetails
-                                                        .Where(m => m.MatchId == matchId
-                                                           && m.BirdId != birdId
-                                                           && m.IsDeleted == false)
-                                                           .FirstOrDefaultAsync();
+                                                    .Where(m => m.MatchId == matchId
+                                                       && m.BirdId != birdId
+                                                       && m.IsDeleted == false)
+                                                       .FirstOrDefaultAsync();
 
                     if (matchDetailCompetitor == null)
                         throw new BadRequestException("MatchDetail competitor not found");
