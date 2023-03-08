@@ -34,8 +34,8 @@ public class QuickMatchController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("room/{id}")]
-    public async Task<ActionResult<Response<List<Guid>>>> QuickMatchRoom(Guid id)
+    [HttpGet("room/{roomid}/{id}")]
+    public async Task<ActionResult<Response<List<Guid>>>> QuickMatchRoom(Guid id, Guid roomid)
     {
         var response = new Response<List<Guid>>();
         try
@@ -46,7 +46,8 @@ public class QuickMatchController : ControllerBase
             //// Console.WriteLine(lq);
             //System.Console.WriteLine(QuickMatch(new List<RequestTuple>() { lq[1] }, lq[0])[0]);
 
-            var list = (await _requestService.GetRequests()).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
+            var list = (await _requestService.GetRequests())
+                .Where(x => x.Room.Id == roomid && x.Group == null && x.Status.Equals(RequestStatus.Waiting)).ToList();
             //var finder = list.Where(x => x.Id == id);
             var finder = new RequestTuple();
             var accountIdFinder = list.Where(x => x.Id == id).ToList()?[0].Host.Id;
@@ -102,7 +103,8 @@ public class QuickMatchController : ControllerBase
         var response = new Response<List<Guid>>();
         try
         {
-            var list = (await _requestService.GetRequestsByGroupId(groupId)).Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
+            var list = (await _requestService.GetRequestsByGroupId(groupId))
+                .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
             var accountIdFinder = list.Where(x => x.Id == requestId).ToList()?[0].Host.Id;
 

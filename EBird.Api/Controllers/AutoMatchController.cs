@@ -47,6 +47,7 @@ public class AutoMatchController : ControllerBase
             //}
 
             var list = (await _requestService.GetRequestsByGroupId(groupid))
+            //var list = (await _requestService.GetRequests())
                 .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
             var listRequest = new List<RequestTuple>();
@@ -66,9 +67,9 @@ public class AutoMatchController : ControllerBase
             var priorityRequestList = await _matchingService.BinarySearch(listRequest);
             //await Console.Out.WriteLineAsync(string.Join("\n",priorityRequestList));
 
-            //foreach(var item in priorityRequestList)
+            //foreach (var item in priorityRequestList)
             //{
-            //    await _requestService.MergeRequest()
+            //    item.Item3 = await _requestService.MergeRequest(item.Item1, item.Item2);
             //}
 
             response = Response<List<Tuple<Guid,Guid>>>.Builder()

@@ -4,9 +4,9 @@ namespace EBird.Application.Services.Algorithm
     {
 
         // limit between two requests
-        public static readonly double LocationLimit = 100;
-        public static readonly int EloLimit = 1000;
-        public static readonly int DateLimit = 14;
+        public static readonly double LocationLimit = 1000;
+        public static readonly int EloLimit = 100000;
+        public static readonly int DateLimit = 140;
 
         //  20km ~ 100elo
         public static readonly double RatioLocationElo = 0.1;
