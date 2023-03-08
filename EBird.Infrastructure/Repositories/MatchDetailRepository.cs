@@ -152,5 +152,16 @@ namespace EBird.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<ICollection<ResourceEntity>> GetMatchResources(Guid matchDetailId)
+        {
+            var matchResources = await  _context.MatchResources
+                                        .Include(mr => mr.Resource)
+                                        .Where(mr => mr.MatchDetailId == matchDetailId)
+                                        .Select(mr => mr.Resource)
+                                        .ToListAsync();
+
+            return matchResources;
+        }
     }
 }

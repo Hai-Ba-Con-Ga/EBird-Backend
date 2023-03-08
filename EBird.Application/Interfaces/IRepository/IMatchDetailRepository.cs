@@ -14,5 +14,6 @@ namespace EBird.Application.Interfaces.IRepository
         public Task UpdateMatchDetail(UpdateChallengerToReadyDTO updateData);
         public Task UpdateMatchResult(Guid matchId, Guid birdId, string result, IList<ResourceEntity>? matchResources = null);
         public Task UpdateMatchDetails(IList<MatchDetailEntity> matchDetails);
+        public Task<ICollection<ResourceEntity>> GetMatchResources(Guid matchDetailId);
     }
 }
