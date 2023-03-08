@@ -122,7 +122,15 @@ namespace EBird.Application.Services
                 throw new BadRequestException("User not in this match");
             }
 
-            await _repository.MatchDetail.UpdateMatchResult(matchId, updateResultData.BirdId, updateResultData.Result);
+            var matchResources = _mapper.Map<List<ResourceEntity>>(updateResultData.ListResource);
+
+            foreach(var resource in matchResources)
+            {
+                resource.CreateById = userId;
+                resource.CreateDate = DateTime.Now;
+            }
+
+            await _repository.MatchDetail.UpdateMatchResult(matchId, updateResultData.BirdId, updateResultData.Result, matchResources);
 
             match = await _repository.Match.GetMatch(matchId);
 

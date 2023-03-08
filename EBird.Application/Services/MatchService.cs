@@ -9,6 +9,7 @@ using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.Match;
 using EBird.Application.Model.PagingModel;
+using EBird.Application.Model.Resource;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
@@ -57,7 +58,15 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
+            
             matchDTO.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
+            
+            foreach (var matchDetail in matchDTO.MatchDetails)
+            {
+                var matchResources = await _repository.MatchDetail.GetMatchResources(matchDetail.Id);
+
+                matchDetail.ResourceResponses = _mapper.Map<ICollection<ResourceResponse>>(matchResources);
+            }
 
             return matchDTO;
         }

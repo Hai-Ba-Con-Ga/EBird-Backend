@@ -58,15 +58,14 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
-        public async Task<MatchEntity> GetMatch(Guid id)
+        public async Task<MatchEntity?> GetMatch(Guid id)
         {
-            var entity = await _context.Matches
+            var entity = _context.Matches
                 .Include(e => e.Place)
                 .Include(e => e.MatchDetails)
-                .ThenInclude(e => e.Bird)
-                .Where(e => e.Id == id && e.IsDeleted == false)
-                .FirstOrDefaultAsync();
-            return entity;
+                .ThenInclude(e => e.Bird);
+                
+            return await entity.FirstOrDefaultAsync(e => e.Id == id && e.IsDeleted == false);
         }
 
         public async Task<PagedList<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
@@ -364,7 +363,7 @@ namespace EBird.Infrastructure.Repositories
                     }
 
                     _context.UpdateRange(matchDetails);
-                    
+
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
