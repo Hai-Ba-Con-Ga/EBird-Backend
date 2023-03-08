@@ -18,13 +18,9 @@ namespace EBird.Application.Services
             List<(RequestTuple, double)> result = new List<(RequestTuple, double)>();
             foreach(var item in listRequest) {
                 var capacity = EdgeDistance.CapacityOfTwoRequest(finder, item);
-                //Console.WriteLine(capacity);
+                //Console.WriteLine(EdgeDistance.LocationDistance(10.8411455160116, 106.80985584436259, 10.857847264830015, 106.78786938795808));
+                //Console.WriteLine(capacity + " + id: " + item.id + "\nday : " + EdgeDistance.DateDistance(finder.date,item.date));
                 if (capacity < 0) continue;
-                // System.Console.WriteLine("capacity = " + capacity);
-                //if (capacity < min) {
-                //    min = capacity;
-                //    result = item;
-                //}
                 result.Add((item, capacity));
             }
             if (result.Count == 0) {
@@ -34,7 +30,7 @@ namespace EBird.Application.Services
 
         }
 
-        public async Task<List<(Guid,Guid)>> BinarySearch(List<RequestTuple> listRequest) {
+        public async Task<List<Tuple<Guid,Guid>>> BinarySearch(List<RequestTuple> listRequest) {
             var left = 0.0;
             var right = EdgeDistance.MaxCapacity() + 0.5;
             var minEdge =  right + 0.5;
@@ -51,24 +47,18 @@ namespace EBird.Application.Services
                 }
                 else left = mid;
             }
-            // *** may Hung
             var pairList = await PerfectMatching(listRequest, minEdge);
             pairList.Solve();
-
-            //Console.WriteLine($"minEdge {minEdge}");
+            //Console.WriteLine(pairList.Solve());
+            //Console.WriteLine($"minEdge {minEdge}\ninital {initalPair}");
 
             //var resultList = new List<(RequestTuple, RequestTuple)>();
-            var resultList = new List<(Guid, Guid)>();
+            var resultList = new List<Tuple<Guid, Guid>>();
 
-            for (int i = 0; i < listRequest.Count; i++)
+            foreach(var (value, i) in pairList.GetMate().Select((value, i) => (value, i)))
             {
-                //Console.WriteLine(listRequest[i]);
-                var x = pairList.GetMate()[i];
-                if (i < x)
-                {
-                    //Console.WriteLine(i + " " + x);
-                    resultList.Add((listRequest[i].id, listRequest[x].id));
-                }
+                if (i < value)
+                    resultList.Add(Tuple.Create(listRequest[i].id, listRequest[value].id));
             }
             return resultList;
         }
@@ -95,13 +85,8 @@ namespace EBird.Application.Services
                     //validate 2 request from same user. not yet.
 
                     var tmp = EdgeDistance.CapacityOfTwoRequest(listRequest[i], listRequest[j]);
-                    //bool? sameUser = await _requestValidation.
-                    //    ValidateTowRequestIsSameUser(listRequest[i].id, listRequest[j].id);
-                    //if (sameUser == null)
-                    //    throw new NotFoundException("Have no request to check");
-                    bool sameUser = false;
-
-                    if (sameUser == false && 0 <= tmp && tmp <= capacity)
+                    var same = listRequest[i].hostId == listRequest[j].hostId;
+                    if (!same && 0 <= tmp && tmp <= capacity)
                     {
                         //if (capacity < 2.09482027053833)
                         //Console.WriteLine($"{i} {j} {tmp}");

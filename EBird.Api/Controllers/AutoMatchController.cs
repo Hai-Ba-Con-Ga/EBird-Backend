@@ -32,11 +32,12 @@ public class AutoMatchController : ControllerBase
     }
 
     [HttpGet("group/{groupid}")]
-    public async Task<ActionResult<Response<List<Guid>>>> AutoMatchGroup(Guid groupid)
+    public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
     {
-        var response = new Response<List<Guid>>();
+        var response = new Response<List<Tuple<Guid, Guid>>>();
         try
         {
+            ////Test
             //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
             //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
             //var test = await _matchingService.BinarySearch(lq);
@@ -46,15 +47,16 @@ public class AutoMatchController : ControllerBase
             //}
 
             var list = (await _requestService.GetRequestsByGroupId(groupid))
+            //var list = (await _requestService.GetRequests())
                 .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
-
             var listRequest = new List<RequestTuple>();
 
             foreach(var item in list)
             {
                 var requestTuple = new RequestTuple(
                     item.Id,
+                    item.Host.Id,
                     ((double)item.Place.Latitude, (double)item.Place.Longitude),
                     item.HostBird.Elo,
                     item.RequestDatetime,
@@ -63,10 +65,14 @@ public class AutoMatchController : ControllerBase
                 listRequest.Add(requestTuple); 
             }
             var priorityRequestList = await _matchingService.BinarySearch(listRequest);
+            //await Console.Out.WriteLineAsync(string.Join("\n",priorityRequestList));
 
+            //foreach (var item in priorityRequestList)
+            //{
+            //    item.Item3 = await _requestService.MergeRequest(item.Item1, item.Item2);
+            //}
 
-            //var requests = await _requestService.GetRequests();
-            response = Response<List<Guid>>.Builder()
+            response = Response<List<Tuple<Guid,Guid>>>.Builder()
                         .SetSuccess(true)
                         .SetStatusCode((int)HttpStatusCode.OK)
                         .SetMessage("Requests are retrieved successfully")
@@ -74,14 +80,14 @@ public class AutoMatchController : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            response = Response<List<Guid>>.Builder()
+            response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
         }
         catch (Exception ex)
         {
-            response = Response<List<Guid>>.Builder()
+            response = Response<List<Tuple<Guid,Guid>>>.Builder()
                         .SetSuccess(false)
                         .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage(ex.Message);
