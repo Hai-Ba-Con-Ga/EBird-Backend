@@ -3,6 +3,7 @@ public class RequestTuple
 {
 
 	public Guid id { get; set; }
+	public Guid hostId { get; set; }
 	public (double latitude, double longitude) location { get; set; }
 	public int elo { get; set; }
 	public DateTime date { get; set; }
@@ -17,7 +18,17 @@ public class RequestTuple
 		this.isVip = isVip;
 	}
 
-	public RequestTuple()
+    public RequestTuple(Guid id, Guid hostId, (double latitude, double longitude) location, int elo, DateTime date, bool isVip)
+    {
+        this.id = id;
+        this.hostId = hostId;
+        this.location = location;
+        this.elo = elo;
+        this.date = date;
+        this.isVip = isVip;
+    }
+
+    public RequestTuple()
 	{
         this.id = Guid.Empty;
         this.location = (0, 0);
