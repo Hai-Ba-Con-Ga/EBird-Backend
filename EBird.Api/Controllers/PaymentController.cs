@@ -59,7 +59,7 @@ public class PaymentController : ControllerBase
         string frontendUrlCallBack = _config.FrontendCallBack;
 
         string url = QueryHelpers.AddQueryString(frontendUrlCallBack, queryDictionary);
-        return Ok(url);
+        return Redirect(url);
     }
     [HttpGet("all")]
     public async Task<ActionResult<Response<List<PaymentEntity>>>> GetAllPayments()
