@@ -101,7 +101,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
+                
                 response = Response<MatchResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
