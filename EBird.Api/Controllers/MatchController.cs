@@ -288,20 +288,31 @@ namespace EBird.Api.Controllers
         }
 
         [HttpGet("group/{groupId}")]
-        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByGroup(Guid groupId)
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByGroup(Guid groupId, [FromQuery] MatchParameters parameters)
         {
             var response = new Response<ICollection<MatchResponseDTO>>();
             try
             {
                 ICollection<MatchResponseDTO> matches = null;
 
-                matches = await _matchService.GetMatchByGroupId(groupId);
+                matches = await _matchService.GetMatchByGroupId(groupId, parameters);
 
-                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                PagingData metaData = new PagingData()
+                {
+                    CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
+                    PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
+                    TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
+                    TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
+                    HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
+                    HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
+                };
+
+                response = ResponseWithPaging<ICollection<MatchResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
                     .SetMessage("Get all match is success")
-                    .SetData(matches);
+                    .SetData(matches)
+                    .SetPagingData(metaData);
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -318,7 +329,8 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
+                Console.WriteLine($"Error: {ex.Message}");
+                
                 response = Response<ICollection<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)

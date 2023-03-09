@@ -9,6 +9,6 @@ namespace EBird.Application.Model.Match
 {
     public class MatchParameters : QueryStringParameters
     {
-        public MatchStatus? MatchStatus { get; set; }
+        public MatchStatus? MatchStatus { get; set; } = null;
     }
 }

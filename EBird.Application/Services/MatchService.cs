@@ -58,9 +58,9 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
-            
+
             matchDTO.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
-            
+
             foreach (var matchDetail in matchDTO.MatchDetails)
             {
                 var matchResources = await _repository.MatchDetail.GetMatchResources(matchDetail.Id);
@@ -205,13 +205,14 @@ namespace EBird.Application.Services
             return createdId;
         }
 
-        public async Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId)
+        public async Task<PagedList<MatchResponseDTO>> GetMatchByGroupId(Guid groupId, MatchParameters parameters)
         {
             await _validation.Base.ValidateGroupId(groupId);
+            _validation.Base.ValidateParameter(parameters);
 
-            ICollection<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId);
+            PagedList<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId, parameters);
 
-            var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+            var matchDTOList = _mapper.Map<PagedList<MatchResponseDTO>>(matchList);
 
             return matchDTOList;
         }
