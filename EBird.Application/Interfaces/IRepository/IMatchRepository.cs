@@ -20,7 +20,7 @@ namespace EBird.Application.Interfaces.IRepository
         public Task<PagedList<MatchEntity>> GetMatchesWithPaging(MatchParameters param);
         public Task<ICollection<MatchEntity>> GetWithOwnerAndStatus(Guid userId, RolePlayer rolePlayer, MatchStatus matchStatus);
         public Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO);
-        public Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId);
+        public Task<PagedList<MatchEntity>> GetMatchByGroupId(Guid groupId, MatchParameters matchParameters);
         Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId, MatchStatus matchStatus);
         Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId);
         Task ChangeMatchResultToDraw(Guid matchId, ResolveMatchResultDTO updateData);
