@@ -57,11 +57,14 @@ namespace EBird.Application.Services
             return requestDto;
         }
 
-        public async Task<ICollection<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId)
+        public async Task<PagedList<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId, RequestParameters paramters)
         {
             await _unitOfValidation.Request.ValidateGroupId(groupId);
-            var result = await _repository.Request.GetRequestsByGroupId(groupId);
-            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
+            _unitOfValidation.Base.ValidateParameter(paramters);
+
+            var result = await _repository.Request.GetRequestsByGroupId(groupId, paramters);
+
+            return _mapper.Map<PagedList<RequestResponseDTO>>(result);
         }
 
         public async Task<PagedList<RequestResponseDTO>> GetRequests(RequestParameters parameters)
