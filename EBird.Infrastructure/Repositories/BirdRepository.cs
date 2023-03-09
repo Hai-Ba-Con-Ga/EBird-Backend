@@ -75,20 +75,31 @@ namespace EBird.Infrastructure.Repositories
 
         public async Task<List<BirdEntity>> GetAllBirdActiveByAccountId(Guid accountId)
         {
-            return await this.FindAllWithCondition(b => b.OwnerId.Equals(accountId)
-                                                        && b.IsDeleted == false);
+            var birdsQuey = dbSet
+                            .Include(b => b.Owner)
+                            .Include(b => b.BirdType)
+                            .Where(b => b.OwnerId.Equals(accountId) && b.IsDeleted == false)
+                            .OrderByDescending(b => b.CreatedDatetime)
+                            .AsNoTracking();
+
+            return await birdsQuey.ToListAsync();
         }
 
         public async Task<BirdEntity> GetBirdActiveAsync(Guid birdID)
         {
-            var birdEntity = await this.GetByIdActiveAsync(birdID);
-            return birdEntity;
+            var birdQuery = dbSet
+                            .Include(b => b.Owner)
+                            .Include(b => b.BirdType)
+                            .Where(b => b.Id.Equals(birdID) && b.IsDeleted == false)
+                            .AsNoTracking();
+            return await birdQuery.FirstOrDefaultAsync();
         }
 
         public async Task<List<BirdEntity>> GetBirdsActiveAsync()
         {
             var birds = dbSet
                         .Include(b => b.Owner)
+                        .Include(b => b.BirdType)
                         .AsNoTracking()
                         .OrderByDescending(b => b.Elo);
             return await birds.ToListAsync();
@@ -105,6 +116,7 @@ namespace EBird.Infrastructure.Repositories
 
             var birds = dbSet
                         .Include(b => b.Owner)
+                        .Include(b => b.BirdType)
                         .OrderByDescending(b => b.CreatedDatetime)
                         .AsNoTracking();
 
