@@ -130,21 +130,32 @@ namespace EBird.Api.Controllers
         }
 
         [HttpGet("group/{groupId}")]
-        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> GetRequestsByGroupId(Guid groupId)
+        public async Task<ActionResult<Response<ICollection<RequestResponseDTO>>>> GetRequestsByGroupId(Guid groupId, [FromQuery] RequestParameters parameters)
         {
-            // ResponseWithPaging<ICollection<RequestResponse>> response = null;
             Response<ICollection<RequestResponseDTO>> response;
             try
             {
                 ICollection<RequestResponseDTO> listDTO = null;
 
-                listDTO = await _requestService.GetRequestsByGroupId(groupId);
+                listDTO = await _requestService.GetRequestsByGroupId(groupId, parameters);
 
-                response = Response<ICollection<RequestResponseDTO>>.Builder()
+                PagingData metaData = new PagingData()
+                {
+                    CurrentPage = ((PagedList<RequestResponseDTO>)listDTO).CurrentPage,
+                    PageSize = ((PagedList<RequestResponseDTO>)listDTO).PageSize,
+                    TotalCount = ((PagedList<RequestResponseDTO>)listDTO).TotalCount,
+                    TotalPages = ((PagedList<RequestResponseDTO>)listDTO).TotalPages,
+                    HasNext = ((PagedList<RequestResponseDTO>)listDTO).HasNext,
+                    HasPrevious = ((PagedList<RequestResponseDTO>)listDTO).HasPrevious
+                };
+
+                response = ResponseWithPaging<ICollection<RequestResponseDTO>>.Builder()
                 .SetSuccess(true)
                 .SetStatusCode((int)HttpStatusCode.OK)
                 .SetMessage($"Get all request in {groupId} successful")
-                .SetData(listDTO);
+                .SetData(listDTO)
+                .SetPagingData(metaData);
+
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
@@ -362,7 +373,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
                 Console.WriteLine($"Error: {ex.Message}");
-                
+
                 response = Response<string>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -478,11 +489,11 @@ namespace EBird.Api.Controllers
                 if (isValid == false)
                 {
                     message = "Tow requests are not valid to merge";
-                } 
+                }
                 else
                 {
                     message = "Tow requests are valid to merge";
-                } 
+                }
 
                 response = Response<bool>.Builder()
                     .SetSuccess(true)
@@ -504,7 +515,7 @@ namespace EBird.Api.Controllers
                     return StatusCode((int)response.StatusCode, response);
                 }
                 Console.WriteLine($"Error: {ex.Message}");
-                
+
                 response = Response<bool>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -513,7 +524,7 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
-    
+
         // Put: leave off 
         [HttpPut("leave/{requestId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]

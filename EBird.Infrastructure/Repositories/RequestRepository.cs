@@ -122,17 +122,31 @@ namespace EBird.Infrastructure.Repositories
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();
         }
-        public async Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId)
+        public async Task<PagedList<RequestEntity>> GetRequestsByGroupId(Guid groupId, RequestParameters parameters)
         {
-            return await dbSet.AsNoTracking()
+            var requestListRaw = dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.Group)
                                 .Include(e => e.HostBird)
                                 .Include(e => e.Host)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
-                                .Where(e => e.GroupId == groupId && e.IsDeleted == false)
-                                .ToListAsync();
+                                .Where(e => e.GroupId == groupId 
+                                        && e.IsDeleted == false
+                                        && e.Status != RequestStatus.Closed);
+
+            PagedList<RequestEntity> pagedListRequests = new PagedList<RequestEntity>();
+
+            if (parameters == null || parameters.PageSize == 0)
+            {
+                await pagedListRequests.LoadData(requestListRaw);
+            }
+            else
+            {
+                await pagedListRequests.LoadData(requestListRaw, parameters.PageNumber, parameters.PageSize);
+            }
+            
+            return pagedListRequests;
         }
 
         public async Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId)
