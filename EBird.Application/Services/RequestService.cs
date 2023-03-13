@@ -46,7 +46,7 @@ namespace EBird.Application.Services
 
         public async Task DeleteRequest(Guid id)
         {
-            await _unitOfValidation.Request.ValidateRequestId(id);
+            // await _unitOfValidation.Request.ValidateRequestId(id);
             await _repository.Request.DeleteSoftAsync(id);
         }
 
