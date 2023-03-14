@@ -37,6 +37,6 @@ namespace EBird.Application.Model.Request
         //     profile.CreateMap<RequestEntity, RequestResponse>()
         //         .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.GetDescription()));
         // }
-
+        public DateTime CreateDatetime { get; set; }
     }
 }

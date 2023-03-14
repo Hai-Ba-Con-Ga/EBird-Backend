@@ -3,7 +3,7 @@ using EBird.Application.Interfaces.IMapper;
 using EBird.Domain.Entities;
 
 namespace EBird.Application.Model;
-public class CreatePayment : IMapTo<PaymentEntity>
+public class CreatePayment : IMapTo<PaymentEntity>, IMapFrom<PaymentEntity>
 {
     [Required]
     public double Amount { get; set; }
