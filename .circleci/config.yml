@@ -25,10 +25,11 @@ jobs:
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker tag $DOCKER_IMAGE_NAME $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME
             docker push $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME
-      - add_ssh_keys:
+      - add-ssh-keys:
           fingerprints:
             - $SSH_FINGERPRINT
-          ssh_key: $SSH_PRIVATE_KEY
+          ssh-private-key: |
+            $SSH_PRIVATE_KEY
       - run:
           name: SSH to server and deploy Docker image
           command: |
