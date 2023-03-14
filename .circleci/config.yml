@@ -1,6 +1,7 @@
 version: 2.1
 env: 
   DOCKER_IMAGE_NAME: globird
+
 jobs:
   build_and_deploy:
     machine:
@@ -32,3 +33,9 @@ jobs:
           name: SSH to server and deploy Docker image
           command: |
             ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa $SSH_USERNAME@$SSH_HOST "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && docker pull $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME && docker run -d -p 7137:80 $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME"
+  
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_deploy
