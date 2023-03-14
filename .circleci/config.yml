@@ -5,7 +5,7 @@ env:
 jobs:
   build_and_deploy:
     machine:
-      image: ubuntu-2004:202109-01
+      image: ubuntu-2004:2023.02.1
     steps:
       - checkout
       - run:
