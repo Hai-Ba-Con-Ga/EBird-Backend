@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  build_and_deploy:
+    machine:
+      image: ubuntu-2004:202109-01
+    steps:
+      - checkout
+      - run:
+          name: Install Docker
+          command: |
+            sudo apt-get update && sudo apt-get -y install apt-transport-https ca-certificates curl gnupg lsb-release
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update && sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t my-image .
+      - run:
+          name: Push Docker image to Docker Hub
+          command: |
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+            docker tag my-image $DOCKERHUB_USERNAME/my-image
+            docker push $DOCKERHUB_USERNAME/my-image
+      - add_ssh_keys:
+          fingerprints:
+            - "YOUR_SERVER_SSH_FINGERPRINT"
+      - run:
+          name: SSH to server and deploy Docker image
+          command: |
+            ssh -o "StrictHostKeyChecking=no" user@server "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && docker pull $DOCKERHUB_USERNAME/my-image && docker run -d -p 80:80 -p 7137:7137 $DOCKERHUB_USERNAME/my-image"
