@@ -98,7 +98,7 @@ public class StatisticsController : ControllerBase
             List<RequestResponseDTO> rawList = (await _requestService.GetRequests()).ToList();
             rawList = rawList.OrderBy(x => x.CreateDatetime).ToList();
 
-            var start = rawList.FirstOrDefault()?.CreateDatetime.Date ?? DateTime.Now;
+            var start = rawList.FirstOrDefault()?.CreateDatetime?.Date ?? DateTime.Now;
             var result = new List<Tuple<DateTime,List<RequestResponseDTO>>>();
             int index = 0;
 
