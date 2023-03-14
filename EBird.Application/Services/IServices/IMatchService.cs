@@ -18,10 +18,10 @@ namespace EBird.Application.Services.IServices
         public Task DeleteMatch(Guid matchId);
         public Task UpdateMatch(Guid matchId, MatchUpdateDTO matchUpdateDTO);
         public Task JoinMatch(Guid matchId, MatchJoinDTO matchJoinDTO);
-        Task ConfirmMatch(Guid matchId, Guid userConfirmId);
+        public Task ConfirmMatch(Guid matchId, Guid userConfirmId);
         public Task<ICollection<MatchResponseDTO>> GetWithOwnerAndStatus(Guid userId, string rolePlayer, string matchStatus);
         Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO);
-        Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId);
+        Task<PagedList<MatchResponseDTO>> GetMatchByGroupId(Guid groupId, MatchParameters matchParameters = null);
         Task<ICollection<MatchResponseDTO>> GetMatchesByBirdId(Guid birdId, string matchStatus);
         Task ResolveMatchResult(Guid userId, Guid matchId, ResolveMatchResultDTO updateData);
     }

@@ -48,9 +48,11 @@ namespace EBird.Infrastructure.Repositories
             var entity = await dbSet
                 .Include(e => e.Group)
                 .Include(e => e.HostBird)
+                .ThenInclude(e => e.BirdType)
                 .Include(e => e.Host)
                 .Include(e => e.Challenger)
                 .Include(e => e.ChallengerBird)
+                .ThenInclude(e => e.BirdType)
                 .Include(e => e.Place)
                 .Include(e => e.Room)
                 .Where(e => e.Id == id 
@@ -64,9 +66,11 @@ namespace EBird.Infrastructure.Repositories
             return await dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.HostBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Host)
                                 .Include(e => e.Challenger)
                                 .Include(e => e.ChallengerBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false 
@@ -80,9 +84,11 @@ namespace EBird.Infrastructure.Repositories
             var requests = dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.HostBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Host)
                                 .Include(e => e.Challenger)
                                 .Include(e => e.ChallengerBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false 
@@ -122,17 +128,35 @@ namespace EBird.Infrastructure.Repositories
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();
         }
-        public async Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId)
+        public async Task<PagedList<RequestEntity>> GetRequestsByGroupId(Guid groupId, RequestParameters parameters)
         {
-            return await dbSet.AsNoTracking()
+            var requestListRaw = dbSet.AsNoTracking()
                                 .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.Group)
                                 .Include(e => e.HostBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Host)
+                                .Include(e => e.Challenger)
+                                .Include(e => e.ChallengerBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
-                                .Where(e => e.GroupId == groupId && e.IsDeleted == false)
-                                .ToListAsync();
+                                .Where(e => e.GroupId == groupId 
+                                        && e.IsDeleted == false
+                                        && e.Status != RequestStatus.Closed);
+
+            PagedList<RequestEntity> pagedListRequests = new PagedList<RequestEntity>();
+
+            if (parameters == null || parameters.PageSize == 0)
+            {
+                await pagedListRequests.LoadData(requestListRaw);
+            }
+            else
+            {
+                await pagedListRequests.LoadData(requestListRaw, parameters.PageNumber, parameters.PageSize);
+            }
+            
+            return pagedListRequests;
         }
 
         public async Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId)
@@ -205,9 +229,11 @@ namespace EBird.Infrastructure.Repositories
                                 .OrderByDescending(r => r.CreateDatetime)
                                 .Include(e => e.Group)
                                 .Include(e => e.HostBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Host)
                                 .Include(e => e.Challenger)
                                 .Include(e => e.ChallengerBird)
+                                .ThenInclude(e => e.BirdType)
                                 .Include(e => e.Place)
                                 .Include(e => e.Room)
                                 .Where(e => e.IsDeleted == false 

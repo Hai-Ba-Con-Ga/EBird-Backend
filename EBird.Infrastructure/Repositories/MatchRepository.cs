@@ -58,15 +58,14 @@ namespace EBird.Infrastructure.Repositories
             }
         }
 
-        public async Task<MatchEntity> GetMatch(Guid id)
+        public async Task<MatchEntity?> GetMatch(Guid id)
         {
-            var entity = await _context.Matches
+            var entity = _context.Matches
                 .Include(e => e.Place)
                 .Include(e => e.MatchDetails)
-                .ThenInclude(e => e.Bird)
-                .Where(e => e.Id == id && e.IsDeleted == false)
-                .FirstOrDefaultAsync();
-            return entity;
+                .ThenInclude(e => e.Bird);
+                
+            return await entity.FirstOrDefaultAsync(e => e.Id == id && e.IsDeleted == false);
         }
 
         public async Task<PagedList<MatchEntity>> GetMatchesWithPaging(MatchParameters param)
@@ -297,7 +296,7 @@ namespace EBird.Infrastructure.Repositories
                 }
             }
         }
-        public async Task<ICollection<MatchEntity>> GetMatchByGroupId(Guid groupId)
+        public async Task<PagedList<MatchEntity>> GetMatchByGroupId(Guid groupId, MatchParameters parameters)
         {
             var collection = _context.Matches
                 .Include(e => e.Place)
@@ -310,9 +309,25 @@ namespace EBird.Infrastructure.Repositories
                 collection = collection.Where(e => e.GroupId == groupId);
             }
 
-            return await collection
-                        .OrderByDescending(e => e.CreateDatetime)
-                        .ToListAsync();
+            if(parameters.MatchStatus != null)
+            {
+                collection = collection.Where(e => e.MatchStatus == parameters.MatchStatus);
+            }
+
+            collection = collection.OrderByDescending(e => e.CreateDatetime);
+
+            PagedList<MatchEntity> pagedList = new PagedList<MatchEntity>();
+
+            if (parameters == null || parameters.PageSize == 0)
+            {
+                await pagedList.LoadData(collection);
+            }
+            else
+            {
+                await pagedList.LoadData(collection, parameters.PageNumber, parameters.PageSize);
+            }
+
+            return pagedList;
         }
 
         public async Task<ICollection<MatchEntity>> GetMatchesByBirdId(Guid birdId, MatchStatus matchStatus)
@@ -364,7 +379,7 @@ namespace EBird.Infrastructure.Repositories
                     }
 
                     _context.UpdateRange(matchDetails);
-                    
+
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
