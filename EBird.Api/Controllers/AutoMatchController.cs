@@ -46,7 +46,9 @@ public class AutoMatchController : ControllerBase
             //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
             //}
 
-            var list = (await _requestService.GetRequestsByGroupId(groupid))
+            RequestParameters parameters = new RequestParameters();
+
+            var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
             //var list = (await _requestService.GetRequests())
                 .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
             var finder = new RequestTuple();
@@ -57,12 +59,12 @@ public class AutoMatchController : ControllerBase
                 var requestTuple = new RequestTuple(
                     item.Id,
                     item.Host.Id,
-                    ((double)item.Place.Latitude, (double)item.Place.Longitude),
+                    ((double) item.Place.Latitude, (double) item.Place.Longitude),
                     item.HostBird.Elo,
                     item.RequestDatetime,
                     false
                 );
-                listRequest.Add(requestTuple); 
+                listRequest.Add(requestTuple);
             }
             var priorityRequestList = await _matchingService.BinarySearch(listRequest);
             //await Console.Out.WriteLineAsync(string.Join("\n",priorityRequestList));
@@ -72,24 +74,27 @@ public class AutoMatchController : ControllerBase
             //    item.Item3 = await _requestService.MergeRequest(item.Item1, item.Item2);
             //}
 
-            response = Response<List<Tuple<Guid,Guid>>>.Builder()
+            response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(true)
-                        .SetStatusCode((int)HttpStatusCode.OK)
+                        .SetStatusCode((int) HttpStatusCode.OK)
                         .SetMessage("Requests are retrieved successfully")
                         .SetData(priorityRequestList);
         }
-        catch (NotFoundException ex)
+        catch(Exception ex)
         {
+            if(ex is NotFoundException || ex is BadRequestException)
+            {
+                response = Response<List<Tuple<Guid, Guid>>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
+
+                return response;
+            }
+
             response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode((int)HttpStatusCode.BadRequest)
-                        .SetMessage(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            response = Response<List<Tuple<Guid,Guid>>>.Builder()
-                        .SetSuccess(false)
-                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
                         .SetMessage(ex.Message);
         }
         return response;

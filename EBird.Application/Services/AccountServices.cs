@@ -48,6 +48,7 @@ namespace EBird.Application.Services
 
             return accountResponse;
         }
+        
         public async Task<List<AccountResponse>> GetAllAccount()
         {
             var accounts = await _accountRepository.GetAllActiveAsync();
@@ -65,6 +66,7 @@ namespace EBird.Application.Services
             }
             return accountList;
         }
+        
         public async Task UpdateAccount(AccountEntity updateAccount)
         {
             var account = await _accountRepository.GetByIdActiveAsync(updateAccount.Id);
@@ -177,6 +179,13 @@ namespace EBird.Application.Services
             accountResponseList.MapMetaData(accountList);
 
             return accountResponseList;
+        }
+
+        public async Task<AccountResponse> GetAccountByUsername(string username)
+        {
+            var account = await _repository.Account.GetAccountByUsername(username);
+
+            return _mapper.Map<AccountResponse>(account);
         }
     }
 }
