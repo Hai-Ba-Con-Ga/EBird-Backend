@@ -31,7 +31,12 @@ jobs:
       - run:
           name: SSH to server and deploy Docker image
           command: |
+            CONTAINER_ID=$(ssh -i ~/.ssh/id_rsa $SSH_USERNAME@$SSH_HOST "docker ps --filter 'publish=7137:80' --format '{{.ID}}'")
+            if [ ! -z "$CONTAINER_ID" ]; then
+              ssh -i ~/.ssh/id_rsa $SSH_USERNAME@$SSH_HOST "docker stop $CONTAINER_ID && docker rm $CONTAINER_ID"
+            fi
             ssh -i ~/.ssh/id_rsa $SSH_USERNAME@$SSH_HOST "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && docker pull $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME && docker run -d -p 7137:80 $DOCKERHUB_USERNAME/$DOCKER_IMAGE_NAME"
+
   
 workflows:
   version: 2
