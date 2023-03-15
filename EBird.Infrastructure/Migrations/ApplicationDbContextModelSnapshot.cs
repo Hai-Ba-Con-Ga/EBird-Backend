@@ -455,7 +455,7 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MatchBirdId")
+                    b.Property<Guid>("MatchDetailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ResourceId")
@@ -463,7 +463,7 @@ namespace EBird.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MatchBirdId");
+                    b.HasIndex("MatchDetailId");
 
                     b.HasIndex("ResourceId");
 
@@ -591,6 +591,49 @@ namespace EBird.Infrastructure.Migrations
                     b.HasIndex("ChatRoomId");
 
                     b.ToTable("Participants");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PaymentEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float")
+                        .HasColumnName("Amount");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("Description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("PaymentType");
+
+                    b.Property<string>("StatusString")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>
@@ -865,6 +908,11 @@ namespace EBird.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Thumnail")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("Thumnail");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreateById");
@@ -963,6 +1011,39 @@ namespace EBird.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VerifcationStore");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.VipRegistrationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("VipRegistration");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.AccountResourceEntity", b =>
@@ -1122,9 +1203,9 @@ namespace EBird.Infrastructure.Migrations
 
             modelBuilder.Entity("EBird.Domain.Entities.MatchResourceEntity", b =>
                 {
-                    b.HasOne("EBird.Domain.Entities.MatchDetailEntity", "MatchBird")
+                    b.HasOne("EBird.Domain.Entities.MatchDetailEntity", "MatchDetail")
                         .WithMany("MatchResources")
-                        .HasForeignKey("MatchBirdId")
+                        .HasForeignKey("MatchDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1134,7 +1215,7 @@ namespace EBird.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MatchBird");
+                    b.Navigation("MatchDetail");
 
                     b.Navigation("Resource");
                 });
@@ -1194,6 +1275,17 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("ChatRoom");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PaymentEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("Payments")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PostEntity", b =>
@@ -1332,6 +1424,25 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("EBird.Domain.Entities.VipRegistrationEntity", b =>
+                {
+                    b.HasOne("EBird.Domain.Entities.AccountEntity", "Account")
+                        .WithMany("VipRegistrations")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EBird.Domain.Entities.PaymentEntity", "Payment")
+                        .WithMany("VipRegistrations")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("EBird.Domain.Entities.AccountEntity", b =>
                 {
                     b.Navigation("AccountResources");
@@ -1356,6 +1467,8 @@ namespace EBird.Infrastructure.Migrations
 
                     b.Navigation("Participants");
 
+                    b.Navigation("Payments");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("ReportCreates");
@@ -1367,6 +1480,8 @@ namespace EBird.Infrastructure.Migrations
                     b.Navigation("Rooms");
 
                     b.Navigation("Rules");
+
+                    b.Navigation("VipRegistrations");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.BirdEntity", b =>
@@ -1414,6 +1529,11 @@ namespace EBird.Infrastructure.Migrations
             modelBuilder.Entity("EBird.Domain.Entities.NotificationTypeEntity", b =>
                 {
                     b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("EBird.Domain.Entities.PaymentEntity", b =>
+                {
+                    b.Navigation("VipRegistrations");
                 });
 
             modelBuilder.Entity("EBird.Domain.Entities.PlaceEntity", b =>

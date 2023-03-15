@@ -14,6 +14,7 @@ using Response;
 using System.Net;
 using System.Security.Claims;
 using EBird.Domain.Enums;
+using EBird.Application.Model.PagingModel;
 
 namespace EBird.Api.Controllers
 {
@@ -164,7 +165,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
-        
+
         [HttpPut("forgot-password")]
         public async Task<ActionResult<Response<string>>> ForgotPassword([FromBody] ForgotPasswordRequest req)
         {
@@ -184,7 +185,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
-        
+
         [HttpPut("reset-password")]
         public async Task<ActionResult<Response<string>>> ResetPassword([FromBody] ResetPasswordModel req)
         {
@@ -208,7 +209,7 @@ namespace EBird.Api.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
-       
+
         [HttpPost("email")]
         public async Task<ActionResult<Response<string>>> CheckEmail([FromBody] CheckEmailRequest req)
         {
@@ -244,6 +245,82 @@ namespace EBird.Api.Controllers
                 response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
             return StatusCode((int)response.StatusCode, response);
+        }
+
+
+        [HttpGet("search")]
+        public async Task<ActionResult<Response<List<AccountResponse>>>> SearchAccountByUsername([FromQuery] string? query)
+        {
+            var response = new Response<List<AccountResponse>>();
+            try
+            {
+                var account = await _accountServices.GetAllAccount();
+                if (query != null && query.Length != 0)
+                    account = account.Where(x => x.Username.Contains(query)).ToList();
+
+                response = Response<List<AccountResponse>>.Builder()
+                .SetData(account)
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage("Search successfully");
+            }
+            catch (NotFoundException ex)
+            {
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<Response<IList<AccountResponse>>>> GetAllWithPagination([FromQuery] AccountParameters parameters)
+        {
+            Response<IList<AccountResponse>> response = null;
+            try
+            {
+                IList<AccountResponse> accounts = await _accountServices.GetAllAccountWithPagination(parameters);
+
+                PagingData metaData = new PagingData
+                {
+                    CurrentPage = ((PagedList<AccountResponse>)accounts).CurrentPage,
+                    PageSize = ((PagedList<AccountResponse>)accounts).PageSize,
+                    TotalCount = ((PagedList<AccountResponse>)accounts).TotalCount,
+                    TotalPages = ((PagedList<AccountResponse>)accounts).TotalPages,
+                    HasNext = ((PagedList<AccountResponse>)accounts).HasNext,
+                    HasPrevious = ((PagedList<AccountResponse>)accounts).HasPrevious
+                };
+
+                response = ResponseWithPaging<IList<AccountResponse>>.Builder()
+                .SetData(accounts)
+                .SetPagingData(metaData)
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+
+                if (ex is BadRequestException)
+                {
+                    response = Response<IList<AccountResponse>>.Builder()
+                    .SetSuccess(false)
+                    .SetStatusCode((int)HttpStatusCode.BadRequest)
+                    .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<IList<AccountResponse>>.Builder()
+                .SetSuccess(false)
+                .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                .SetMessage(ex.Message);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
         }
     }
 }

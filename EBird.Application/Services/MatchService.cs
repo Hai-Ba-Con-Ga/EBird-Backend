@@ -8,6 +8,8 @@ using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IValidation;
 using EBird.Application.Model.Bird;
 using EBird.Application.Model.Match;
+using EBird.Application.Model.PagingModel;
+using EBird.Application.Model.Resource;
 using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
@@ -19,12 +21,14 @@ namespace EBird.Application.Services
         private readonly IWapperRepository _repository;
         private readonly IMapper _mapper;
         private readonly IUnitOfValidation _validation;
+        private readonly IMatchDetailService _matchDetailService;
 
-        public MatchService(IWapperRepository repository, IMapper mapper, IUnitOfValidation validation)
+        public MatchService(IWapperRepository repository, IMapper mapper, IUnitOfValidation validation, IMatchDetailService matchDetailService)
         {
             _repository = repository;
             _mapper = mapper;
             _validation = validation;
+            _matchDetailService = matchDetailService;
         }
 
         // public async Task<Guid> CreateMatch(MatchCreateDTO matchCreateDTO)
@@ -54,7 +58,15 @@ namespace EBird.Application.Services
             if (match == null) throw new BadRequestException("Match not found");
 
             var matchDTO = _mapper.Map<MatchResponseDTO>(match);
+
             matchDTO.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(match.MatchDetails);
+
+            foreach (var matchDetail in matchDTO.MatchDetails)
+            {
+                var matchResources = await _repository.MatchDetail.GetMatchResources(matchDetail.Id);
+
+                matchDetail.ResourceResponses = _mapper.Map<ICollection<ResourceResponse>>(matchResources);
+            }
 
             return matchDTO;
         }
@@ -76,22 +88,18 @@ namespace EBird.Application.Services
             return matchDtoList;
         }
 
-        public async Task<ICollection<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
+        public async Task<PagedList<MatchResponseDTO>> GetMatches(MatchParameters matchParameters)
         {
             _validation.Base.ValidateParameter(matchParameters);
 
-            ICollection<MatchEntity> list = null;
+            IList<MatchEntity> list = null;
 
             if (matchParameters.PageSize > 0)
             {
                 list = await _repository.Match.GetMatchesWithPaging(matchParameters);
             }
-            else
-            {
-                list = await _repository.Match.GetMatches(matchParameters);
-            }
 
-            ICollection<MatchResponseDTO> lisDto = _mapper.Map<ICollection<MatchResponseDTO>>(list);
+            PagedList<MatchResponseDTO> lisDto = _mapper.Map<PagedList<MatchResponseDTO>>(list);
 
             foreach (var item in lisDto)
             {
@@ -161,7 +169,7 @@ namespace EBird.Application.Services
                 default:
                     throw new BadRequestException("Role player not found");
             }
-            
+
             MatchStatus matchStatusEnum;
             switch (matchStatus.ToLower())
             {
@@ -191,22 +199,82 @@ namespace EBird.Application.Services
         public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
         {
             await _validation.Match.ValidateCreateMatch(matchCreateDTO);
-            
+
             Guid createdId = await _repository.Match.CreateMatchFromRequest(matchCreateDTO);
 
             return createdId;
         }
 
-        public async Task<ICollection<MatchResponseDTO>> GetMatchByGroupId(Guid groupId)
+        public async Task<PagedList<MatchResponseDTO>> GetMatchByGroupId(Guid groupId, MatchParameters parameters)
         {
             await _validation.Base.ValidateGroupId(groupId);
+            _validation.Base.ValidateParameter(parameters);
 
-            ICollection<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId);
+            PagedList<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId, parameters);
 
-            var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+            var matchDTOList = _mapper.Map<PagedList<MatchResponseDTO>>(matchList);
 
             return matchDTOList;
         }
 
+        public async Task<ICollection<MatchResponseDTO>> GetMatchesByBirdId(Guid birdId, string matchStatusRaw)
+        {
+            await _validation.Base.ValidateBirdId(birdId);
+
+            MatchStatus matchStatus;
+
+            ICollection<MatchEntity> matchList;
+
+            if (matchStatusRaw != null)
+            {
+                var resultParse = Enum.TryParse<MatchStatus>(matchStatusRaw, out matchStatus);
+
+                if (resultParse == false)
+                    throw new BadRequestException("Match status not found");
+
+                matchList = await _repository.Match.GetMatchesByBirdId(birdId, matchStatus);
+            }
+            else
+            {
+                matchList = await _repository.Match.GetMatchesByBirdId(birdId);
+            }
+
+            var matchListDTO = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
+
+            foreach (var item in matchListDTO)
+            {
+                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(matchList
+                                                .Where(x => x.Id == item.Id)
+                                                .FirstOrDefault()
+                                                .MatchDetails);
+            }
+
+            return matchListDTO;
+        }
+
+        public async Task ResolveMatchResult(Guid userId, Guid matchId, ResolveMatchResultDTO updateData)
+        {
+            await _validation.Base.ValidateAdmin(userId);
+            await _validation.Base.ValidateMatchId(matchId);
+
+            if (updateData.loseBirdId == null || updateData.loseBirdId == null)
+            {
+                await _repository.Match.ChangeMatchResultToDraw(matchId, updateData);
+            }
+            else
+            {
+                await _repository.MatchDetail.UpdateMatchResult(matchId, updateData.winBirdId, "win");
+                await _repository.MatchDetail.UpdateMatchResult(matchId, updateData.loseBirdId, "lose");
+
+                var match = await _repository.Match.GetMatch(matchId);
+
+                if (match.MatchStatus == MatchStatus.Completed)
+                {
+                    bool isInGroup = (match.GroupId != Guid.Empty && match.GroupId != null);
+
+                    await _matchDetailService.UpdateBirdsEloAfterMatchComplete(matchId, isInGroup);
+                }
+            }
+        }
     }
 }

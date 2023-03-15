@@ -101,7 +101,7 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
-
+                
                 response = Response<MatchResponseDTO>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
@@ -113,43 +113,32 @@ namespace EBird.Api.Controllers
 
         //get all match
         [HttpGet("all")]
-        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
+        public async Task<ActionResult<Response<IList<MatchResponseDTO>>>> GetAll([FromQuery] MatchParameters queryParameters)
         {
-            var response = new Response<ICollection<MatchResponseDTO>>();
+            var response = new Response<IList<MatchResponseDTO>>();
             try
             {
-                ICollection<MatchResponseDTO> matches = null;
-                if (queryParameters?.MatchStatus == null)
+                IList<MatchResponseDTO> matches = null;
+
+                matches = await _matchService.GetMatches(queryParameters);
+
+                PagingData metaData = new PagingData()
                 {
-                    matches = await _matchService.GetMatches();
+                    CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
+                    PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
+                    TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
+                    TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
+                    HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
+                    HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
+                };
 
-                    response = Response<ICollection<MatchResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all match is success")
-                    .SetData(matches);
-                }
-                else
-                {
-                    matches = await _matchService.GetMatches(queryParameters);
+                response = ResponseWithPaging<IList<MatchResponseDTO>>.Builder()
+                .SetSuccess(true)
+                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetMessage("Get all match is successful")
+                .SetData(matches)
+                .SetPagingData(metaData);
 
-                    PagingData metaData = new PagingData()
-                    {
-                        CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
-                        PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
-                        TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
-                        TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
-                        HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
-                        HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
-                    };
-
-                    response = ResponseWithPaging<ICollection<MatchResponseDTO>>.Builder()
-                    .SetSuccess(true)
-                    .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all match is successful")
-                    .SetData(matches)
-                    .SetPagingData(metaData);
-                }
 
                 return StatusCode((int)response.StatusCode, response);
             }
@@ -157,15 +146,16 @@ namespace EBird.Api.Controllers
             {
                 if (ex is BadRequestException || ex is NotFoundException)
                 {
-                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                    response = Response<IList<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.BadRequest)
                             .SetMessage(ex.Message);
 
                     return StatusCode((int)response.StatusCode, response);
                 }
+                Console.WriteLine($"Error: {ex.Message} + {ex.StackTrace}");
 
-                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                response = Response<IList<MatchResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
                             .SetMessage("Internal Server Error");
@@ -298,19 +288,72 @@ namespace EBird.Api.Controllers
         }
 
         [HttpGet("group/{groupId}")]
-        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByGroup(Guid groupId)
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByGroup(Guid groupId, [FromQuery] MatchParameters parameters)
         {
             var response = new Response<ICollection<MatchResponseDTO>>();
             try
             {
                 ICollection<MatchResponseDTO> matches = null;
 
-                matches = await _matchService.GetMatchByGroupId(groupId);
+                matches = await _matchService.GetMatchByGroupId(groupId, parameters);
+
+                PagingData metaData = new PagingData()
+                {
+                    CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
+                    PageSize = ((PagedList<MatchResponseDTO>)matches).PageSize,
+                    TotalCount = ((PagedList<MatchResponseDTO>)matches).TotalCount,
+                    TotalPages = ((PagedList<MatchResponseDTO>)matches).TotalPages,
+                    HasNext = ((PagedList<MatchResponseDTO>)matches).HasNext,
+                    HasPrevious = ((PagedList<MatchResponseDTO>)matches).HasPrevious
+                };
+
+                response = ResponseWithPaging<ICollection<MatchResponseDTO>>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Get all match is success")
+                    .SetData(matches)
+                    .SetPagingData(metaData);
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+                Console.WriteLine($"Error: {ex.Message}");
+                
+                response = Response<ICollection<MatchResponseDTO>>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
+
+        [HttpGet("bird/{birdId}")]
+        public async Task<ActionResult<Response<ICollection<MatchResponseDTO>>>> GetByBird(Guid birdId, [FromQuery] string? matchStatus)
+        {
+            var response = new Response<ICollection<MatchResponseDTO>>();
+            try
+            {
+                ICollection<MatchResponseDTO> matches = null;
+
+                matches = await _matchService.GetMatchesByBirdId(birdId, matchStatus);
 
                 response = Response<ICollection<MatchResponseDTO>>.Builder()
                     .SetSuccess(true)
                     .SetStatusCode((int)HttpStatusCode.OK)
-                    .SetMessage("Get all match is success")
+                    .SetMessage("Get all match within birdId is success")
                     .SetData(matches);
 
                 return StatusCode((int)response.StatusCode, response);
@@ -338,97 +381,50 @@ namespace EBird.Api.Controllers
             }
         }
 
-        // //join match with bird id
-        // [HttpPut("join/{id}")]
-        // [Authorize(AuthenticationSchemes = "Bearer")]
-        // public async Task<ActionResult<Response<string>>> JoinMatch(Guid id, [FromBody] MatchJoinDTO matchJoinDTO)
-        // {
-        //     var response = new Response<string>();
-        //     try
-        //     {
-        //         var userIdRaw = this.GetUserId();
-        //         if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
 
-        //         matchJoinDTO.ChallengerId = Guid.Parse(userIdRaw);
+        //endpoint for admin resolve conflict result
+        [HttpPut("admin/resolve/result/{matchId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<Response<string>>> ResolveMatchResult(Guid matchId, [FromBody] ResolveMatchResultDTO updateData)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var userIdRaw = this.GetUserId();
 
-        //         await _matchService.JoinMatch(id, matchJoinDTO);
+                Guid userId = Guid.Parse(userIdRaw);
 
-        //         response = Response<string>.Builder()
-        //             .SetSuccess(true)
-        //             .SetStatusCode((int)HttpStatusCode.OK)
-        //             .SetMessage("Join match is success")
-        //             .SetData("");
+                await _matchService.ResolveMatchResult(userId, matchId, updateData);
 
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         if (ex is BadRequestException ||
-        //             ex is NotFoundException ||
-        //             ex is UnauthorizedException)
-        //         {
-        //             response = Response<string>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.BadRequest)
-        //                     .SetMessage(ex.Message);
+                response = Response<string>.Builder()
+                    .SetSuccess(true)
+                    .SetStatusCode((int)HttpStatusCode.OK)
+                    .SetMessage("Update match result successful")
+                    .SetData("");
 
-        //             return StatusCode((int)response.StatusCode, response);
-        //         }
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException ||
+                    ex is NotFoundException ||
+                    ex is UnauthorizedException)
+                {
+                    response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.BadRequest)
+                            .SetMessage(ex.Message);
 
-        //         response = Response<string>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.InternalServerError)
-        //                     .SetMessage("Internal Server Error");
+                    return StatusCode((int)response.StatusCode, response);
+                }
 
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        // }
+                response = Response<string>.Builder()
+                            .SetSuccess(false)
+                            .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                            .SetMessage("Internal Server Error");
 
-        // //confirm match with match id
-        // [HttpPut("confirm/{matchId}")]
-        // [Authorize(AuthenticationSchemes = "Bearer")]
-        // public async Task<ActionResult<Response<string>>> ConfirmMatch(Guid matchId)
-        // {
-        //     var response = new Response<string>();
-        //     try
-        //     {
-        //         var userIdRaw = this.GetUserId();
-        //         if (userIdRaw == null) throw new UnauthorizedException("Not allowed to access");
-
-        //         Guid userId = Guid.Parse(userIdRaw);
-
-        //         await _matchService.ConfirmMatch(matchId, userId);
-
-        //         response = Response<string>.Builder()
-        //             .SetSuccess(true)
-        //             .SetStatusCode((int)HttpStatusCode.OK)
-        //             .SetMessage("Join match is success")
-        //             .SetData("");
-
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         if (ex is BadRequestException ||
-        //             ex is NotFoundException ||
-        //             ex is UnauthorizedException)
-        //         {
-        //             response = Response<string>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.BadRequest)
-        //                     .SetMessage(ex.Message);
-
-        //             return StatusCode((int)response.StatusCode, response);
-        //         }
-
-        //         response = Response<string>.Builder()
-        //                     .SetSuccess(false)
-        //                     .SetStatusCode((int)HttpStatusCode.InternalServerError)
-        //                     .SetMessage("Internal Server Error");
-
-        //         return StatusCode((int)response.StatusCode, response);
-        //     }
-        // }
-
+                return StatusCode((int)response.StatusCode, response);
+            }
+        }
     }
 }

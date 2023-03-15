@@ -5,9 +5,10 @@ namespace EBird.Domain.Entities;
 public class MatchResourceEntity : BaseEntity
 {
     [Required]
-    public Guid MatchBirdId { get; set; }
+    public Guid MatchDetailId { get; set; }
     //1 - M relationship Bird
-    public MatchDetailEntity MatchBird { get; set; } = null!;
+    public MatchDetailEntity MatchDetail { get; set; } = null!;
+    
     [Required]
     public Guid ResourceId { get; set; }
     //1- M relationship Resource

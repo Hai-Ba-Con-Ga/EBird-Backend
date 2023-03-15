@@ -58,9 +58,11 @@ namespace EBird.Application.Services
             return birdEntity.Id;
         }
 
-        public async Task DeleteBird(Guid birdID)
+        public async Task DeleteBird(Guid userId, Guid birdId)
         {
-            await _repository.Bird.SoftDeleteBirdAsync(birdID);
+            await _unitOfValidation.Bird.ValidateBirdDelete(userId, birdId);
+
+            await _repository.Bird.SoftDeleteBirdAsync(birdId);
         }
 
         public async Task<BirdResponseDTO> GetBird(Guid birdID)
@@ -119,11 +121,11 @@ namespace EBird.Application.Services
             return birdListDTO;
         }
 
-        public async Task UpdateBird(Guid birdID, BirdRequestDTO birdDTO)
+        public async Task UpdateBird(Guid birdId, BirdRequestDTO birdDTO, Guid userId)
         {
-            await _unitOfValidation.Bird.ValidateUpdateBird(birdDTO);
+            await _unitOfValidation.Bird.ValidateUpdateBird(birdDTO, birdId, userId);
 
-            var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdID);
+            var birdEntity = await _repository.Bird.GetBirdActiveAsync(birdId);
 
             if(birdEntity == null)
             {
@@ -173,7 +175,7 @@ namespace EBird.Application.Services
             birdRatio.Lose = matchBirdList
                             .Where(x => x.Result == MatchDetailResult.Lose)
                             .Count();
-                            
+
             if((birdRatio.Win + birdRatio.Lose) == 0)
             {
                 birdRatio.Ratio = 0;
@@ -185,6 +187,29 @@ namespace EBird.Application.Services
             return birdRatio;
         }
 
+        public async Task<BirdResponseDTO> GetBirdWithRank(Guid birdId)
+        {
+            BirdEntity birdEntity = await _repository.Bird.GetByIdActiveAsync(birdId);
 
+            if (birdEntity == null)
+            {
+                throw new BadRequestException("Can not found bird");
+            }
+
+            var birdDto = _mapper.Map<BirdResponseDTO>(birdEntity);
+
+            birdDto.Ratio = await GetBirdRatio(birdId);
+
+            long rank = await _repository.Bird.GetBirdRank(birdId);
+
+            if (rank == 0)
+            {
+                throw new BadRequestException("Can not found bird rank");
+            }
+
+            birdDto.Rank = rank;
+            
+            return birdDto;
+        }
     }
 }

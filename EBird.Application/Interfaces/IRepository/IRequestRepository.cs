@@ -17,8 +17,10 @@ namespace EBird.Application.Interfaces.IRepository
         Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto);
         Task<Guid> MergeRequest(Guid hostRequestId, Guid challengerRequestId);
 
-        Task<ICollection<RequestEntity>> GetRequestsByGroupId(Guid groupId);
+        Task<PagedList<RequestEntity>> GetRequestsByGroupId(Guid groupId, RequestParameters parameters);
         Task ReadyRequest(Guid requestId);
         Task<ICollection<RequestEntity>> GetRequestByUserId(Guid userId);
+        Task LeaveRequest(Guid requestId, Guid userId);
+        Task<bool> IsBirdExistingInRequest(Guid hostBirdId);
     }
 }

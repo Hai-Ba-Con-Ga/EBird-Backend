@@ -17,6 +17,8 @@ using EBird.Application.Exceptions;
 using Google.Apis.Auth;
 using Newtonsoft.Json;
 using System.Text.Json;
+using EBird.Application.Model;
+
 namespace EBird.Application.Services
 {
     public class AuthenticationServices : IAuthenticationServices
@@ -24,13 +26,19 @@ namespace EBird.Application.Services
 
         private readonly IGenericRepository<RefreshTokenEntity> _refreshTokenRepository;
         private readonly IGenericRepository<AccountEntity> _accountRepository;
+        private readonly IGenericRepository<VipRegistrationEntity> _vipRegistrationRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository, IGenericRepository<AccountEntity> accountRepository, IConfiguration configuration, IMapper mapper)
+        public AuthenticationServices(IGenericRepository<RefreshTokenEntity> refreshTokenRepository,
+            IGenericRepository<AccountEntity> accountRepository,
+            IGenericRepository<VipRegistrationEntity> vipRegistrationRepository,
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _refreshTokenRepository = refreshTokenRepository;
             _accountRepository = accountRepository;
+            _vipRegistrationRepository = vipRegistrationRepository;
             _configuration = configuration;
             _mapper = mapper;
         }
@@ -123,11 +131,11 @@ namespace EBird.Application.Services
             var user = await _accountRepository.FindWithCondition(p => p.Username.Equals(req.Username) || p.Email.Equals(req.Email));
             if (user != null)
             {
-                if(req.Username.Equals(user.Username))
+                if (req.Username.Equals(user.Username))
                 {
                     throw new BadRequestException(String.Format("Username {0} is already taken", req.Username));
                 }
-                if(req.Email.Equals(user.Email))
+                if (req.Email.Equals(user.Email))
                 {
                     throw new BadRequestException(String.Format("Email {0} is already taken", req.Email));
                 }
@@ -168,8 +176,20 @@ namespace EBird.Application.Services
                 throw new NotFoundException("Account not found");
             }
             var accountResponse = new AccountResponse();
-            _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
-
+            var vipList = await _vipRegistrationRepository.FindAllWithCondition(p => p.AccountId.Equals(id));
+            if (vipList.Count() > 0)
+            {
+                foreach (var item in vipList)
+                {
+                    if (item.ExpiredDate > DateTime.Now) //check expired date of vip
+                    {
+                        accountResponse.Vip = _mapper.Map<VipRegistrationEntity, VipResponse>(item);
+                        break;
+                    }
+                }
+            }
+            accountResponse = _mapper.Map<AccountEntity, AccountResponse>(account, accountResponse);
+            // accountResponse.Vip = _mapper.Map<VipRegistrationEntity, VipResponse>(vip);
             return accountResponse;
         }
 
@@ -182,7 +202,7 @@ namespace EBird.Application.Services
             // string json = System.Text.Json.JsonSerializer.Serialize(client);
             Console.WriteLine(client.Email);
             var account = await _accountRepository.FindWithCondition(p => p.Email.Equals(client.Email));
-            
+
             var token = new TokenModel();
             if (account == null)
             {
@@ -196,7 +216,8 @@ namespace EBird.Application.Services
                 token = await CreateToken(newAccount);
                 return token;
             }
-            if (account.Username != null){
+            if (account.Username != null)
+            {
                 throw new BadRequestException("The account invalid!!");
             }
             token = await CreateToken(account);
