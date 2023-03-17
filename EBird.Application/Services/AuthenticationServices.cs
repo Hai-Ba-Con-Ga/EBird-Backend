@@ -216,7 +216,7 @@ namespace EBird.Application.Services
                 token = await CreateToken(newAccount);
                 return token;
             }
-            if (account.Username != null)
+            if (account.Username == null)
             {
                 throw new BadRequestException("The account invalid!!");
             }

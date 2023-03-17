@@ -20,31 +20,37 @@ namespace EBird.Api.Controllers;
 [ApiController]
 public class AutoMatchController : ControllerBase
 {
-    private readonly IRequestService _requestService;
-    private readonly IMatchingService _matchingService;
-    private readonly IMapper _mapper;
+  private readonly IRequestService _requestService;
+  private readonly IMatchingService _matchingService;
+  private readonly IMapper _mapper;
 
-    public AutoMatchController(IRequestService requestService, IMatchingService mathcingService, IMapper mapper)
-    {
-        _requestService = requestService;
-        _matchingService = mathcingService;
-        _mapper = mapper;
-    }
+  public AutoMatchController(IRequestService requestService, IMatchingService mathcingService, IMapper mapper)
+  {
+    _requestService = requestService;
+    _matchingService = mathcingService;
+    _mapper = mapper;
+  }
 
-    [HttpGet("group/{groupid}")]
-    public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
+  [HttpGet("group/{groupid}")]
+  public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
+  {
+    var response = new Response<List<Tuple<Guid, Guid>>>();
+    try
     {
-        var response = new Response<List<Tuple<Guid, Guid>>>();
-        try
-        {
-            ////Test
-            //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
-            //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
-            //var test = await _matchingService.BinarySearch(lq);
-            //for (int i = 0; i < test.Count; i++)
-            //{
-            //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
-            //}
+      ////Test
+      //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
+      //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
+      //var test = await _matchingService.BinarySearch(lq);
+      //for (int i = 0; i < test.Count; i++)
+      //{
+      //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
+      //}
+      var parameters = new RequestParameters();
+      var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
+          //var list = (await _requestService.GetRequests())
+          .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
+      var finder = new RequestTuple();
+      var listRequest = new List<RequestTuple>();
 
             RequestParameters parameters = new RequestParameters();
 
@@ -99,4 +105,6 @@ public class AutoMatchController : ControllerBase
         }
         return response;
     }
+    return response;
+  }
 }
