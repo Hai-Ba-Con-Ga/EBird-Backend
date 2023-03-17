@@ -45,13 +45,7 @@ public class AutoMatchController : ControllerBase
       //{
       //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
       //}
-      var parameters = new RequestParameters();
-      var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
-          //var list = (await _requestService.GetRequests())
-          .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
-      var finder = new RequestTuple();
-      var listRequest = new List<RequestTuple>();
-
+      
             RequestParameters parameters = new RequestParameters();
 
             var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
@@ -104,7 +98,5 @@ public class AutoMatchController : ControllerBase
                         .SetMessage(ex.Message);
         }
         return response;
-    }
-    return response;
   }
 }
