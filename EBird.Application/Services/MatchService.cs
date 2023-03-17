@@ -198,7 +198,7 @@ namespace EBird.Application.Services
 
         public async Task<Guid> CreateMatchFromRequest(MatchCreateDTO matchCreateDTO)
         {
-            await _validation.Match.ValidateCreateMatch(matchCreateDTO);
+            // await _validation.Match.ValidateCreateMatch(matchCreateDTO);
 
             Guid createdId = await _repository.Match.CreateMatchFromRequest(matchCreateDTO);
 
