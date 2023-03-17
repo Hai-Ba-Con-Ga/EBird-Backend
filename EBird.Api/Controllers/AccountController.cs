@@ -25,12 +25,14 @@ namespace EBird.Api.Controllers
         private readonly IAccountServices _accountServices;
         private readonly IMapper _mapper;
         private readonly IGenericRepository<AccountEntity> _accountRepository;
+        private readonly IAuthenticationServices _authenticationServices;
 
-        public AccountController(IAccountServices accountServices, IMapper mapper, IGenericRepository<AccountEntity> accountRepository)
+        public AccountController(IAccountServices accountServices, IMapper mapper, IGenericRepository<AccountEntity> accountRepository,IAuthenticationServices authenticationServices)
         {
             _accountServices = accountServices;
             _mapper = mapper;
             _accountRepository = accountRepository;
+            _authenticationServices = authenticationServices;
         }
 
         [HttpGet("{id}")]
@@ -39,7 +41,8 @@ namespace EBird.Api.Controllers
             var response = new Response<AccountResponse>();
             try
             {
-                var account = await _accountServices.GetAccountById(id);
+                // var account = await _accountServices.GetAccountById(id);
+                var account = await _authenticationServices.GetAccountById(id);
                 response = Response<AccountResponse>.Builder().SetData(account).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             }
             catch (NotFoundException ex)
