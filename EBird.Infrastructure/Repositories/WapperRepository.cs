@@ -1,5 +1,6 @@
 ﻿using EBird.Application.Interfaces;
 using EBird.Application.Interfaces.IRepository;
+using EBird.Application.Services.IServices;
 using EBird.Domain.Entities;
 using EBird.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,6 @@ namespace EBird.Infrastructure.Repositories
 
         private IBirdRepository _birdRepository;
 
-        private IGenericRepository<AccountEntity> _accountRepository;
-
         private IGroupRepository _groupRepository;
 
         private IRoomRepository _roomRepository;
@@ -36,6 +35,7 @@ namespace EBird.Infrastructure.Repositories
         private INotificationTypeRepository _NotificationTypeRepository;
         private IPostRepository _postRepository;
         private IGroupMemberRepository _groupMemberRepository;
+        private IAccountRepository _accountRepository;
 
         public WapperRepository(ApplicationDbContext context)
         {
@@ -66,13 +66,13 @@ namespace EBird.Infrastructure.Repositories
             }
         }
         
-        public IGenericRepository<AccountEntity> Account
+        public IAccountRepository Account
         {
             get
             {
                 if(_accountRepository == null)
                 {
-                    _accountRepository = new GenericRepository<AccountEntity>(_context);
+                    _accountRepository = new AccountRepository(_context);
                 }
                 return _accountRepository;
             }

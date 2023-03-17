@@ -1,4 +1,5 @@
 ﻿using EBird.Application.Interfaces.IMapper;
+using EBird.Application.Model.Resource;
 using EBird.Domain.Entities;
 using EBird.Domain.Enums;
 
@@ -14,5 +15,9 @@ namespace EBird.Application.Model.Auth
         public RoleAccount Role { get; set; }
         public string Username { get; set; } = null!;
         public string Description { get; set; } = null!;
+
+        public VipResponse? Vip { get; set; }
+        public ICollection<ResourceResponse> Resources { get; set; } = null!;
+
     }
 }

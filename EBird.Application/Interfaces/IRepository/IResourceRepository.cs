@@ -15,5 +15,6 @@ namespace EBird.Application.Interfaces.IRepository
         public Task<bool> UpdateResource(ResourceEntity entity);
         public Task<bool> DeleteResource(Guid id);
         public Task<ICollection<ResourceResponse>> GetResourcesByBird(Guid birdId);
+        public Task<ICollection<ResourceResponse>> GetResourcesByAccount(Guid accountId);
     }
 }

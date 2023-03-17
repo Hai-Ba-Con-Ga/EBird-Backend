@@ -46,7 +46,7 @@ namespace EBird.Application.Services
 
         public async Task DeleteRequest(Guid id)
         {
-            await _unitOfValidation.Request.ValidateRequestId(id);
+            // await _unitOfValidation.Request.ValidateRequestId(id);
             await _repository.Request.DeleteSoftAsync(id);
         }
 
@@ -56,11 +56,30 @@ namespace EBird.Application.Services
             var requestDto = _mapper.Map<RequestResponseDTO>(result);
             return requestDto;
         }
-        public async Task<ICollection<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId)
+
+        public async Task<PagedList<RequestResponseDTO>> GetRequestsByGroupId(Guid groupId, RequestParameters paramters)
         {
             await _unitOfValidation.Request.ValidateGroupId(groupId);
-            var result = await _repository.Request.GetRequestsByGroupId(groupId);
-            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
+            _unitOfValidation.Base.ValidateParameter(paramters);
+
+            var result = await _repository.Request.GetRequestsByGroupId(groupId, paramters);
+
+            var resultDTO = _mapper.Map<PagedList<RequestResponseDTO>>(result);
+
+            foreach(var entity in resultDTO)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
+            return resultDTO;
         }
 
         public async Task<PagedList<RequestResponseDTO>> GetRequests(RequestParameters parameters)
@@ -72,13 +91,42 @@ namespace EBird.Application.Services
             var requestDTOList = _mapper.Map<PagedList<RequestResponseDTO>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
 
+            foreach(var entity in requestDTOList)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+                
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
             return requestDTOList;
         }
 
         public async Task<ICollection<RequestResponseDTO>> GetRequests()
         {
             var result = await _repository.Request.GetRequestsInAllRoom();
-            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
+        
+            var resultDTO = _mapper.Map<ICollection<RequestResponseDTO>>(result);
+
+            foreach(var entity in resultDTO)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
+            return resultDTO;
         }
 
         public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
@@ -113,7 +161,6 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Request cannot be updated");
             }
         }
-
         public async Task ReadyRequest(Guid requestId, Guid userId)
         {
             await _unitOfValidation.Request.ValidateReadyRequest(requestId, userId);
@@ -125,13 +172,28 @@ namespace EBird.Application.Services
             await _unitOfValidation.Base.ValidateAccountId(userId);
 
             var requestEntities = await _repository.Request.GetRequestByUserId(userId);
-            
+
             return _mapper.Map<ICollection<RequestResponseDTO>>(requestEntities);
         }
 
         public async Task<bool> CheckRequest(Guid hostRequestID, Guid challengerRequestID)
         {
-          return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
+            return await _unitOfValidation.Request.ValidateTowRequestIsSameUser(hostRequestID, challengerRequestID);
+        }
+
+        public async Task LeaveRequest(Guid requestId, Guid userId)
+        {
+            await _unitOfValidation.Request.ValidateLeaveRequest(requestId, userId);
+
+            await _repository.Request.LeaveRequest(requestId, userId);
+
+        }
+
+        public async Task KickFromRequest(Guid requestId, Guid userId, Guid kickedUserId)
+        {
+            await _unitOfValidation.Request.ValidateKickFromRequest(requestId, userId, kickedUserId);
+
+            await _repository.Request.LeaveRequest(requestId, kickedUserId);
         }
     }
 }
