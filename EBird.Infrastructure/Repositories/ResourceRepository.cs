@@ -72,6 +72,22 @@ namespace EBird.Infrastructure.Repositories
                                 CreateById = r.CreateById
                             };
             return await resultQeury.ToListAsync();
-        } 
+        }
+
+        public async Task<ICollection<ResourceResponse>> GetResourcesByAccount(Guid accountId)
+        {
+            var resultQeury = from ar in _context.AccountResources
+                              join r in _context.Resources on ar.ResourceId equals r.Id
+                              where ar.Id == accountId
+                              select new ResourceResponse
+                              {
+                                  Id = r.Id,
+                                  DataLink = r.Datalink,
+                                  Description = r.Description,
+                                  CreateDate = r.CreateDate,
+                                  CreateById = r.CreateById
+                              };
+            return await resultQeury.ToListAsync();
+        }
     }
 }
