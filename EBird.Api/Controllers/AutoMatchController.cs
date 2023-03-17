@@ -52,46 +52,58 @@ public class AutoMatchController : ControllerBase
       var finder = new RequestTuple();
       var listRequest = new List<RequestTuple>();
 
-      foreach (var item in list)
-      {
-        var requestTuple = new RequestTuple(
-            item.Id,
-            item.Host.Id,
-            ((double)item.Place.Latitude, (double)item.Place.Longitude),
-            item.HostBird.Elo,
-            item.RequestDatetime,
-            false
-        );
-        listRequest.Add(requestTuple);
-      }
-      var priorityRequestList = await _matchingService.BinarySearch(listRequest);
-      //await Console.Out.WriteLineAsync(string.Join("\n",priorityRequestList));
+            RequestParameters parameters = new RequestParameters();
 
-      //foreach (var item in priorityRequestList)
-      //{
-      //    item.Item3 = await _requestService.MergeRequest(item.Item1, item.Item2);
-      //}
+            var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
+            //var list = (await _requestService.GetRequests())
+                .Where(x => x.Status.Equals(RequestStatus.Waiting)).ToList();
+            var finder = new RequestTuple();
+            var listRequest = new List<RequestTuple>();
 
-      response = Response<List<Tuple<Guid, Guid>>>.Builder()
-                  .SetSuccess(true)
-                  .SetStatusCode((int)HttpStatusCode.OK)
-                  .SetMessage("Requests are retrieved successfully")
-                  .SetData(priorityRequestList);
-    }
-    catch (NotFoundException ex)
-    {
-      response = Response<List<Tuple<Guid, Guid>>>.Builder()
-                  .SetSuccess(false)
-                  .SetStatusCode((int)HttpStatusCode.BadRequest)
-                  .SetMessage(ex.Message);
-    }
-    catch (Exception ex)
-    {
-      System.Console.WriteLine(ex.Message);
-      response = Response<List<Tuple<Guid, Guid>>>.Builder()
-                  .SetSuccess(false)
-                  .SetStatusCode((int)HttpStatusCode.InternalServerError)
-                  .SetMessage(ex.Message);
+            foreach(var item in list)
+            {
+                var requestTuple = new RequestTuple(
+                    item.Id,
+                    item.Host.Id,
+                    ((double) item.Place.Latitude, (double) item.Place.Longitude),
+                    item.HostBird.Elo,
+                    item.RequestDatetime,
+                    false
+                );
+                listRequest.Add(requestTuple);
+            }
+            var priorityRequestList = await _matchingService.BinarySearch(listRequest);
+            //await Console.Out.WriteLineAsync(string.Join("\n",priorityRequestList));
+
+            //foreach (var item in priorityRequestList)
+            //{
+            //    item.Item3 = await _requestService.MergeRequest(item.Item1, item.Item2);
+            //}
+
+            response = Response<List<Tuple<Guid, Guid>>>.Builder()
+                        .SetSuccess(true)
+                        .SetStatusCode((int) HttpStatusCode.OK)
+                        .SetMessage("Requests are retrieved successfully")
+                        .SetData(priorityRequestList);
+        }
+        catch(Exception ex)
+        {
+            if(ex is NotFoundException || ex is BadRequestException)
+            {
+                response = Response<List<Tuple<Guid, Guid>>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.BadRequest)
+                        .SetMessage(ex.Message);
+
+                return response;
+            }
+
+            response = Response<List<Tuple<Guid, Guid>>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetMessage(ex.Message);
+        }
+        return response;
     }
     return response;
   }

@@ -18,6 +18,12 @@ namespace EBird.Infrastructure.Repositories
         {
         }
 
+        public async Task<AccountEntity> GetAccountByUsername(string username)
+        {
+          return await  dbSet.Include(a => a.Resources)
+                             .FirstOrDefaultAsync(a => a.Username.Equals(username));
+        }
+        
         public async Task<PagedList<AccountEntity>> GetAllWithPagination(AccountParameters parameters)
         {
             PagedList<AccountEntity> pageList = new PagedList<AccountEntity>();

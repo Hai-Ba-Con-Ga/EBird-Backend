@@ -64,7 +64,22 @@ namespace EBird.Application.Services
 
             var result = await _repository.Request.GetRequestsByGroupId(groupId, paramters);
 
-            return _mapper.Map<PagedList<RequestResponseDTO>>(result);
+            var resultDTO = _mapper.Map<PagedList<RequestResponseDTO>>(result);
+
+            foreach(var entity in resultDTO)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
+            return resultDTO;
         }
 
         public async Task<PagedList<RequestResponseDTO>> GetRequests(RequestParameters parameters)
@@ -76,13 +91,42 @@ namespace EBird.Application.Services
             var requestDTOList = _mapper.Map<PagedList<RequestResponseDTO>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
 
+            foreach(var entity in requestDTOList)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+                
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
             return requestDTOList;
         }
 
         public async Task<ICollection<RequestResponseDTO>> GetRequests()
         {
             var result = await _repository.Request.GetRequestsInAllRoom();
-            return _mapper.Map<ICollection<RequestResponseDTO>>(result);
+        
+            var resultDTO = _mapper.Map<ICollection<RequestResponseDTO>>(result);
+
+            foreach(var entity in resultDTO)
+            {
+                var resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.HostBird.Id);
+
+                entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+
+                resourceList = await _repository.Resource
+                        .GetResourcesByBird(entity.ChallengerBird.Id);
+
+                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+            }
+
+            return resultDTO;
         }
 
         public async Task JoinRequest(Guid requestId, Guid userId, JoinRequestDTO joinRequestDto)
@@ -117,7 +161,6 @@ namespace EBird.Application.Services
                 throw new BadRequestException("Request cannot be updated");
             }
         }
-
         public async Task ReadyRequest(Guid requestId, Guid userId)
         {
             await _unitOfValidation.Request.ValidateReadyRequest(requestId, userId);

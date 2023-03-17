@@ -83,8 +83,15 @@ namespace EBird.Application.Services
                                                 .Where(x => x.Id == matchDto.Id)
                                                 .FirstOrDefault()
                                                 .MatchDetails);
-            }
+                
+                matchDto.MatchDetails.ToList().ForEach(x =>
+                {
+                    var resoures = _repository.Resource.GetResourcesByBird(x.Bird.Id);
 
+                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                });
+            }
+            
             return matchDtoList;
         }
 
@@ -101,12 +108,19 @@ namespace EBird.Application.Services
 
             PagedList<MatchResponseDTO> lisDto = _mapper.Map<PagedList<MatchResponseDTO>>(list);
 
-            foreach (var item in lisDto)
+            foreach (var matchDto in lisDto)
             {
-                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
-                                                .Where(x => x.Id == item.Id)
+                matchDto.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(list
+                                                .Where(x => x.Id == matchDto.Id)
                                                 .FirstOrDefault()
                                                 .MatchDetails);
+
+                matchDto.MatchDetails.ToList().ForEach(x =>
+                {
+                    var resoures = _repository.Resource.GetResourcesByBird(x.Bird.Id);
+
+                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                });
             }
 
             return lisDto;
@@ -193,6 +207,16 @@ namespace EBird.Application.Services
 
             var matchDTOList = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
 
+            foreach(var matchDto in matchDTOList)
+            {
+                matchDto.MatchDetails.ToList().ForEach(x =>
+                {
+                    var resoures = _repository.Resource.GetResourcesByBird(x.Bird.Id);
+
+                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                });
+            }
+
             return matchDTOList;
         }
 
@@ -213,6 +237,16 @@ namespace EBird.Application.Services
             PagedList<MatchEntity> matchList = await _repository.Match.GetMatchByGroupId(groupId, parameters);
 
             var matchDTOList = _mapper.Map<PagedList<MatchResponseDTO>>(matchList);
+
+            foreach(var matchDto in matchDTOList)
+            {
+                matchDto.MatchDetails.ToList().ForEach(x =>
+                {
+                    var resoures = _repository.Resource.GetResourcesByBird(x.Bird.Id);
+
+                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                });
+            }
 
             return matchDTOList;
         }
@@ -241,12 +275,19 @@ namespace EBird.Application.Services
 
             var matchListDTO = _mapper.Map<ICollection<MatchResponseDTO>>(matchList);
 
-            foreach (var item in matchListDTO)
+            foreach (var matchDto in matchListDTO)
             {
-                item.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(matchList
-                                                .Where(x => x.Id == item.Id)
+                matchDto.MatchDetails = _mapper.Map<ICollection<MatchDetailResponseDTO>>(matchList
+                                                .Where(x => x.Id == matchDto.Id)
                                                 .FirstOrDefault()
                                                 .MatchDetails);
+
+                matchDto.MatchDetails.ToList().ForEach(x =>
+                {
+                    var resoures = _repository.Resource.GetResourcesByBird(x.Bird.Id);
+
+                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                });
             }
 
             return matchListDTO;
