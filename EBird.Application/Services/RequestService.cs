@@ -66,17 +66,20 @@ namespace EBird.Application.Services
 
             var resultDTO = _mapper.Map<PagedList<RequestResponseDTO>>(result);
 
-            foreach(var entity in resultDTO)
+            foreach (var entity in resultDTO)
             {
                 var resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.HostBird.Id);
 
                 entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
 
-                resourceList = await _repository.Resource
+                if (entity.ChallengerBird != null)
+                {
+                    resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.ChallengerBird.Id);
 
-                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                    entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                }
             }
 
             return resultDTO;
@@ -91,39 +94,44 @@ namespace EBird.Application.Services
             var requestDTOList = _mapper.Map<PagedList<RequestResponseDTO>>(resultEntityList);
             requestDTOList.MapMetaData(resultEntityList);
 
-            foreach(var entity in requestDTOList)
+            foreach (var entity in requestDTOList)
             {
                 var resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.HostBird.Id);
-                
+
                 entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
 
-                resourceList = await _repository.Resource
+                if (entity.ChallengerBird != null)
+                {
+                    resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.ChallengerBird.Id);
 
-                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                    entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                }
             }
-
             return requestDTOList;
         }
 
         public async Task<ICollection<RequestResponseDTO>> GetRequests()
         {
             var result = await _repository.Request.GetRequestsInAllRoom();
-        
+
             var resultDTO = _mapper.Map<ICollection<RequestResponseDTO>>(result);
 
-            foreach(var entity in resultDTO)
+            foreach (var entity in resultDTO)
             {
                 var resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.HostBird.Id);
 
                 entity.HostBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
 
-                resourceList = await _repository.Resource
+                if (entity.ChallengerBird != null)
+                {
+                    resourceList = await _repository.Resource
                         .GetResourcesByBird(entity.ChallengerBird.Id);
 
-                entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                    entity.ChallengerBird.ResourceList = _mapper.Map<List<ResourceResponse>>(resourceList);
+                }
             }
 
             return resultDTO;

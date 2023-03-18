@@ -37,7 +37,7 @@ namespace EBird.Api.Controllers
             {
                 ICollection<RequestResponseDTO> listDTO = null;
 
-                if (parameters.PageSize == 0 && parameters.RoomId == Guid.Empty)
+                if (parameters.PageSize == 0 && parameters.RoomId == null)
                 {
                     listDTO = await _requestService.GetRequests();
 
@@ -59,7 +59,7 @@ namespace EBird.Api.Controllers
                         TotalPages = ((PagedList<RequestResponseDTO>)listDTO).TotalPages,
                         HasNext = ((PagedList<RequestResponseDTO>)listDTO).HasNext,
                         HasPrevious = ((PagedList<RequestResponseDTO>)listDTO).HasPrevious
-                    };
+                    };   
 
                     response = ResponseWithPaging<ICollection<RequestResponseDTO>>.Builder()
                     .SetSuccess(true)
@@ -82,6 +82,9 @@ namespace EBird.Api.Controllers
 
                     return StatusCode((int)response.StatusCode, response);
                 }
+
+                Console.WriteLine($"Error: {ex.Message}");
+                
                 response = Response<ICollection<RequestResponseDTO>>.Builder()
                             .SetSuccess(false)
                             .SetStatusCode((int)HttpStatusCode.InternalServerError)
