@@ -99,14 +99,19 @@ namespace EBird.Application.Services
         {
             _validation.Base.ValidateParameter(matchParameters);
 
-            IList<MatchEntity> list = null;
+            PagedList<MatchEntity> list = null;
 
             if (matchParameters.PageSize > 0)
             {
                 list = await _repository.Match.GetMatchesWithPaging(matchParameters);
             }
 
+            Console.WriteLine($"Pagination data: {((PagedList<MatchEntity>)list).TotalCount}");
+            
+
             PagedList<MatchResponseDTO> lisDto = _mapper.Map<PagedList<MatchResponseDTO>>(list);
+
+            lisDto.MapMetaData(list);
 
             foreach (var matchDto in lisDto)
             {
@@ -114,13 +119,6 @@ namespace EBird.Application.Services
                                                 .Where(x => x.Id == matchDto.Id)
                                                 .FirstOrDefault()
                                                 .MatchDetails);
-
-                // matchDto.MatchDetails.ToList().ForEach(async x =>
-                // {
-                //     var resoures = await _repository.Resource.GetResourcesByBird(x.Bird.Id);
-
-                //     x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
-                // });
 
                 foreach (var resoures in matchDto.MatchDetails)
                 {
