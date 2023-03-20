@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,5 +25,8 @@ namespace EBird.Application.Model.Place
 
         [Required]
         public decimal Latitude { get; set; }
+
+        [DefaultValue(false)]
+        public bool FavoritePlace { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace EBird.Application.Services.IServices
         public Task DeletepPlace(Guid placeId);
         public Task UpdatePlace(Guid placeId, PlaceRequestDTO request);
         public Task<ICollection<PlaceResponseDTO>> GetPlaces();
+        public Task<ICollection<PlaceResponseDTO>> GetFavoritePlaces();
         public Task<PlaceResponseDTO> GetPlace(Guid id);
     }
 }

@@ -212,5 +212,45 @@ namespace EBird.Api.Controllers
                 return StatusCode((int)response.StatusCode, response);
             }
         }
+
+        [HttpGet("favorite")]
+        public async Task<ActionResult<Response<List<PlaceResponseDTO>>>> GetFavoritePlaces()
+        {
+            Response<List<PlaceResponseDTO>> response;
+            try
+            {
+                var placeResponeList = await _birdservice.GetFavoritePlaces();
+
+                response = new Response<List<PlaceResponseDTO>>()
+                            .SetData(placeResponeList.ToList())
+                            .SetStatusCode((int)HttpStatusCode.OK)
+                            .SetSuccess(true)
+                            .SetMessage("Get favorite place is successful");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                if (ex is BadRequestException)
+                {
+                    response = Response<List<PlaceResponseDTO>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode(((BaseHttpException)ex).StatusCode)
+                        .SetMessage(ex.Message);
+
+                    return StatusCode((int)response.StatusCode, response);
+                }
+
+                response = Response<List<PlaceResponseDTO>>.Builder()
+                        .SetSuccess(false)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                        .SetMessage("Internal server error");
+
+                return StatusCode((int)response.StatusCode, response);
+            }
+
+        }
+        
+        
     }
 }

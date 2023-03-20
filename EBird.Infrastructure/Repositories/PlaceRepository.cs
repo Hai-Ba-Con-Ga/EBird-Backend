@@ -55,5 +55,9 @@ namespace EBird.Infrastructure.Repositories
             
             return true;
         }
+        public async Task<ICollection<PlaceEntity>> GetFavoritePlaces()
+        {
+            return await this.FindAllWithCondition(p=> p.FavoritePlace == true);
+        }
     }
 }
