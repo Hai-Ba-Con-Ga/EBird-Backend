@@ -50,6 +50,11 @@ namespace EBird.Application.Services
             var result = await _repository.Place.GetPlaces();
             return _mapper.Map<ICollection<PlaceResponseDTO>>(result);
         }
+        public async Task<ICollection<PlaceResponseDTO>> GetFavoritePlaces()
+        {
+            var result = await _repository.Place.GetFavoritePlaces();
+            return _mapper.Map<ICollection<PlaceResponseDTO>>(result);
+        }
 
         public async Task UpdatePlace(Guid placeId, PlaceRequestDTO request)
         {

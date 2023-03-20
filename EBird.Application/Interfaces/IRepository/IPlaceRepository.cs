@@ -13,5 +13,6 @@ namespace EBird.Application.Interfaces.IRepository
         public Task<bool> UpdatePlace(PlaceEntity entity);
         public Task<PlaceEntity> GetPlace(Guid id); 
         public Task<ICollection<PlaceEntity>> GetPlaces(); 
+        public Task<ICollection<PlaceEntity>> GetFavoritePlaces(); 
     }
 }
