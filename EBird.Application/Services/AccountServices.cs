@@ -192,7 +192,7 @@ namespace EBird.Application.Services
 
             foreach(var accountReponse in accountResponseList)
             {
-                var resources = _repository.Resource.GetResourcesByAccount(accountReponse.Id);
+                var resources = await _repository.Resource.GetResourcesByAccount(accountReponse.Id);
 
                 accountReponse.Resources = _mapper.Map<ICollection<ResourceResponse>>(resources);
             }
@@ -206,7 +206,7 @@ namespace EBird.Application.Services
 
             var accountReponse = _mapper.Map<AccountResponse>(account);
 
-            var resources = _repository.Resource.GetResourcesByAccount(account.Id);
+            var resources = await _repository.Resource.GetResourcesByAccount(account.Id);
             
             accountReponse.Resources = _mapper.Map<ICollection<ResourceResponse>>(resources);
 

@@ -20,16 +20,16 @@ namespace EBird.Api.Controllers;
 [ApiController]
 public class AutoMatchController : ControllerBase
 {
-  private readonly IRequestService _requestService;
-  private readonly IMatchingService _matchingService;
-  private readonly IMapper _mapper;
+    private readonly IRequestService _requestService;
+    private readonly IMatchingService _matchingService;
+    private readonly IMapper _mapper;
 
-  public AutoMatchController(IRequestService requestService, IMatchingService mathcingService, IMapper mapper)
-  {
-    _requestService = requestService;
-    _matchingService = mathcingService;
-    _mapper = mapper;
-  }
+    public AutoMatchController(IRequestService requestService, IMatchingService mathcingService, IMapper mapper)
+    {
+        _requestService = requestService;
+        _matchingService = mathcingService;
+        _mapper = mapper;
+    }
 
   [HttpGet("group/{groupid}")]
   public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
@@ -54,12 +54,12 @@ public class AutoMatchController : ControllerBase
             var finder = new RequestTuple();
             var listRequest = new List<RequestTuple>();
 
-            foreach(var item in list)
+            foreach (var item in list)
             {
                 var requestTuple = new RequestTuple(
                     item.Id,
                     item.Host.Id,
-                    ((double) item.Place.Latitude, (double) item.Place.Longitude),
+                    ((double)item.Place.Latitude, (double)item.Place.Longitude),
                     item.HostBird.Elo,
                     item.RequestDatetime,
                     false
@@ -76,17 +76,17 @@ public class AutoMatchController : ControllerBase
 
             response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(true)
-                        .SetStatusCode((int) HttpStatusCode.OK)
+                        .SetStatusCode((int)HttpStatusCode.OK)
                         .SetMessage("Requests are retrieved successfully")
                         .SetData(priorityRequestList);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            if(ex is NotFoundException || ex is BadRequestException)
+            if (ex is NotFoundException || ex is BadRequestException)
             {
                 response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode((int) HttpStatusCode.BadRequest)
+                        .SetStatusCode((int)HttpStatusCode.BadRequest)
                         .SetMessage(ex.Message);
 
                 return response;
@@ -94,7 +94,7 @@ public class AutoMatchController : ControllerBase
 
             response = Response<List<Tuple<Guid, Guid>>>.Builder()
                         .SetSuccess(false)
-                        .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                        .SetStatusCode((int)HttpStatusCode.InternalServerError)
                         .SetMessage(ex.Message);
         }
         return response;

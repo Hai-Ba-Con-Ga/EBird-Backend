@@ -32,6 +32,9 @@ namespace EBird.Domain.Entities
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
+        [Required]
+        public bool FavoritePlace { get; set; } = false;
+
         public ICollection<RequestEntity> Requests { get; set; }
 
         public ICollection<MatchEntity> Matches { get; set; }
