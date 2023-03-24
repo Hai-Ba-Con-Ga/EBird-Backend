@@ -31,22 +31,21 @@ public class AutoMatchController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("group/{groupid}")]
-    public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
+  [HttpGet("group/{groupid}")]
+  public async Task<ActionResult<Response<List<Tuple<Guid, Guid>>>>> AutoMatchGroup(Guid groupid)
+  {
+    var response = new Response<List<Tuple<Guid, Guid>>>();
+    try
     {
-        var response = new Response<List<Tuple<Guid, Guid>>>();
-        try
-        {
-            ////Test
-            //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
-            //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
-            //var test = await _matchingService.BinarySearch(lq);
-            //for (int i = 0; i < test.Count; i++)
-            //{
-            //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
-            //}
-
-
+      ////Test
+      //dynamic jsonarray = _matchingService.LoadJson("request_tuple_mock_data.json");
+      //List<RequestTuple> lq = jsonarray.ToObject<List<RequestTuple>>();
+      //var test = await _matchingService.BinarySearch(lq);
+      //for (int i = 0; i < test.Count; i++)
+      //{
+      //    System.Console.WriteLine($"{test[i].Item1} + {test[i].Item2}");
+      //}
+      
             RequestParameters parameters = new RequestParameters();
 
             var list = (await _requestService.GetRequestsByGroupId(groupid, parameters))
@@ -99,5 +98,5 @@ public class AutoMatchController : ControllerBase
                         .SetMessage(ex.Message);
         }
         return response;
-    }
+  }
 }
