@@ -122,8 +122,6 @@ namespace EBird.Api.Controllers
 
                 matches = await _matchService.GetMatches(queryParameters);
 
-                Console.WriteLine($"Pagination data: {((PagedList<MatchResponseDTO>) matches).TotalPages}");
-
                 PagingData metaData = new PagingData()
                 {
                     CurrentPage = ((PagedList<MatchResponseDTO>)matches).CurrentPage,
