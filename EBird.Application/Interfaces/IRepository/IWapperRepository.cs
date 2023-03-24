@@ -25,5 +25,6 @@ namespace EBird.Application.Interfaces
         public IMatchRepository Match { get; }
         public IGroupMemberRepository GroupMember { get; }
         public IAccountRepository Account { get; }
+        public IFriendshipRepository Friendship { get; }
     }
 }

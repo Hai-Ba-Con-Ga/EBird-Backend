@@ -29,6 +29,7 @@ namespace EBird.Api.Configurations
             services.AddScoped<IMatchDetailService, MatchDeatailService>();
             services.AddScoped<IGroupMemberService, GroupMemberService>();
             services.AddScoped<IMatchingService, MatchingService>();
+            services.AddScoped<IFriendshipService, FriendshipService>();
             //register Validation services
             services.AddScoped<IUnitOfValidation, UnitOfValidation>();
             //register AutoMapper services

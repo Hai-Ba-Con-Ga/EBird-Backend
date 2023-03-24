@@ -67,6 +67,7 @@ namespace EBird.Domain.Entities
 
         public ICollection<PaymentEntity> Payments { get; set; }
         public ICollection<VipRegistrationEntity> VipRegistrations { get; set; }
-
+        public ICollection<FriendshipEntity> FriendshipInviteds { get; set; }
+        public ICollection<FriendshipEntity> FriendshipReceivers { get; set; }
     }
 }

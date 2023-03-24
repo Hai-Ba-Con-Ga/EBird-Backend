@@ -36,6 +36,7 @@ namespace EBird.Infrastructure.Repositories
         private IPostRepository _postRepository;
         private IGroupMemberRepository _groupMemberRepository;
         private IAccountRepository _accountRepository;
+        private IFriendshipRepository _friendshipRepository;
 
         public WapperRepository(ApplicationDbContext context)
         {
@@ -205,6 +206,18 @@ namespace EBird.Infrastructure.Repositories
                     _groupMemberRepository = new GroupMemberRepository(_context);
                 }
                 return _groupMemberRepository;
+            }
+        }
+
+        public IFriendshipRepository Friendship
+        {
+            get
+            {
+                if(_friendshipRepository == null)
+                {
+                    _friendshipRepository = new FriendshipRepository(_context);
+                }
+                return _friendshipRepository;
             }
         }
     }

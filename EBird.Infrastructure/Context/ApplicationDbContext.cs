@@ -254,25 +254,43 @@ namespace EBird.Infrastructure.Context
                 .WithOne(b => b.Payment)
                 .HasForeignKey(b => b.PaymentId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            //Config for frienddship between account with account
+            // modelBuilder.Entity<FriendshipEntity>(entity => 
+            // {
+            //     entity.Property(e => e.AcceptanceDatetime).HasColumnType("datetime");
+            //     entity.Property(e => e.CreateDatetime).HasColumnType("datetime");
+            //     entity.Property(e => e.IsAccept).HasColumnType("bit");
+            //     entity.Property(e => e.Status).HasMaxLength(255);
+            // });
+
+            modelBuilder.Entity<FriendshipEntity>()
+            .HasOne(f => f.Inviter)
+            .WithMany(a => a.FriendshipInviteds)
+            .HasForeignKey(f => f.InviterId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<FriendshipEntity>()
+            .HasOne(f => f.Receiver)
+            .WithMany(a => a.FriendshipReceivers)
+            .HasForeignKey(f => f.ReceiverId)
+            .OnDelete(DeleteBehavior.NoAction);
         }
 
         #region DbSet
         public DbSet<AccountEntity> Accounts { get; set; } = null!;
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; } = null!;
         public DbSet<VerifcationStoreEntity> VerifcationStores { get; set; } = null!;
-
         public DbSet<BirdEntity> Birds { get; set; }
         public DbSet<BirdTypeEntity> BirdTypes { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<RuleEntity> Rules { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
         public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
-
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<ResourceEntity> Resources { get; set; }
         public DbSet<AccountResourceEntity> AccountResources { get; set; }
         public DbSet<BirdResourceEntity> BirdResources { get; set; }
-
         public DbSet<ChatRoomEntity> ChatRooms { get; set; }
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<ParticipantEntity> Participants { get; set; }
@@ -284,10 +302,9 @@ namespace EBird.Infrastructure.Context
         public DbSet<PostEntity> Posts { get; set; }
         public DbSet<MatchResourceEntity> MatchResources { get; set; }
         public DbSet<GroupMemberEntity> GroupMembers { get; set; }
-
         public DbSet<PaymentEntity> Payments { get; set; }
         public DbSet<VipRegistrationEntity> PaymentDetails { get; set; }
-
+        public DbSet<FriendshipEntity> Friendships { get; set; }
         #endregion
     }
 }
