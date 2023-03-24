@@ -60,7 +60,7 @@ public class PaymentController : ControllerBase
         string frontendUrlCallBack = _config.FrontendCallBack;
 
         string url = QueryHelpers.AddQueryString(frontendUrlCallBack, queryDictionary);
-        return Redirect($"http://localhost:3000{url}");
+        return Redirect($"https://www.globird.tech/{url}");
     }
     [HttpGet("all")]
     public async Task<ActionResult<Response<List<PaymentEntity>>>> GetAllPayments()
