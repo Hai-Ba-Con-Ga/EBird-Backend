@@ -42,7 +42,8 @@ public class PaymentController : ControllerBase
             //     var host = HttpContext.Request.Host;
             //     origin = $"{scheme}://{host}";
             // }
-            var origin = "https://localhost:7137";
+            // var origin = "https://localhost:7137";
+            var origin = "https://www.globird.tech";
             string url = await _paymentService.CreatePayment(request, origin);
             response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success").SetData(url);
         }
