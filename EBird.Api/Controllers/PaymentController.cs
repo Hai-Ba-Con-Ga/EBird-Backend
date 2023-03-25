@@ -43,7 +43,7 @@ public class PaymentController : ControllerBase
             //     origin = $"{scheme}://{host}";
             // }
             // var origin = "https://localhost:7137";
-            var origin = "https://wyvernpserver.tech/";
+            var origin = "https://wyvernpserver.tech";
             string url = await _paymentService.CreatePayment(request, origin);
             response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success").SetData(url);
         }
