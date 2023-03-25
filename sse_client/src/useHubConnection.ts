@@ -32,7 +32,7 @@ const useHubConnection = (
   const handleConnectClick = useCallback(() => {
     const hubClient = new HubConnectionBuilder()
       .withUrl(endpoint, {
-        transport: HttpTransportType.ServerSentEvents,
+        transport: HttpTransportType.WebSockets,
         skipNegotiation: true,
         accessTokenFactory: () => token,
       })
