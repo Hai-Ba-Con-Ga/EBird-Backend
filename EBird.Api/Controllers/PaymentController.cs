@@ -1,4 +1,4 @@
-uSsing System.Net;
+using System.Net;
 using EBird.Application.Model;
 using EBird.Application.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
