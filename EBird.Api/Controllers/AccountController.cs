@@ -45,16 +45,16 @@ namespace EBird.Api.Controllers
                 var account = await _authenticationServices.GetAccountById(id);
                 response = Response<AccountResponse>.Builder().SetData(account).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<AccountResponse>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
 
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
 
 
         }
@@ -66,17 +66,17 @@ namespace EBird.Api.Controllers
             try
             {
                 var account = await _accountServices.GetAllAccount();
-                response = Response<List<AccountResponse>>.Builder().SetData(account).SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK);
+                response = Response<List<AccountResponse>>.Builder().SetData(account).SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK);
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [HttpPut("{id}")]
@@ -85,24 +85,24 @@ namespace EBird.Api.Controllers
             var acc = await _accountRepository.GetByIdActiveAsync(id);
             var response = new Response<string>();
 
-            if (acc == null)
+            if(acc == null)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Account not found");
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage("Account not found");
             }
             try
             {
                 await _accountRepository.UpdateAsync(_mapper.Map<UpdateAccountRequest, AccountEntity>(updateAccount, acc));
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Update account successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Update account successfully");
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
 
         }
         [HttpDelete("{id}")]
@@ -115,27 +115,27 @@ namespace EBird.Api.Controllers
 
                 response = Response<string>.Builder()
                 .SetSuccess(true)
-                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetStatusCode((int) HttpStatusCode.OK)
                 .SetMessage("Delete account successfully");
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                if (ex is BadRequestException || ex is NotFoundException)
+                if(ex is BadRequestException || ex is NotFoundException)
                 {
                     response = Response<string>.Builder()
                     .SetSuccess(false)
-                    .SetStatusCode((int)HttpStatusCode.BadRequest)
+                    .SetStatusCode((int) HttpStatusCode.BadRequest)
                     .SetMessage(ex.Message);
                 }
                 else
                 {
                     response = Response<string>.Builder()
                     .SetSuccess(false)
-                    .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                    .SetStatusCode((int) HttpStatusCode.InternalServerError)
                     .SetMessage(ex.Message);
                 }
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -144,29 +144,29 @@ namespace EBird.Api.Controllers
         {
             string rawId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var response = new Response<string>();
-            if (rawId == null)
+            if(rawId == null)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage("Account not found");
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage("Account not found");
             }
             try
             {
                 Guid id = Guid.Parse(rawId);
                 await _accountServices.ChangePassword(id, req);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Change password successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Change password successfully");
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (BadRequestException ex)
+            catch(BadRequestException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.BadRequest).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [HttpPut("forgot-password")]
@@ -176,17 +176,17 @@ namespace EBird.Api.Controllers
             try
             {
                 await _accountServices.ForgotPassword(req.Username);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Send email successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Send email successfully");
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [HttpPut("reset-password")]
@@ -196,21 +196,21 @@ namespace EBird.Api.Controllers
             try
             {
                 await _accountServices.ResetPassword(req);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Reset password successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Reset password successfully");
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (BadRequestException ex)
+            catch(BadRequestException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.BadRequest).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.BadRequest).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [HttpPost("email")]
@@ -220,17 +220,17 @@ namespace EBird.Api.Controllers
             try
             {
                 await _accountServices.CheckEmail(req.Email);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Check email successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Check email successfully");
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.NotFound).SetMessage(ex.Message);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = nameof(RoleAccount.Admin))]
@@ -241,41 +241,47 @@ namespace EBird.Api.Controllers
             try
             {
                 await _accountServices.ChangeRoleAdmin(id);
-                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Change role successfully");
+                response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int) HttpStatusCode.OK).SetMessage("Change role successfully");
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
+                response = Response<string>.Builder().SetSuccess(false).SetStatusCode((int) HttpStatusCode.InternalServerError).SetMessage(ex.Message);
             }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
 
         [HttpGet("search")]
-        public async Task<ActionResult<Response<List<AccountResponse>>>> SearchAccountByUsername([FromQuery] string? query)
+        public async Task<ActionResult<Response<AccountResponse>>> SearchAccountByUsername([FromQuery] string? username)
         {
-            var response = new Response<List<AccountResponse>>();
+            var response = new Response<AccountResponse>();
             try
             {
-                var account = await _accountServices.GetAllAccount();
-                if (query != null && query.Length != 0)
-                    account = account.Where(x => x.Username.Contains(query)).ToList();
+                var account = await _accountServices.GetAccountByUsername(username);
 
-                response = Response<List<AccountResponse>>.Builder()
+                response = Response<AccountResponse>.Builder()
                 .SetData(account)
                 .SetSuccess(true)
-                .SetStatusCode((int)HttpStatusCode.OK)
+                .SetStatusCode((int) HttpStatusCode.OK)
                 .SetMessage("Search successfully");
             }
-            catch (NotFoundException ex)
+            catch(Exception ex)
             {
-                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.NotFound).SetMessage(ex.Message);
+
+                if(ex is NotFoundException || ex is BadRequestException)
+                {
+                    response = Response<AccountResponse>.Builder()
+                    .SetSuccess(false)
+                    .SetStatusCode((int) HttpStatusCode.BadRequest)
+                    .SetMessage(ex.Message);
+                }
+
+                response = Response<AccountResponse>.Builder()
+                    .SetSuccess(false)
+                    .SetStatusCode((int) HttpStatusCode.InternalServerError)
+                    .SetMessage(ex.Message);
             }
-            catch (Exception ex)
-            {
-                response = Response<List<AccountResponse>>.Builder().SetSuccess(false).SetStatusCode((int)HttpStatusCode.InternalServerError).SetMessage(ex.Message);
-            }
-            return StatusCode((int)response.StatusCode, response);
+            return StatusCode((int) response.StatusCode, response);
         }
 
         [HttpGet("all")]
@@ -288,41 +294,41 @@ namespace EBird.Api.Controllers
 
                 PagingData metaData = new PagingData
                 {
-                    CurrentPage = ((PagedList<AccountResponse>)accounts).CurrentPage,
-                    PageSize = ((PagedList<AccountResponse>)accounts).PageSize,
-                    TotalCount = ((PagedList<AccountResponse>)accounts).TotalCount,
-                    TotalPages = ((PagedList<AccountResponse>)accounts).TotalPages,
-                    HasNext = ((PagedList<AccountResponse>)accounts).HasNext,
-                    HasPrevious = ((PagedList<AccountResponse>)accounts).HasPrevious
+                    CurrentPage = ((PagedList<AccountResponse>) accounts).CurrentPage,
+                    PageSize = ((PagedList<AccountResponse>) accounts).PageSize,
+                    TotalCount = ((PagedList<AccountResponse>) accounts).TotalCount,
+                    TotalPages = ((PagedList<AccountResponse>) accounts).TotalPages,
+                    HasNext = ((PagedList<AccountResponse>) accounts).HasNext,
+                    HasPrevious = ((PagedList<AccountResponse>) accounts).HasPrevious
                 };
 
                 response = ResponseWithPaging<IList<AccountResponse>>.Builder()
                 .SetData(accounts)
                 .SetPagingData(metaData)
                 .SetSuccess(true)
-                .SetStatusCode((int)HttpStatusCode.OK);
+                .SetStatusCode((int) HttpStatusCode.OK);
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
 
-                if (ex is BadRequestException)
+                if(ex is BadRequestException)
                 {
                     response = Response<IList<AccountResponse>>.Builder()
                     .SetSuccess(false)
-                    .SetStatusCode((int)HttpStatusCode.BadRequest)
+                    .SetStatusCode((int) HttpStatusCode.BadRequest)
                     .SetMessage(ex.Message);
 
-                    return StatusCode((int)response.StatusCode, response);
+                    return StatusCode((int) response.StatusCode, response);
                 }
 
                 response = Response<IList<AccountResponse>>.Builder()
                 .SetSuccess(false)
-                .SetStatusCode((int)HttpStatusCode.InternalServerError)
+                .SetStatusCode((int) HttpStatusCode.InternalServerError)
                 .SetMessage(ex.Message);
 
-                return StatusCode((int)response.StatusCode, response);
+                return StatusCode((int) response.StatusCode, response);
             }
         }
     }

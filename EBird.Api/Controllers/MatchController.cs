@@ -118,7 +118,7 @@ namespace EBird.Api.Controllers
             var response = new Response<IList<MatchResponseDTO>>();
             try
             {
-                IList<MatchResponseDTO> matches = null;
+                PagedList<MatchResponseDTO> matches = null;
 
                 matches = await _matchService.GetMatches(queryParameters);
 

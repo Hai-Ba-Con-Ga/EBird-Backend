@@ -11,6 +11,7 @@ namespace EBird.Application.Services.IServices
 {
     public interface IAccountRepository : IGenericRepository<AccountEntity>
     {
+        Task<AccountEntity> GetAccountByUsername(string username);
         Task<PagedList<AccountEntity>> GetAllWithPagination(AccountParameters parameters);
         Task<bool> IsValidToJoinGroup(Guid userId, Guid groupId);
         Task<bool> IsVipAccount(Guid userId);
