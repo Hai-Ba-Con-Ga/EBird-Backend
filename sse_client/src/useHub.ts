@@ -10,7 +10,8 @@ const useHub = ({
     const [connection,setCn] = useState<HubConnection>();
     useEffect(()=>{
         setCn(new HubConnectionBuilder().withUrl(endpoint,{
-            transport: HttpTransportType.ServerSentEvents
+            transport: HttpTransportType.WebSockets,
+            skipNegotiation:true
           }).configureLogging(LogLevel.Information).build());
     },[endpoint])
     const sendMessageFromClient = useCallback((eventName : string,args : any)=> {
