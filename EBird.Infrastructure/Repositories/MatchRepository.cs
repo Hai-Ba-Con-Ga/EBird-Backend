@@ -75,6 +75,7 @@ namespace EBird.Infrastructure.Repositories
                 .Include(e => e.Place)
                 .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
+                .ThenInclude(e => e.Owner)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
                 .AsNoTracking();
@@ -190,6 +191,7 @@ namespace EBird.Infrastructure.Repositories
                 .Include(e => e.Place)
                 .Include(e => e.MatchDetails)
                 .ThenInclude(e => e.Bird)
+                .ThenInclude(e => e.Owner)
                 .Where(e => e.IsDeleted == false)
                 .OrderByDescending(e => e.CreateDatetime)
                 .AsNoTracking();
