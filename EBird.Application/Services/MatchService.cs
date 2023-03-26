@@ -210,12 +210,19 @@ namespace EBird.Application.Services
 
             foreach(var matchDto in matchDTOList)
             {
-                matchDto.MatchDetails.ToList().ForEach(async x =>
-                {
-                    var resoures = await _repository.Resource.GetResourcesByBird(x.Bird.Id);
+                // matchDto.MatchDetails.ToList().ForEach(async x =>
+                // {
+                //     var resoures = await _repository.Resource.GetResourcesByBird(x.Bird.Id);
 
-                    x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
-                });
+                //     x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
+                // });
+
+                foreach(var resoures in matchDto.MatchDetails)
+                {
+                    var res = await _repository.Resource.GetResourcesByBird(resoures.Bird.Id);
+
+                    resoures.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(res);
+                }
             }
 
             return matchDTOList;
