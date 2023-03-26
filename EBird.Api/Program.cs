@@ -115,7 +115,9 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/hub/chat");
+app.MapHub<ChatHub>("/hub/chat",option => {
+  option.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+});
 app.MapHub<TestHub>("/hub/test");
 // app.MapHub<RequestHub>("/requestHub");
 
