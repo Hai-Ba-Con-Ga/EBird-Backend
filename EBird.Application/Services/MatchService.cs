@@ -217,11 +217,11 @@ namespace EBird.Application.Services
                 //     x.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(resoures);
                 // });
 
-                foreach(var resoures in matchDto.MatchDetails)
+                foreach(var matchDetail in matchDto.MatchDetails)
                 {
-                    var res = await _repository.Resource.GetResourcesByBird(resoures.Bird.Id);
+                    var matchResources = await _repository.MatchDetail.GetMatchResources(matchDetail.Id);
 
-                    resoures.Bird.ResourceList = _mapper.Map<ICollection<ResourceResponse>>(res);
+                    matchDetail.ResourceResponses = _mapper.Map<ICollection<ResourceResponse>>(matchResources);
                 }
             }
 

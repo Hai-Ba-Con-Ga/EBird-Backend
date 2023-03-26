@@ -15,12 +15,13 @@ const useHubConnection = (
    
     const hubClient = new HubConnectionBuilder()
       .withUrl(endpoint, {
-        transport: HttpTransportType.ServerSentEvents,
-        accessTokenFactory: () => token,
-        withCredentials :true,
+        transport: HttpTransportType.WebSockets,
+        skipNegotiation: true,
+        // accessTokenFactory: () => token,
+        // withCredentials :true,
         
       })
-      .withAutomaticReconnect()
+      // .withAutomaticReconnect()
       .build();
       
     hubClient?.start().then(()=>toast.success("Connection established")).catch(()=>toast.error("Connection failed! Check console log for errors"));
@@ -31,7 +32,8 @@ const useHubConnection = (
   const handleConnectClick = useCallback(() => {
     const hubClient = new HubConnectionBuilder()
       .withUrl(endpoint, {
-        transport: HttpTransportType.ServerSentEvents,
+        transport: HttpTransportType.WebSockets,
+        skipNegotiation: true,
         accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()

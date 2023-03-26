@@ -42,7 +42,8 @@ public class PaymentController : ControllerBase
             //     var host = HttpContext.Request.Host;
             //     origin = $"{scheme}://{host}";
             // }
-            var origin = "https://localhost:7137";
+            // var origin = "https://localhost:7137";
+            var origin = "https://wyvernpserver.tech";
             string url = await _paymentService.CreatePayment(request, origin);
             response = Response<string>.Builder().SetSuccess(true).SetStatusCode((int)HttpStatusCode.OK).SetMessage("Success").SetData(url);
         }
@@ -60,7 +61,7 @@ public class PaymentController : ControllerBase
         string frontendUrlCallBack = _config.FrontendCallBack;
 
         string url = QueryHelpers.AddQueryString(frontendUrlCallBack, queryDictionary);
-        return Redirect($"http://localhost:3000{url}");
+        return Redirect($"https://www.globird.tech/{url}");
     }
     [HttpGet("all")]
     public async Task<ActionResult<Response<List<PaymentEntity>>>> GetAllPayments()
