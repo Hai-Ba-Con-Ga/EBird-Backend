@@ -14,13 +14,8 @@ namespace EBird.Application.Model.Request
 {
     public class RequestUpdateDTO : IMapTo<RequestEntity>
     {
-        [Required]
         public DateTime RequestDatetime { get; set; }
-
-        [Required]
         public Guid HostBirdId { get; set; }
-
-        [Required]
         public Guid PlaceId { get; set; }
     }
 }

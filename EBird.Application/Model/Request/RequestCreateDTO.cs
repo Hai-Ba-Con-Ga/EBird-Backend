@@ -12,8 +12,14 @@ using EBird.Application.Model.Place;
 
 namespace EBird.Application.Model.Request
 {
-    public class RequestCreateDTO : RequestUpdateDTO
+    public class RequestCreateDTO : IMapTo<RequestEntity>
     {
+        [Required]
+        public DateTime RequestDatetime { get; set; }
+        [Required]
+        public Guid HostBirdId { get; set; }
+        [Required]
+        public Guid PlaceId { get; set; }
         public Guid? HostId { get; set; }
         public Guid? GroupId { get; set; }
         public Guid RoomId { get; set; }

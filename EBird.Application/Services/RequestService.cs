@@ -158,7 +158,19 @@ namespace EBird.Application.Services
 
             var requestEntity = await _repository.Request.GetRequest(id);
 
-            _mapper.Map(request, requestEntity);
+            if (request.HostBirdId != Guid.Empty)
+            {
+                requestEntity.HostBirdId = request.HostBirdId;
+            }
+            if (request.PlaceId != Guid.Empty)
+            {
+                requestEntity.PlaceId = request.PlaceId;
+            }
+            if (request.RequestDatetime != null)
+            {
+                requestEntity.RequestDatetime = request.RequestDatetime;
+            }
+
 
             try
             {
