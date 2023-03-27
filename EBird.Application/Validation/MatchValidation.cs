@@ -25,8 +25,8 @@ namespace EBird.Application.Validation
             if (request == null)
                 throw new BadRequestException("Request not found");
 
-            if (request.IsReady == false)
-                throw new BadRequestException("Request is not ready");
+            // if (request.IsReady == false)
+            //     throw new BadRequestException("Request is not ready");
 
             if (request.HostId != matchCreateDTO.UserId)
                 throw new BadRequestException("You are not the host of this request");
