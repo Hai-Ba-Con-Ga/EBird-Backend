@@ -28,8 +28,8 @@ namespace EBird.Application.Validation
             // if (request.IsReady == false)
             //     throw new BadRequestException("Request is not ready");
 
-            if (request.HostId != matchCreateDTO.UserId)
-                throw new BadRequestException("You are not the host of this request");
+            // if (request.HostId != matchCreateDTO.UserId)
+            //     throw new BadRequestException("You are not the host of this request");
 
             if (request.Status != RequestStatus.Matched)
                 throw new BadRequestException("This request was not matched");
